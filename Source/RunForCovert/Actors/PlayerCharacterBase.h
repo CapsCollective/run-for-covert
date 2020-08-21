@@ -74,8 +74,4 @@ private:
 
     UPROPERTY(VisibleAnywhere)
     USkeletalMeshComponent* Arms;
-
-    UPROPERTY(VisibleAnywhere)
-    UChildActorComponent* GunComponent;
-
 };

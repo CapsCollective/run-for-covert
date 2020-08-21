@@ -8,6 +8,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GunBase.h"
+#include "GameFramework/Controller.h"
+
+#define OUT
 
 APlayerCharacterBase::APlayerCharacterBase()
 {
@@ -20,15 +23,11 @@ APlayerCharacterBase::APlayerCharacterBase()
     Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
     Arms->SetupAttachment(Camera);
 
-    GunComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
-    GunComponent->SetupAttachment(Arms);
-
 	// Set field default values
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
     DefaultCapsuleHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-    Gun = Cast<AGunBase>(GunComponent->GetChildActor());
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -54,6 +53,21 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void APlayerCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
+    TArray<AActor*> ChildActors;
+
+    // Set up gun child actor
+    GetAllChildActors(OUT ChildActors);
+    if (ChildActors.Num() != 1)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Incorrect number of child actors for player character."))
+        return;
+    }
+    Gun = Cast<AGunBase>(ChildActors[0]);
+    if (!Gun)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Child actor does not inherit from AGunBase."))
+        return;
+    }
 }
 
 void APlayerCharacterBase::Tick(float DeltaTime)
@@ -84,7 +98,10 @@ void APlayerCharacterBase::LookRight(float Amount)
 void APlayerCharacterBase::Fire()
 {
     if (!Gun) { return; }
-    Gun->Fire(GetActorForwardVector());
+    FVector StartLocation;
+    FRotator StartRotation;
+    GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
+    Gun->Fire(StartLocation);
 }
 
 void APlayerCharacterBase::SprintStart()

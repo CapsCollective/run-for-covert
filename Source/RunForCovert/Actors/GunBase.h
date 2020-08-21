@@ -22,8 +22,11 @@ public:
 
     // Properties
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    USoundBase* FireSound;
 
     // Public functions
 

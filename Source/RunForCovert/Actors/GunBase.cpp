@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Components/HealthComponent.h"
+#include "DrawDebugHelpers.h"
 
 #define OUT
 
@@ -14,7 +15,7 @@ AGunBase::AGunBase()
 
 	// Setup components
     GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh"));
-    GunMesh->SetupAttachment(RootComponent);
+    RootComponent = GunMesh;
 
     MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("Muzzle Position"));
     MuzzlePosition->SetupAttachment(GunMesh);
@@ -35,6 +36,10 @@ void AGunBase::Tick(float DeltaTime)
 
 void AGunBase::Fire(FVector LaunchDirection)
 {
+    // Play firing sound
+    UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
+
+    // Get projectile trace
     FPredictProjectilePathResult Result;
     FPredictProjectilePathParams Params = FPredictProjectilePathParams(
             1.f,
@@ -45,6 +50,10 @@ void AGunBase::Fire(FVector LaunchDirection)
     );
     if (UGameplayStatics::PredictProjectilePath(GetWorld(), Params, OUT Result))
     {
+        UE_LOG(LogTemp, Error, TEXT("Hit something!"))
+        DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
+
+        // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
         if (!HitActor) { return; }
 
