@@ -14,7 +14,7 @@ class RUNFORCOVERT_API AGunBase : public AActor
 	
 public:
 
-	AGunBase();
+	AGunBase(); //TODO add montage to gun class blueprint
 
     // Public overrides
 

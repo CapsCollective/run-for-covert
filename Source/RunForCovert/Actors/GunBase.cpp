@@ -43,7 +43,7 @@ void AGunBase::Fire(FVector LaunchDirection)
     FPredictProjectilePathResult Result;
     FPredictProjectilePathParams Params = FPredictProjectilePathParams(
             1.f,
-            MuzzlePosition->GetComponentLocation(),
+            MuzzlePosition->GetComponentLocation(), // TODO reconsider using muzzle as start position
             LaunchDirection * 10000.f,
             2.f,
             ECC_WorldDynamic
@@ -51,11 +51,15 @@ void AGunBase::Fire(FVector LaunchDirection)
     if (UGameplayStatics::PredictProjectilePath(GetWorld(), Params, OUT Result))
     {
         UE_LOG(LogTemp, Error, TEXT("Hit something!"))
+        // TODO fix draw debug options
         DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
 
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
         if (!HitActor) { return; }
+
+        // TODO use the inbuilt takedamage override and add health component into C++
+//        HitActor->TakeDamage()
 
         UHealthComponent* HealthComponent = Cast<UHealthComponent>(
                 HitActor->GetComponentByClass(TSubclassOf<UHealthComponent>()));
