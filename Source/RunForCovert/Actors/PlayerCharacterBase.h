@@ -9,6 +9,7 @@
 UCLASS()
 class RUNFORCOVERT_API APlayerCharacterBase : public ACharacter
 {
+
 	GENERATED_BODY()
 
 public:
@@ -53,6 +54,7 @@ public:
 protected:
 
 	// Protected overrides
+
 	virtual void BeginPlay() override;
 
 private:
