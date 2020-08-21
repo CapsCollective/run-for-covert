@@ -43,6 +43,8 @@ public:
 
     void LookRight(float Amount);
 
+    void Fire();
+
     void SprintStart();
 
     void SprintEnd();
@@ -62,5 +64,18 @@ private:
     // Private fields
 
     float DefaultCapsuleHeight;
+
+    class AGunBase* Gun;
+
+    // Components
+
+    UPROPERTY(VisibleAnywhere)
+    class UCameraComponent* Camera;
+
+    UPROPERTY(VisibleAnywhere)
+    USkeletalMeshComponent* Arms;
+
+    UPROPERTY(VisibleAnywhere)
+    UChildActorComponent* GunComponent;
 
 };

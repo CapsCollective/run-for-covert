@@ -4,17 +4,31 @@
 #include "PlayerCharacterBase.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GunBase.h"
 
 APlayerCharacterBase::APlayerCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+    // Setup components
+    Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+    Camera->SetupAttachment(GetCapsuleComponent());
+
+    Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
+    Arms->SetupAttachment(Camera);
+
+    GunComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
+    GunComponent->SetupAttachment(Arms);
 
 	// Set field default values
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
     DefaultCapsuleHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    Gun = Cast<AGunBase>(GunComponent->GetChildActor());
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -27,6 +41,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
     PlayerInputComponent->BindAxis(TEXT("LookRight"), this, &APlayerCharacterBase::LookRight);
 
     PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Jump);
+
+    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Fire);
 
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::SprintStart);
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &APlayerCharacterBase::SprintEnd);
@@ -63,6 +79,12 @@ void APlayerCharacterBase::LookUp(float Amount)
 void APlayerCharacterBase::LookRight(float Amount)
 {
     AddControllerYawInput(Amount * LookSpeed);
+}
+
+void APlayerCharacterBase::Fire()
+{
+    if (!Gun) { return; }
+    Gun->Fire(GetActorForwardVector());
 }
 
 void APlayerCharacterBase::SprintStart()

@@ -24,7 +24,10 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::OnTakeDamage(float Damage)
 {
-    CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, CurrentHealth);
+    if ((CurrentHealth -= Damage) <= 0.f) {
+        CurrentHealth = 0;
+        OnDeath();
+    }
 }
 
 void UHealthComponent::OnDeath()
