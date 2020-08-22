@@ -98,10 +98,10 @@ void APlayerCharacterBase::LookRight(float Amount)
 void APlayerCharacterBase::Fire()
 {
     if (!Gun) { return; }
-    FVector StartLocation;
-    FRotator StartRotation;
-    GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
-    Gun->Fire(StartLocation);
+    //FVector StartLocation;
+    //FRotator StartRotation;
+    //GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
+    Gun->Fire(GetActorForwardVector());
 }
 
 void APlayerCharacterBase::SprintStart()

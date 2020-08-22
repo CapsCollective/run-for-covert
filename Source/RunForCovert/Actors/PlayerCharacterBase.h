@@ -33,6 +33,14 @@ public:
     UPROPERTY(EditAnywhere, Category = "Player Control")
     float SprintMultiplier;
 
+    // Components
+
+    UPROPERTY(VisibleAnywhere)
+    class UCameraComponent* Camera;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    USkeletalMeshComponent* Arms;
+
     // Input methods
 
     void MoveForward(float Amount);
@@ -66,12 +74,4 @@ private:
     float DefaultCapsuleHeight;
 
     class AGunBase* Gun;
-
-    // Components
-
-    UPROPERTY(VisibleAnywhere)
-    class UCameraComponent* Camera;
-
-    UPROPERTY(VisibleAnywhere)
-    USkeletalMeshComponent* Arms;
 };

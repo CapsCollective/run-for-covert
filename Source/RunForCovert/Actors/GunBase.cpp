@@ -52,7 +52,13 @@ void AGunBase::Fire(FVector LaunchDirection)
     {
         UE_LOG(LogTemp, Error, TEXT("Hit something!"))
         // TODO fix draw debug options
-        DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
+        //DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
+
+        for (auto It = Result.PathData.CreateConstIterator(); It; It++)
+        {
+            FColor Colour = It.GetIndex() < Result.PathData.Num() ? FColor::Green : FColor::Red;
+            DrawDebugPoint(GetWorld(), (*It).Location, 1.f, Colour);
+        }
 
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
