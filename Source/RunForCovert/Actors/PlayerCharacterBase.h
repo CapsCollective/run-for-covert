@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "CharacterBase.h"
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API APlayerCharacterBase : public ACharacter
+class RUNFORCOVERT_API APlayerCharacterBase : public ACharacterBase
 {
 
 	GENERATED_BODY()

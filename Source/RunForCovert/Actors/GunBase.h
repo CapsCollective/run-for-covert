@@ -30,7 +30,7 @@ public:
 
     // Public functions
 
-    void Fire(FVector LaunchDirection);
+    void Fire(AController* Controller, FVector LaunchDirection);
 
 protected:
 

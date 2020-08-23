@@ -6,6 +6,9 @@
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Setup components
+    Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 }
 
 void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -22,4 +25,3 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-

@@ -17,6 +17,8 @@ APlayerCharacterBase::APlayerCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
     // Setup components
+    Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(GetCapsuleComponent());
 
@@ -101,7 +103,7 @@ void APlayerCharacterBase::Fire()
     //FVector StartLocation;
     //FRotator StartRotation;
     //GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
-    Gun->Fire(GetActorForwardVector());
+    Gun->Fire(GetController(), GetActorForwardVector());
 }
 
 void APlayerCharacterBase::SprintStart()

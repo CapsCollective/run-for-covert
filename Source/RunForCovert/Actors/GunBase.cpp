@@ -4,8 +4,8 @@
 #include "GunBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "../Components/HealthComponent.h"
 #include "DrawDebugHelpers.h"
+#include "GameFramework/DamageType.h"
 
 #define OUT
 
@@ -34,8 +34,10 @@ void AGunBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AGunBase::Fire(FVector LaunchDirection)
+void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
 {
+    if (!Controller) { return; }
+
     // Play firing sound
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
 
@@ -51,6 +53,7 @@ void AGunBase::Fire(FVector LaunchDirection)
     if (UGameplayStatics::PredictProjectilePath(GetWorld(), Params, OUT Result))
     {
         UE_LOG(LogTemp, Error, TEXT("Hit something!"))
+
         // TODO fix draw debug options
         //DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
 
@@ -63,15 +66,8 @@ void AGunBase::Fire(FVector LaunchDirection)
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
         if (!HitActor) { return; }
-
-        // TODO use the inbuilt takedamage override and add health component into C++
-//        HitActor->TakeDamage()
-
-        UHealthComponent* HealthComponent = Cast<UHealthComponent>(
-                HitActor->GetComponentByClass(TSubclassOf<UHealthComponent>()));
-
-        if (!HealthComponent) { return; }
-
-        HealthComponent->OnTakeDamage(GunDamage);
+        FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
+                                                          Result.HitResult.ImpactNormal, nullptr);
+        HitActor->TakeDamage(GunDamage,DamageEvent, Controller,GetOwner());
     }
 }
