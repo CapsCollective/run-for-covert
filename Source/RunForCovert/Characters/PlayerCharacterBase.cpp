@@ -7,7 +7,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
-#include "RunForCovert/Actors/GunBase.h"
 #include "GameFramework/Controller.h"
 
 #define OUT
@@ -55,21 +54,6 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void APlayerCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
-    TArray<AActor*> ChildActors;
-
-    // Set up gun child actor
-    GetAllChildActors(OUT ChildActors);
-    if (ChildActors.Num() != 1)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Incorrect number of child actors for player character."))
-        return;
-    }
-    Gun = Cast<AGunBase>(ChildActors[0]);
-    if (!Gun)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Child actor does not inherit from AGunBase."))
-        return;
-    }
 }
 
 void APlayerCharacterBase::Tick(float DeltaTime)
@@ -99,8 +83,8 @@ void APlayerCharacterBase::LookRight(float Amount)
 
 void APlayerCharacterBase::Fire()
 {
-    if (!Gun) { return; }
-    Gun->Fire(GetController(), Camera->GetForwardVector());
+    if (!GetGun()) { return; }
+    GetGun()->Fire(GetController(), Camera->GetForwardVector());
 }
 
 void APlayerCharacterBase::SprintStart()

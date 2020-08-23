@@ -25,3 +25,8 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+void AEnemyCharacterBase::FireWeapon()
+{
+    Fire();
+}

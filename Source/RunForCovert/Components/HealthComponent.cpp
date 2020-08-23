@@ -1,8 +1,10 @@
 // Caps Collective 2020
 
 
+#include "RunForCovert/Characters/CharacterBase.h"
 #include "HealthComponent.h"
-#include "GameFramework/Actor.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/Controller.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -33,4 +35,11 @@ void UHealthComponent::OnTakeDamage(float Damage)
 void UHealthComponent::OnDeath()
 {
     UE_LOG(LogTemp, Warning, TEXT("%s died!"), *GetOwner()->GetName())
+
+    ACharacterBase* Character = Cast<ACharacterBase>(GetOwner());
+
+    if (!Character) { return; }
+
+    Character->DetachFromControllerPendingDestroy();
+    Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

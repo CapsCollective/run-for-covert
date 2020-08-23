@@ -23,6 +23,10 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    // Public methods
+
+    void FireWeapon();
+
 protected:
 
     // Protected overrides

@@ -52,8 +52,6 @@ public:
 
     void LookRight(float Amount);
 
-    void Fire();
-
     void SprintStart();
 
     void SprintEnd();
@@ -68,11 +66,11 @@ protected:
 
 	virtual void BeginPlay() override;
 
+    virtual void Fire() override;
+
 private:
 
     // Private fields
 
     float DefaultCapsuleHeight;
-
-    class AGunBase* Gun;
 };

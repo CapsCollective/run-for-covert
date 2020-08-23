@@ -20,6 +20,10 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
+    // Public functions
+
+    void FireAtPlayer();
+
 protected:
 
     // Protected overrides
@@ -31,5 +35,11 @@ private:
     // Private fields
 
     APawn* Player;
-	
+
+    class AEnemyCharacterBase* Character;
+
+    FTimerHandle TimerHandle;
+
+    int32 RepeatedAction;
+
 };
