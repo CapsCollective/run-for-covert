@@ -39,9 +39,11 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent,
-                                       class AController * EventInstigator, AActor * DamageCauser)
+float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,
+                                       class AController* EventInstigator, AActor* DamageCauser)
 {
+    DamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
     if (!Health) { return 0.f; }
     Health->OnTakeDamage(DamageAmount);
     return DamageAmount;
