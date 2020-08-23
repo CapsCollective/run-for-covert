@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Components/HealthComponent.h"
+#include "RunForCovert/Components/HealthComponent.h"
 #include "CharacterBase.generated.h"
 
 UCLASS()

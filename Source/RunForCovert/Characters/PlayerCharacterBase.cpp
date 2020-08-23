@@ -7,7 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GunBase.h"
+#include "RunForCovert/Actors/GunBase.h"
 #include "GameFramework/Controller.h"
 
 #define OUT
@@ -100,9 +100,6 @@ void APlayerCharacterBase::LookRight(float Amount)
 void APlayerCharacterBase::Fire()
 {
     if (!Gun) { return; }
-    //FVector StartLocation;
-    //FRotator StartRotation;
-    //GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
     Gun->Fire(GetController(), Camera->GetForwardVector());
 }
 

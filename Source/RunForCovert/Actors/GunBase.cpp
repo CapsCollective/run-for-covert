@@ -65,12 +65,8 @@ void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     for (auto It = Result.PathData.CreateConstIterator(); It; It++)
     {
         DrawDebugPoint(
-                GetWorld(),
-                (*It).Location,
-                5.f,
-                It + 1 ? FColor::Green : FColor::Red,
-                false,
-                4.f
+                GetWorld(), (*It).Location,5.f,
+                It + 1 ? FColor::Green : FColor::Red,false,4.f
         );
     }
 }
