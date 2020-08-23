@@ -103,7 +103,7 @@ void APlayerCharacterBase::Fire()
     //FVector StartLocation;
     //FRotator StartRotation;
     //GetController()->GetPlayerViewPoint(OUT StartLocation, OUT StartRotation);
-    Gun->Fire(GetController(), GetActorForwardVector());
+    Gun->Fire(GetController(), Camera->GetForwardVector());
 }
 
 void APlayerCharacterBase::SprintStart()

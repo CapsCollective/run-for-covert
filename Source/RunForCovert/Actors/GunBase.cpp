@@ -45,29 +45,32 @@ void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     FPredictProjectilePathResult Result;
     FPredictProjectilePathParams Params = FPredictProjectilePathParams(
             1.f,
-            MuzzlePosition->GetComponentLocation(), // TODO reconsider using muzzle as start position
+            MuzzlePosition->GetComponentLocation(),
             LaunchDirection * 10000.f,
             2.f,
-            ECC_WorldDynamic
+            ECC_WorldDynamic,
+            GetParentActor()
     );
     if (UGameplayStatics::PredictProjectilePath(GetWorld(), Params, OUT Result))
     {
-        UE_LOG(LogTemp, Error, TEXT("Hit something!"))
-
-        // TODO fix draw debug options
-        //DrawDebugLine(GetWorld(), MuzzlePosition->GetComponentLocation(), Result.HitResult.ImpactPoint, FColor::Red, true);
-
-        for (auto It = Result.PathData.CreateConstIterator(); It; It++)
-        {
-            FColor Colour = It.GetIndex() < Result.PathData.Num() ? FColor::Green : FColor::Red;
-            DrawDebugPoint(GetWorld(), (*It).Location, 1.f, Colour);
-        }
-
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
         if (!HitActor) { return; }
         FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
                                                           Result.HitResult.ImpactNormal, nullptr);
         HitActor->TakeDamage(GunDamage,DamageEvent, Controller,GetOwner());
+    }
+
+    // Draw debug line
+    for (auto It = Result.PathData.CreateConstIterator(); It; It++)
+    {
+        DrawDebugPoint(
+                GetWorld(),
+                (*It).Location,
+                5.f,
+                It + 1 ? FColor::Green : FColor::Red,
+                false,
+                4.f
+        );
     }
 }
