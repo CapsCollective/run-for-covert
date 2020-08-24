@@ -34,6 +34,8 @@ public:
 
 protected:
 
+    // Protected overrides
+
 	virtual void BeginPlay() override;
 
 private:

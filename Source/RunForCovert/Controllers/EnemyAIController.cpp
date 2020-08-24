@@ -1,15 +1,19 @@
 // Caps Collective 2020
 
 
+#include "RunForCovert/Actors/Cover.h"
 #include "EnemyAIController.h"
-#include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Characters/EnemyCharacterBase.h"
 #include "TimerManager.h"
+#include "EngineUtils.h"
 
 AEnemyAIController::AEnemyAIController()
 {
     PrimaryActorTick.bCanEverTick = true;
+
+    RepeatedAction = 0;
+    CoverPosition = nullptr;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -33,6 +37,35 @@ void AEnemyAIController::Tick(float DeltaTime)
     if (!Player) { return; }
 
     MoveToActor(Player, 300.f);
+
+    // Uncomment this (and comment out the above) to test the cover system
+//    if (LineOfSightTo(Player) && !CoverPosition)
+//    {
+//        FVector PlayerLocation = Player->GetActorLocation();
+//
+//        TArray<AActor*> IgnoredActors;
+//        IgnoredActors.Add(GetPawn());
+//        IgnoredActors.Add(Player);
+//
+//        UCoverPositionComponent* PotentialCover;
+//        for (ACover* Cover : TActorRange<ACover>(GetWorld()))
+//        {
+//            PotentialCover = Cover->FindCover(PlayerLocation, IgnoredActors);
+//            if (PotentialCover) {
+//                CoverPosition = PotentialCover;
+//                break;
+//            }
+//        }
+//    }
+//    else if (CoverPosition)
+//    {
+//        MoveToLocation(CoverPosition->GetComponentLocation());
+//
+//        if (FVector::Dist(Character->GetActorLocation(), CoverPosition->GetComponentLocation()) < 1000.f)
+//        {
+//            CoverPosition = nullptr;
+//        }
+//    }
 }
 
 void AEnemyAIController::FireAtPlayer()

@@ -42,4 +42,6 @@ private:
 
     int32 RepeatedAction;
 
+    class UCoverPositionComponent* CoverPosition;
+
 };
