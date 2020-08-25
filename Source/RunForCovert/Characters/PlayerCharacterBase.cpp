@@ -51,6 +51,10 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
 }
 
+//  TODO implement desired player behaviours:
+//      - Crouch behind cover
+//      - Silent movement while crouching
+
 void APlayerCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
