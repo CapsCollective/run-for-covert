@@ -19,6 +19,6 @@ public:
 
     // Public functions
 
-    bool DoesProvideCover(FVector &CoverFromPosition, struct FCollisionQueryParams &QueryParams);
+    bool DoesProvideCover(FVector &CoverFromPosition);
 
 };

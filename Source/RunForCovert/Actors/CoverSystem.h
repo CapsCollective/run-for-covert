@@ -34,8 +34,6 @@ private:
 
     TArray<class ACover*> CoverActors;
 
-    TArray<AActor*> IgnoredActors;
-
     float CoverRadius;
 
 };

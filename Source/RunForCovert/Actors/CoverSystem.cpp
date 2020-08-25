@@ -4,8 +4,6 @@
 #include "CoverSystem.h"
 #include "EngineUtils.h"
 #include "../Actors/Cover.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/Character.h"
 
 #define OUT
 
@@ -15,7 +13,6 @@ ACoverSystem::ACoverSystem()
 
     // Set field default values
     CoverRadius = 1000.f;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), OUT IgnoredActors);
 }
 
 void ACoverSystem::BeginPlay()
@@ -59,7 +56,7 @@ UCoverPositionComponent* ACoverSystem::GetClosestValidCoverPoint(AActor* Agent, 
         if (CoverDistance >= ClosestCoverDistance) { continue; }
 
         // Check if it actually provides cover from the enemy
-        UCoverPositionComponent* PotentialCover = (*It)->FindCover(Enemy->GetActorLocation(), IgnoredActors);
+        UCoverPositionComponent* PotentialCover = (*It)->FindCover(Enemy->GetActorLocation());
         if (PotentialCover)
         {
             ClosestCoverDistance = CoverDistance;

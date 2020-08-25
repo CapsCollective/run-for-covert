@@ -19,7 +19,7 @@ public:
 
     // Public functions
 
-    UCoverPositionComponent* FindCover(FVector CoverFromPosition, TArray<AActor*> &IgnoredActors);
+    UCoverPositionComponent* FindCover(FVector CoverFromPosition);
 
     // Public functions
 

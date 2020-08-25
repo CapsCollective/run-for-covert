@@ -24,19 +24,12 @@ void ACover::AddAdjacentCover(ACover* Cover)
     DrawDebugLine(GetWorld(), GetActorLocation(), Cover->GetActorLocation(), FColor::Green, true);
 }
 
-UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition, TArray<AActor*> &IgnoredActors)
+UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition)
 {
-    // Create query params from ignore list
-    FCollisionQueryParams QueryParams;
-    for (auto It = IgnoredActors.CreateConstIterator(); It; It++)
-    {
-        QueryParams.AddIgnoredActor(*It);
-    }
-
     // Iterate over cover points and return any that provide sufficient cover
     for (auto It = CoverPoints.CreateConstIterator(); It; It++)
     {
-        if ((*It)->DoesProvideCover(CoverFromPosition, QueryParams))
+        if ((*It)->DoesProvideCover(CoverFromPosition))
         {
             return *It;
         }
