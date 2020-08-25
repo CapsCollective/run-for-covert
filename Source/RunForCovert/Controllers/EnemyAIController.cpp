@@ -1,12 +1,13 @@
 // Caps Collective 2020
 
 
-#include "RunForCovert/Actors/Cover.h"
 #include "EnemyAIController.h"
+#include "RunForCovert/Actors/Cover.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Characters/EnemyCharacterBase.h"
 #include "TimerManager.h"
 #include "EngineUtils.h"
+#include "../GameModes/DefaultGameModeBase.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -36,43 +37,38 @@ void AEnemyAIController::Tick(float DeltaTime)
 
     if (!Player) { return; }
 
-    MoveToActor(Player, 300.f);
+//    MoveToActor(Player, 300.f);
 
     // Uncomment this (and comment out the above) to test the cover system
-//    if (LineOfSightTo(Player) && !CoverPosition)
-//    {
-//        FVector PlayerLocation = Player->GetActorLocation();
-//
-//        TArray<AActor*> IgnoredActors;
-//        IgnoredActors.Add(GetPawn());
-//        IgnoredActors.Add(Player);
-//
-//        UCoverPositionComponent* PotentialCover;
-//        for (ACover* Cover : TActorRange<ACover>(GetWorld()))
-//        {
-//            PotentialCover = Cover->FindCover(PlayerLocation, IgnoredActors);
-//            if (PotentialCover) {
-//                CoverPosition = PotentialCover;
-//                break;
-//            }
-//        }
-//    }
-//    else if (CoverPosition)
-//    {
-//        MoveToLocation(CoverPosition->GetComponentLocation());
-//
-//        if (FVector::Dist(Character->GetActorLocation(), CoverPosition->GetComponentLocation()) < 1000.f)
-//        {
-//            CoverPosition = nullptr;
-//        }
-//    }
+    if (LineOfSightTo(Player) && !CoverPosition) // TODO remember not to use LineOfSightTo as it disregards senses
+    {
+        // Get a reference to the game mode (used as a service locator)
+        ACoverSystem* CoverSystem;
+        ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
+        if (!GameMode || !(CoverSystem = GameMode->GetCoverSystem())) { return; }
+
+        // Get the closest valid cover point to the agent
+        CoverPosition = CoverSystem->GetClosestValidCoverPoint(Character, Player);
+    }
+    else if (CoverPosition)
+    {
+        // Move towards the player while there is a valid cover point
+        MoveToLocation(CoverPosition->GetComponentLocation());
+
+        // Nullify the cover point once close enough
+        if (FVector::Dist(Character->GetActorLocation(), CoverPosition->GetComponentLocation()) < 1000.f)
+        {
+            CoverPosition = nullptr;
+        }
+    }
 }
 
 void AEnemyAIController::FireAtPlayer()
 {
     if (!Character) { return; }
 
-    Character->FireWeapon();
+//    Character->FireWeapon();
 
     if (++RepeatedAction >= 15)
     {
