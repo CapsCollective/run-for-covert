@@ -1,8 +1,8 @@
 // Caps Collective 2020
 
 
-#include "RunForCovert/Characters/CharacterBase.h"
 #include "HealthComponent.h"
+#include "RunForCovert/Characters/CharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Controller.h"
 

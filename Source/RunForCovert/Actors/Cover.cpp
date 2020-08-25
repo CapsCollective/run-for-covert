@@ -3,6 +3,7 @@
 
 #include "Cover.h"
 #include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 
 ACover::ACover()
 {
@@ -17,7 +18,13 @@ void ACover::BeginPlay()
 	GetComponents(OUT CoverPoints);
 }
 
-UCoverPositionComponent* ACover::FindCover(FVector &CoverFromPosition, TArray<AActor*> &IgnoredActors)
+void ACover::AddAdjacentCover(ACover* Cover)
+{
+    AdjacentCover.Add(Cover);
+    DrawDebugLine(GetWorld(), GetActorLocation(), Cover->GetActorLocation(), FColor::Green, true);
+}
+
+UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition, TArray<AActor*> &IgnoredActors)
 {
     // Create query params from ignore list
     FCollisionQueryParams QueryParams;

@@ -19,7 +19,11 @@ public:
 
     // Public functions
 
-    UCoverPositionComponent* FindCover(FVector &CoverFromPosition, TArray<AActor*> &IgnoredActors);
+    UCoverPositionComponent* FindCover(FVector CoverFromPosition, TArray<AActor*> &IgnoredActors);
+
+    // Public functions
+
+    void AddAdjacentCover(ACover* Cover);
 
 protected:
 
@@ -32,5 +36,7 @@ private:
     // Private fields
 
     TArray<UCoverPositionComponent*> CoverPoints;
+
+    TArray<ACover*> AdjacentCover;
 
 };
