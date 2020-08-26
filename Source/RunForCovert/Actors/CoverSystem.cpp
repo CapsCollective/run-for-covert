@@ -4,6 +4,7 @@
 #include "CoverSystem.h"
 #include "EngineUtils.h"
 #include "../Actors/Cover.h"
+#include "DrawDebugHelpers.h"
 
 #define OUT
 
@@ -19,10 +20,17 @@ void ACoverSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Get a list of all cover actors in the world
+	// Get a list of all cover actors in the world and generate a list of
+	// nodes representing cover actors with graph attributes
     for (ACover* Cover : TActorRange<ACover>(GetWorld()))
     {
+        // Add to cover list
         CoverActors.Add(Cover);
+
+        // Add cover node list
+        UCoverNode* NewNode = NewObject<UCoverNode>();
+        NewNode->CoverActor = Cover;
+        CoverNodes.Add(NewNode);
     }
 
     if (CoverActors.Num() < 3) {
@@ -31,15 +39,24 @@ void ACoverSystem::BeginPlay()
     }
 
     // Generate a random geometric graph of R depth between cover items
-    TArray<ACover*> SortedCoverActors = CoverActors;
-    for (auto CurrentCoverIt = CoverActors.CreateConstIterator(); CurrentCoverIt; CurrentCoverIt++)
+    for (UCoverNode* CurrentNode : CoverNodes)
     {
-        for (auto SortedCoverIt = SortedCoverActors.CreateConstIterator(); SortedCoverIt; SortedCoverIt++)
+        for (UCoverNode* Node : CoverNodes)
         {
-            if ((*SortedCoverIt)->GetDistanceTo(*CurrentCoverIt) <= CoverRadius && *SortedCoverIt != *CurrentCoverIt)
+            if (Node->CoverActor->GetDistanceTo(CurrentNode->CoverActor) <= CoverRadius && Node->CoverActor != CurrentNode->CoverActor)
             {
-                (*CurrentCoverIt)->AddAdjacentCover(*SortedCoverIt);
+                CurrentNode->AdjacentCover.Add(Node);
             }
+        }
+    }
+
+    // Display debug lines
+    for (UCoverNode* Node : CoverNodes)
+    {
+        for (UCoverNode* ConnectedNode : Node->AdjacentCover)
+        {
+            DrawDebugLine(GetWorld(), Node->CoverActor->GetActorLocation(),
+                          ConnectedNode->CoverActor->GetActorLocation(), FColor::Green, true);
         }
     }
 }
@@ -69,5 +86,64 @@ UCoverPositionComponent* ACoverSystem::GetClosestValidCoverPoint(AActor* Agent, 
 TArray<UCoverPositionComponent*> ACoverSystem::GetCoverPath(UCoverPositionComponent* CurrentCoverPosition, AActor* Enemy)
 {
     // TODO implement path generation of valid cover points toward the enemy
+
+//    TArray<FCoverNode> OpenSet;
+//    FCoverNode StartNode;
+//    FCoverNode EndNode; // TODO calculate this
+//
+//    for (ACover* Cover : CoverActors)
+//    {
+//        FCoverNode NewNode = FCoverNode();
+//        NewNode.GScore = TNumericLimits<float>::Max();
+//
+//        if (Cover == CurrentCoverPosition->GetOwner())
+//        {
+//            StartNode = NewNode;
+//        }
+//    }
+//
+//    StartNode.GScore = 0.f;
+//    StartNode.HScore = StartNode.CoverActor->GetOwner()->GetDistanceTo(EndNode.CoverActor->GetOwner());
+//
+//    OpenSet.Add(StartNode);
+//
+//    while (OpenSet.Num() > 0)
+//    {
+//        OpenSet.Sort([](FCoverNode &A, FCoverNode &B){
+//            return A.FScore() < B.FScore();
+//        });
+//        FCoverNode CurrentNode = OpenSet.Pop();
+//
+//        if (CurrentNode.CoverActor == EndNode.CoverActor) {
+//            TArray<UCoverPositionComponent*> Path;
+//            Path.Push(EndNode.ValidCover);
+//            CurrentNode = EndNode;
+//            while (CurrentNode.CoverActor != StartNode.CoverActor)
+//            {
+//                CurrentNode = *CurrentNode.CameFrom;
+//                Path.Add(CurrentNode.ValidCover);
+//            }
+//            return Path;
+//        }
+//
+//        for (FCoverNode* ConnectedNode : CurrentNode.ConnectedNodes)
+//        {
+//            float TentativeGScore = CurrentNode.GScore +
+//            FVector::Distance(CurrentNode.CoverActor->GetActorLocation(), ConnectedNode->GetActorLocation());
+//            if (TentativeGScore < ConnectedNode.GScore)
+//            {
+//                ConnectedNode->CameFrom = CurrentNode;
+//                ConnectedNode->GScore = TentativeGScore;
+//                ConnectedNode->HScore = FVector::Distance(ConnectedNode->GetActorLocation(), EndNode->GetActorLocation());
+//                if (!OpenSet.Contains(ConnectedNode))
+//                {
+//                    OpenSet.Add(ConnectedNode);
+//                }
+//            }
+//        }
+//    }
+
+    //If it leaves this loop without finding the end node then return an empty path.
+    UE_LOG(LogTemp, Error, TEXT("NO PATH FOUND"));
     return TArray<UCoverPositionComponent*>();
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Objects/CoverNode.h"
 #include "CoverSystem.generated.h"
 
 UCLASS()
@@ -35,5 +36,7 @@ private:
     TArray<class ACover*> CoverActors;
 
     float CoverRadius;
+
+    TArray<UCoverNode*> CoverNodes;
 
 };

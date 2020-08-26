@@ -21,10 +21,6 @@ public:
 
     UCoverPositionComponent* FindCover(FVector CoverFromPosition);
 
-    // Public functions
-
-    void AddAdjacentCover(ACover* Cover);
-
 protected:
 
     // Protected overrides
@@ -36,7 +32,5 @@ private:
     // Private fields
 
     TArray<UCoverPositionComponent*> CoverPoints;
-
-    TArray<ACover*> AdjacentCover;
 
 };

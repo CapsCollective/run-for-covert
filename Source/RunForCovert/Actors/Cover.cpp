@@ -3,7 +3,6 @@
 
 #include "Cover.h"
 #include "Engine/World.h"
-#include "DrawDebugHelpers.h"
 
 ACover::ACover()
 {
@@ -16,12 +15,6 @@ void ACover::BeginPlay()
 
 	// Populate the cover points field
 	GetComponents(OUT CoverPoints);
-}
-
-void ACover::AddAdjacentCover(ACover* Cover)
-{
-    AdjacentCover.Add(Cover);
-    DrawDebugLine(GetWorld(), GetActorLocation(), Cover->GetActorLocation(), FColor::Green, true);
 }
 
 UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition)
