@@ -7,6 +7,7 @@
 ACover::ACover()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	GetOwner();
 }
 
 void ACover::BeginPlay()
@@ -17,7 +18,7 @@ void ACover::BeginPlay()
 	GetComponents(OUT CoverPoints);
 }
 
-UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition)
+UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition) // TODO name this better?
 {
     // Iterate over cover points and return any that provide sufficient cover
     for (auto It = CoverPoints.CreateConstIterator(); It; It++)
@@ -28,4 +29,9 @@ UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition)
         }
     }
     return nullptr;
+}
+
+UCoverPositionComponent* ACover::GetRandomCover()
+{
+    return CoverPoints[0]; // TODO this is not actually random!
 }

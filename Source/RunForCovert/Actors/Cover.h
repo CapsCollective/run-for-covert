@@ -21,6 +21,8 @@ public:
 
     UCoverPositionComponent* FindCover(FVector CoverFromPosition);
 
+    UCoverPositionComponent* GetRandomCover();
+
 protected:
 
     // Protected overrides

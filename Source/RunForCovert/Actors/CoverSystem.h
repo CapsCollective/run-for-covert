@@ -8,7 +8,7 @@
 #include "CoverSystem.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API ACoverSystem : public AActor
+class RUNFORCOVERT_API ACoverSystem : public AActor // TODO make inherit from UObject?
 {
 
 	GENERATED_BODY()
@@ -21,7 +21,7 @@ public:
 
     class UCoverPositionComponent* GetClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
-    TArray<UCoverPositionComponent*> GetCoverPath(UCoverPositionComponent* CurrentCoverPosition, AActor* Enemy);
+    TArray<ACover*> GetCoverPath(AActor* Agent, AActor* Enemy);
 
 protected:
 
@@ -33,11 +33,19 @@ private:
 
     // Private fields
 
-    TArray<class ACover*> CoverActors;
-
     float CoverRadius;
 
     UPROPERTY()
     TArray<UCoverNode*> CoverNodes;
+
+    // Private methods
+
+    UCoverNode* GetClosestCover(AActor* Actor);
+
+    void GenerateGraph(float Radius);
+
+    void DisplayDebugGraph(float DisplayTime);
+
+    void DisplayDebugPath(TArray<ACover*>* Path, float DisplayTime);
 
 };

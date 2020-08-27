@@ -23,7 +23,6 @@ public:
     UPROPERTY()
     class ACover* CoverActor;
 
-    class UCoverPositionComponent* ValidCover;
     UPROPERTY()
     UCoverNode* CameFrom;
 
