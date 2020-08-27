@@ -49,6 +49,7 @@ private:
 
     // Private fields
 
+    UPROPERTY()
     AGunBase* Gun;
 
 };

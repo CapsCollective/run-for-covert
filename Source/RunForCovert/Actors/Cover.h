@@ -31,6 +31,7 @@ private:
 
     // Private fields
 
+    UPROPERTY()
     TArray<UCoverPositionComponent*> CoverPoints;
 
 };

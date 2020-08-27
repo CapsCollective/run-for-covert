@@ -20,12 +20,14 @@ public:
 
     // Public fields
 
+    UPROPERTY()
     class ACover* CoverActor;
 
     class UCoverPositionComponent* ValidCover;
-
+    UPROPERTY()
     UCoverNode* CameFrom;
 
+    UPROPERTY()
     TArray<UCoverNode*> AdjacentCover;
 
     float GScore;

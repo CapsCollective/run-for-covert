@@ -37,6 +37,7 @@ private:
 
     float CoverRadius;
 
+    UPROPERTY()
     TArray<UCoverNode*> CoverNodes;
 
 };

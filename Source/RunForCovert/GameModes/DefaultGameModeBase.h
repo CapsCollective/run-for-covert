@@ -29,6 +29,7 @@ private:
 
     // Private fields
 
+    UPROPERTY()
     ACoverSystem* CoverSystem;
 	
 };

@@ -34,14 +34,24 @@ private:
 
     // Private fields
 
+    UPROPERTY()
     APawn* Player;
 
-    class AEnemyCharacterBase* Character;
+    UPROPERTY()
+    class AEnemyCharacterBase* Agent;
 
-    FTimerHandle TimerHandle;
+    UPROPERTY()
+    class ACoverSystem* CoverSystem;
+
+    UPROPERTY()
+    class UCoverPositionComponent* CoverPosition;
+
+    UPROPERTY()
+    TArray<class ACover*> CoverPath;
+
+	UPROPERTY()
+	FTimerHandle TimerHandle;
 
     int32 RepeatedAction;
-
-    class UCoverPositionComponent* CoverPosition;
 
 };
