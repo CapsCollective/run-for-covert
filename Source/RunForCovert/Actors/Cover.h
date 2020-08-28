@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RunForCovert/Components/CoverPositionComponent.h"
+#include "RunForCovert/Components/CoverPointComponent.h"
 #include "Cover.generated.h"
 
 UCLASS()
@@ -19,9 +19,9 @@ public:
 
     // Public functions
 
-    UCoverPositionComponent* FindValidCoverPoint(FVector CoverFromPosition);
+    UCoverPointComponent* FindValidCoverPoint(FVector CoverFromPosition);
 
-    UCoverPositionComponent* GetRandomCover();
+    UCoverPointComponent* GetRandomCover();
 
 protected:
 
@@ -34,6 +34,6 @@ private:
     // Private fields
 
     UPROPERTY()
-    TArray<UCoverPositionComponent*> CoverPoints;
+    TArray<UCoverPointComponent*> CoverPoints;
 
 };

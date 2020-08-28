@@ -14,7 +14,7 @@ AEnemyAIController::AEnemyAIController()
     PrimaryActorTick.bCanEverTick = true;
 
     RepeatedAction = 0;
-    CoverPosition = nullptr;
+    CoverPoint = nullptr;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -65,38 +65,38 @@ void AEnemyAIController::Tick(float DeltaTime)
     //MoveToActor(Player, 300.f);
 
     // Uncomment this to see the AI constantly hide from the player
-//    if (LineOfSightTo(Player) && !CoverPosition) // TODO remember not to use LineOfSightTo as it disregards senses
+//    if (LineOfSightTo(Player) && !CoverPoint) // TODO remember not to use LineOfSightTo as it disregards senses
 //    {
 //        // Get the closest valid cover point to the agent
-//        CoverPosition = CoverSystem->FindClosestValidCoverPoint(Agent, Player);
+//        CoverPoint = CoverSystem->FindClosestValidCoverPoint(Agent, Player);
 //    }
-//    else if (CoverPosition)
+//    else if (CoverPoint)
 //    {
 //        // Move towards the player while there is a valid cover point
-//        MoveToLocation(CoverPosition->GetComponentLocation());
+//        MoveToLocation(CoverPoint->GetComponentLocation());
 //
 //        // Nullify the cover point once close enough
-//        if (FVector::Dist(Agent->GetActorLocation(), CoverPosition->GetComponentLocation()) < 1000.f)
+//        if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 1000.f)
 //        {
-//            CoverPosition = nullptr;
+//            CoverPoint = nullptr;
 //        }
 //    }
 
     // Uncomment this to see the AI path towards the nearest cover to the player
-    if (CoverPath.Num() <= 0 && !CoverPosition)
+    if (CoverPath.Num() <= 0 && !CoverPoint)
     {
         CoverPath = CoverSystem->FindCoverPath(Agent, Player);
     }
-    else if (!CoverPosition)
+    else if (!CoverPoint)
     {
-        CoverPosition = CoverPath.Pop()->GetRandomCover();
+        CoverPoint = CoverPath.Pop()->GetRandomCover();
     }
     else
     {
-        MoveToLocation(CoverPosition->GetComponentLocation());
-        if (FVector::Dist(Agent->GetActorLocation(), CoverPosition->GetComponentLocation()) < 100.f)
+        MoveToLocation(CoverPoint->GetComponentLocation());
+        if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
         {
-            CoverPosition = nullptr;
+            CoverPoint = nullptr;
         }
     }
 }

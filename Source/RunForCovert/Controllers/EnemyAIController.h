@@ -44,7 +44,7 @@ private:
     class ACoverSystem* CoverSystem;
 
     UPROPERTY()
-    class UCoverPositionComponent* CoverPosition;
+    class UCoverPointComponent* CoverPoint;
 
     UPROPERTY()
     TArray<class ACover*> CoverPath;

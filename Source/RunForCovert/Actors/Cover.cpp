@@ -19,9 +19,14 @@ void ACover::BeginPlay()
 
 	// Populate the cover points field
 	GetComponents(OUT CoverPoints);
+
+	if (CoverPoints.Num() <= 0)
+    {
+	    UE_LOG(LogTemp, Error, TEXT("No cover points found for %s"), *GetName())
+    }
 }
 
-UCoverPositionComponent* ACover::FindValidCoverPoint(FVector CoverFromPosition)
+UCoverPointComponent* ACover::FindValidCoverPoint(FVector CoverFromPosition)
 {
     // Iterate over cover points and return any that provide sufficient cover
     for (auto It = CoverPoints.CreateConstIterator(); It; It++)
@@ -34,7 +39,7 @@ UCoverPositionComponent* ACover::FindValidCoverPoint(FVector CoverFromPosition)
     return nullptr;
 }
 
-UCoverPositionComponent* ACover::GetRandomCover()
+UCoverPointComponent* ACover::GetRandomCover()
 {
     return CoverPoints[FMath::RandRange(0, CoverPoints.Num()-1)];
 }

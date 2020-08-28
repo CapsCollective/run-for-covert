@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "CoverPositionComponent.generated.h"
+#include "CoverPointComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RUNFORCOVERT_API UCoverPositionComponent : public USceneComponent
+class RUNFORCOVERT_API UCoverPointComponent : public USceneComponent // TODO rename this
 {
 
 	GENERATED_BODY()
 
 public:	
 
-	UCoverPositionComponent();
+	UCoverPointComponent();
 
     // Public functions
 

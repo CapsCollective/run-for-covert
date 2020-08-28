@@ -1,17 +1,17 @@
 // Caps Collective 2020
 
 
-#include "CoverPositionComponent.h"
+#include "CoverPointComponent.h"
 #include "Engine/World.h"
 
 #define OUT
 
-UCoverPositionComponent::UCoverPositionComponent()
+UCoverPointComponent::UCoverPointComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-bool UCoverPositionComponent::DoesProvideCover(FVector &CoverFromPosition)
+bool UCoverPointComponent::DoesProvideCover(FVector &CoverFromPosition)
 {
     // Perform ray-trace between cover point and point to take cover from
     FHitResult Hit;

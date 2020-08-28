@@ -33,11 +33,11 @@ void ACoverSystem::BeginPlay()
     DisplayDebugGraph(2.f);
 }
 
-UCoverPositionComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
+UCoverPointComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
-    UCoverPositionComponent* ClosestCoverPoint = nullptr;
+    UCoverPointComponent* ClosestCoverPoint = nullptr;
     for (auto It = CoverNodes.CreateConstIterator(); It; It++)
     {
         // Check if the current point is closer than stored
@@ -45,7 +45,7 @@ UCoverPositionComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent,
         if (CoverDistance >= ClosestCoverDistance) { continue; }
 
         // Check if it actually provides cover from the enemy
-        UCoverPositionComponent* PotentialCover = (*It)->CoverActor->FindValidCoverPoint(Enemy->GetActorLocation());
+        UCoverPointComponent* PotentialCover = (*It)->CoverActor->FindValidCoverPoint(Enemy->GetActorLocation());
         if (PotentialCover)
         {
             ClosestCoverDistance = CoverDistance;
