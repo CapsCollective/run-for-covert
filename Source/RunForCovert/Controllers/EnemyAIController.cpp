@@ -59,7 +59,7 @@ void AEnemyAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (!Player) { return; }
+    if (!(Player && Agent && CoverSystem)) { return; }
 
     // Uncomment this (and the line in FireAtPlayer) to see the AI constantly run and shoot at the player
     //MoveToActor(Player, 300.f);
@@ -68,7 +68,7 @@ void AEnemyAIController::Tick(float DeltaTime)
 //    if (LineOfSightTo(Player) && !CoverPosition) // TODO remember not to use LineOfSightTo as it disregards senses
 //    {
 //        // Get the closest valid cover point to the agent
-//        CoverPosition = CoverSystem->GetClosestValidCoverPoint(Agent, Player);
+//        CoverPosition = CoverSystem->FindClosestValidCoverPoint(Agent, Player);
 //    }
 //    else if (CoverPosition)
 //    {
@@ -85,7 +85,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     // Uncomment this to see the AI path towards the nearest cover to the player
     if (CoverPath.Num() <= 0 && !CoverPosition)
     {
-        CoverPath = CoverSystem->GetCoverPath(Agent, Player);
+        CoverPath = CoverSystem->FindCoverPath(Agent, Player);
     }
     else if (!CoverPosition)
     {

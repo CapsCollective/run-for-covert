@@ -19,7 +19,7 @@ public:
 
     // Public functions
 
-    UCoverPositionComponent* FindCover(FVector CoverFromPosition);
+    UCoverPositionComponent* FindValidCoverPoint(FVector CoverFromPosition);
 
     UCoverPositionComponent* GetRandomCover();
 

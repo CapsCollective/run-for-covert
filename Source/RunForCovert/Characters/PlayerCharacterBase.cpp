@@ -9,8 +9,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Controller.h"
 
-#define OUT
-
 APlayerCharacterBase::APlayerCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;

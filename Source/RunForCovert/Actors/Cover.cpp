@@ -3,6 +3,9 @@
 
 #include "Cover.h"
 #include "Engine/World.h"
+#include "Math/UnrealMathUtility.h"
+
+#define OUT
 
 ACover::ACover()
 {
@@ -18,7 +21,7 @@ void ACover::BeginPlay()
 	GetComponents(OUT CoverPoints);
 }
 
-UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition) // TODO name this better?
+UCoverPositionComponent* ACover::FindValidCoverPoint(FVector CoverFromPosition)
 {
     // Iterate over cover points and return any that provide sufficient cover
     for (auto It = CoverPoints.CreateConstIterator(); It; It++)
@@ -33,5 +36,5 @@ UCoverPositionComponent* ACover::FindCover(FVector CoverFromPosition) // TODO na
 
 UCoverPositionComponent* ACover::GetRandomCover()
 {
-    return CoverPoints[0]; // TODO this is not actually random!
+    return CoverPoints[FMath::RandRange(0, CoverPoints.Num()-1)];
 }

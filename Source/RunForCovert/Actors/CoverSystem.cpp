@@ -6,8 +6,6 @@
 #include "../Actors/Cover.h"
 #include "DrawDebugHelpers.h"
 
-#define OUT
-
 ACoverSystem::ACoverSystem()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -35,7 +33,7 @@ void ACoverSystem::BeginPlay()
     DisplayDebugGraph(2.f);
 }
 
-UCoverPositionComponent* ACoverSystem::GetClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
+UCoverPositionComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
@@ -47,7 +45,7 @@ UCoverPositionComponent* ACoverSystem::GetClosestValidCoverPoint(AActor* Agent, 
         if (CoverDistance >= ClosestCoverDistance) { continue; }
 
         // Check if it actually provides cover from the enemy
-        UCoverPositionComponent* PotentialCover = (*It)->CoverActor->FindCover(Enemy->GetActorLocation());
+        UCoverPositionComponent* PotentialCover = (*It)->CoverActor->FindValidCoverPoint(Enemy->GetActorLocation());
         if (PotentialCover)
         {
             ClosestCoverDistance = CoverDistance;
@@ -57,7 +55,7 @@ UCoverPositionComponent* ACoverSystem::GetClosestValidCoverPoint(AActor* Agent, 
     return ClosestCoverPoint;
 }
 
-TArray<ACover*> ACoverSystem::GetCoverPath(AActor* Agent, AActor* Enemy)
+TArray<ACover*> ACoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
 {
     // Set up the search for values
     TArray<UCoverNode*> OpenSet;

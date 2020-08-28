@@ -19,9 +19,9 @@ public:
 
     // Public functions
 
-    class UCoverPositionComponent* GetClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
+    class UCoverPositionComponent* FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
-    TArray<ACover*> GetCoverPath(AActor* Agent, AActor* Enemy);
+    TArray<ACover*> FindCoverPath(AActor* Agent, AActor* Enemy);
 
 protected:
 
