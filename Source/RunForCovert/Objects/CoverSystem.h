@@ -3,31 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "../Objects/CoverNode.h"
+#include "CoverNode.h"
 #include "CoverSystem.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API ACoverSystem : public AActor // TODO make inherit from UObject?
+class RUNFORCOVERT_API UCoverSystem : public UObject
 {
 
 	GENERATED_BODY()
 	
 public:
 
-	ACoverSystem();
+    UCoverSystem();
 
     // Public functions
+
+    void Initialise(UWorld* InWorld);
 
     class UCoverPointComponent* FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
     TArray<ACover*> FindCoverPath(AActor* Agent, AActor* Enemy);
-
-protected:
-
-    // Protected overrides
-
-	virtual void BeginPlay() override;
 
 private:
 
@@ -37,6 +32,9 @@ private:
 
     UPROPERTY()
     TArray<UCoverNode*> CoverNodes;
+
+    UPROPERTY()
+    UWorld* World;
 
     // Private methods
 

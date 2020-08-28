@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "../Actors/CoverSystem.h"
+#include "RunForCovert/Objects/CoverSystem.h"
 #include "DefaultGameModeBase.generated.h"
 
 UCLASS()
@@ -17,7 +17,7 @@ public:
 
     // Public functions
 
-    class ACoverSystem* GetCoverSystem();
+    class UCoverSystem* GetCoverSystem();
 
 protected:
 
@@ -30,6 +30,6 @@ private:
     // Private fields
 
     UPROPERTY()
-    ACoverSystem* CoverSystem;
+    UCoverSystem* CoverSystem;
 	
 };

@@ -3,24 +3,23 @@
 
 #include "CoverSystem.h"
 #include "EngineUtils.h"
-#include "../Actors/Cover.h"
+#include "RunForCovert/Actors/Cover.h"
 #include "DrawDebugHelpers.h"
 
-ACoverSystem::ACoverSystem()
+UCoverSystem::UCoverSystem()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
     // Set field default values
     CoverRadius = 1000.f;
 }
 
-void ACoverSystem::BeginPlay()
+void UCoverSystem::Initialise(UWorld* InWorld)
 {
-	Super::BeginPlay();
+    // Set the world reference
+    World = InWorld;
 
-	// Populate a list of nodes representing all cover actors in the
-	// world wrapped in objects specifying graph attributes
-    for (ACover* Cover : TActorRange<ACover>(GetWorld()))
+    // Populate a list of nodes representing all cover actors in the
+    // world wrapped in objects specifying graph attributes
+    for (ACover* Cover : TActorRange<ACover>(World))
     {
         // Add cover node list
         UCoverNode* NewNode = NewObject<UCoverNode>();
@@ -33,7 +32,7 @@ void ACoverSystem::BeginPlay()
     DisplayDebugGraph(2.f);
 }
 
-UCoverPointComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
+UCoverPointComponent* UCoverSystem::FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
@@ -55,7 +54,7 @@ UCoverPointComponent* ACoverSystem::FindClosestValidCoverPoint(AActor* Agent, AA
     return ClosestCoverPoint;
 }
 
-TArray<ACover*> ACoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
+TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
 {
     // Set up the search for values
     TArray<UCoverNode*> OpenSet;
@@ -117,7 +116,7 @@ TArray<ACover*> ACoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     return TArray<ACover*>();
 }
 
-UCoverNode* ACoverSystem::GetClosestCover(AActor* Actor)
+UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
@@ -135,7 +134,7 @@ UCoverNode* ACoverSystem::GetClosestCover(AActor* Actor)
     return ClosestCover;
 }
 
-void ACoverSystem::GenerateGraph(float Radius)
+void UCoverSystem::GenerateGraph(float Radius)
 {
     // Generate a random geometric graph of R depth between cover items
     for (UCoverNode* CurrentNode : CoverNodes)
@@ -151,25 +150,25 @@ void ACoverSystem::GenerateGraph(float Radius)
     }
 }
 
-void ACoverSystem::DisplayDebugGraph(float DisplayTime)
+void UCoverSystem::DisplayDebugGraph(float DisplayTime)
 {
     // Display debug lines
     for (UCoverNode* Node : CoverNodes)
     {
         for (UCoverNode* ConnectedNode : Node->AdjacentCover)
         {
-            DrawDebugLine(GetWorld(), Node->CoverActor->GetActorLocation(),
+            DrawDebugLine(World, Node->CoverActor->GetActorLocation(),
                           ConnectedNode->CoverActor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
 }
 
-void ACoverSystem::DisplayDebugPath(TArray<ACover*>* Path, float DisplayTime)
+void UCoverSystem::DisplayDebugPath(TArray<ACover*>* Path, float DisplayTime)
 {
     // Display debug path
     for (auto It = Path->CreateConstIterator(); It+1; It++)
     {
-        DrawDebugLine(GetWorld(), (*It)->GetActorLocation(),
+        DrawDebugLine(World, (*It)->GetActorLocation(),
                       (*(It+1))->GetActorLocation(), FColor::Red, false, DisplayTime);
     }
 }

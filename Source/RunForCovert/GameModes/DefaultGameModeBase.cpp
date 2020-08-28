@@ -9,10 +9,11 @@ void ADefaultGameModeBase::BeginPlay()
     Super::BeginPlay();
 
     // Set field default values
-    CoverSystem = GetWorld()->SpawnActor<ACoverSystem>();
+    CoverSystem = NewObject<UCoverSystem>();
+    CoverSystem->Initialise(GetWorld());
 }
 
-ACoverSystem* ADefaultGameModeBase::GetCoverSystem()
+UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
 {
     return CoverSystem;
 }

@@ -41,7 +41,7 @@ private:
     class AEnemyCharacterBase* Agent;
 
     UPROPERTY()
-    class ACoverSystem* CoverSystem;
+    class UCoverSystem* CoverSystem;
 
     UPROPERTY()
     class UCoverPointComponent* CoverPoint;

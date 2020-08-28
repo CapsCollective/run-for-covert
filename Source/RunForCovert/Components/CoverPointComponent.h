@@ -8,7 +8,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RUNFORCOVERT_API UCoverPointComponent : public USceneComponent // TODO rename this
+class RUNFORCOVERT_API UCoverPointComponent : public USceneComponent
 {
 
 	GENERATED_BODY()
