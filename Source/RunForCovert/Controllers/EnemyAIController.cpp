@@ -13,8 +13,10 @@ AEnemyAIController::AEnemyAIController()
 {
     PrimaryActorTick.bCanEverTick = true;
 
+    // Set field default values
     RepeatedAction = 0;
     CoverPoint = nullptr;
+    PreviousCoverPoint = nullptr;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -63,11 +65,15 @@ void AEnemyAIController::Tick(float DeltaTime)
 
     if (!(Player && Agent && CoverSystem)) { return; }
 
+
+    // TODO there's definitely better ways of doing all this, but this is
+    //  just some example code to show how the cover system can be used
+
     // Uncomment this (and the line in FireAtPlayer) to see the AI constantly run and shoot at the player
 //    MoveToActor(Player, 300.f);
 
     // Uncomment this to see the AI constantly hide from the player
-//    if (LineOfSightTo(Player) && !CoverPoint) // TODO remember not to use LineOfSightTo as it disregards senses
+//    if (LineOfSightTo(Player) && !CoverPoint)
 //    {
 //        // Get the closest valid cover point to the agent
 //        CoverPoint = CoverSystem->FindClosestValidCoverPoint(Agent, Player);
@@ -85,28 +91,35 @@ void AEnemyAIController::Tick(float DeltaTime)
 //    }
 
     // Uncomment this to see the AI path towards the nearest cover to the player
-    if (CoverPath.Num() <= 0 && !CoverPoint)
+    if (CoverPoint)
     {
-        CoverPath = CoverSystem->FindCoverPath(Agent, Player);
-    }
-    else if (!CoverPoint)
-    {
-        ACover* Cover = CoverPath.Pop();
-        if (!(CoverPoint = Cover->FindValidCoverPoint(Player->GetActorLocation())))
+        if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
         {
-            // TODO there's definitely better ways of doing this so they don't
-            //  randomly oscillate between the two sides of their final cover point,
-            //  this is just some example code to show how the cover system can be used
-            CoverPoint = Cover->GetRandomCover();
+            PreviousCoverPoint = CoverPoint;
+            CoverPoint = nullptr;
+        }
+    }
+    else if (CoverPath.Num() > 0)
+    {
+        ACover *Cover = CoverPath.Pop();
+        if (!Cover->IsOccupiedByOther(Agent))
+        {
+            // Find a valid (or failing that, the first) cover point on the cover
+            UCoverPointComponent *NewCoverPoint = Cover->FindValidCoverPoint(Player->GetActorLocation());
+            if (!NewCoverPoint) { NewCoverPoint = Cover->GetFirstCover(); }
+
+            // Attempt to claim the new cover point, releasing the previous one in the process
+            if (NewCoverPoint->TrySetOccupation(Agent))
+            {
+                CoverPoint = NewCoverPoint;
+                if (PreviousCoverPoint) { PreviousCoverPoint->ReleaseOccupation(Agent); }
+                MoveToLocation(CoverPoint->GetComponentLocation());
+            }
         }
     }
     else
     {
-        MoveToLocation(CoverPoint->GetComponentLocation());
-        if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
-        {
-            CoverPoint = nullptr;
-        }
+        CoverPath = CoverSystem->FindCoverPath(Agent, Player);
     }
 }
 

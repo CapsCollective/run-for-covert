@@ -10,7 +10,6 @@
 ACover::ACover()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	GetOwner();
 }
 
 void ACover::BeginPlay()
@@ -39,7 +38,21 @@ UCoverPointComponent* ACover::FindValidCoverPoint(FVector CoverFromPosition)
     return nullptr;
 }
 
-UCoverPointComponent* ACover::GetRandomCover()
+UCoverPointComponent* ACover::GetFirstCover()
 {
-    return CoverPoints[FMath::RandRange(0, CoverPoints.Num()-1)];
+    // Return the first available cover point
+    return CoverPoints[0];
+}
+
+bool ACover::IsOccupiedByOther(AActor* Actor)
+{
+    // Check if any cover points are occupied
+    for (auto It = CoverPoints.CreateConstIterator(); It; It++)
+    {
+        if ((*It)->IsOccupiedByOther(Actor))
+        {
+            return true;
+        }
+    }
+    return false;
 }

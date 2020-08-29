@@ -21,4 +21,17 @@ public:
 
     bool DoesProvideCover(FVector &CoverFromPosition);
 
+    bool TrySetOccupation(class AActor* Actor);
+
+    void ReleaseOccupation(AActor* Actor);
+
+    bool IsOccupiedByOther(AActor* Actor);
+
+private:
+
+    // Private fields
+
+    UPROPERTY()
+    AActor* Occupier;
+
 };

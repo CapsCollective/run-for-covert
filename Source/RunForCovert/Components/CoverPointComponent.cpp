@@ -9,6 +9,9 @@
 UCoverPointComponent::UCoverPointComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+    // Set field default values
+    Occupier = nullptr;
 }
 
 bool UCoverPointComponent::DoesProvideCover(FVector &CoverFromPosition)
@@ -23,4 +26,25 @@ bool UCoverPointComponent::DoesProvideCover(FVector &CoverFromPosition)
             CoverFromPosition,
             ECC_WorldDynamic,
             QueryParams);
+}
+
+bool UCoverPointComponent::TrySetOccupation(class AActor* Actor)
+{
+    if (!Occupier)
+    {
+        Occupier = Actor;
+        return true;
+    }
+    return false;
+}
+
+void UCoverPointComponent::ReleaseOccupation(AActor* Actor)
+{
+    if (Actor != Occupier) { return; }
+    Occupier = nullptr;
+}
+
+bool UCoverPointComponent::IsOccupiedByOther(AActor* Actor)
+{
+    return Occupier && Occupier != Actor;
 }

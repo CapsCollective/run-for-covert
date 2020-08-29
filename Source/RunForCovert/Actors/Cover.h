@@ -21,7 +21,9 @@ public:
 
     UCoverPointComponent* FindValidCoverPoint(FVector CoverFromPosition);
 
-    UCoverPointComponent* GetRandomCover();
+    UCoverPointComponent* GetFirstCover();
+
+    bool IsOccupiedByOther(AActor* Actor);
 
 protected:
 

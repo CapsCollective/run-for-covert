@@ -44,13 +44,18 @@ private:
     class UCoverSystem* CoverSystem;
 
     UPROPERTY()
+    TArray<class ACover*> CoverPath;
+
+    // TODO the below fields are simply for demonstration purposes and can be removed
+
+    UPROPERTY()
+    FTimerHandle TimerHandle;
+
+    UPROPERTY()
     class UCoverPointComponent* CoverPoint;
 
     UPROPERTY()
-    TArray<class ACover*> CoverPath;
-
-	UPROPERTY()
-	FTimerHandle TimerHandle;
+    UCoverPointComponent* PreviousCoverPoint;
 
     int32 RepeatedAction;
 
