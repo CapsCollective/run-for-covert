@@ -38,7 +38,7 @@ private:
 
     // Private methods
 
-    UCoverNode* GetClosestCover(AActor* Actor);
+    UCoverNode* GetClosestCover(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
 
     void GenerateGraph(float Radius);
 

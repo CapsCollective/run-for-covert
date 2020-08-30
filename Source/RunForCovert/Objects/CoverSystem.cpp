@@ -59,7 +59,7 @@ TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     // Set up the search for values
     TArray<UCoverNode*> OpenSet;
     UCoverNode* StartNode = GetClosestCover(Agent);
-    UCoverNode* EndNode = GetClosestCover(Enemy);
+    UCoverNode* EndNode = GetClosestCover(Enemy, true, Agent);
     assert(StartNode && EndNode);
 
     // Reset the GScore of all nodes in the collection
@@ -116,7 +116,7 @@ TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     return TArray<ACover*>();
 }
 
-UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor)
+UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
@@ -126,6 +126,9 @@ UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor)
         // Check if the current point is closer
         float CoverDistance = (*It)->CoverActor->GetDistanceTo(Actor);
         if (CoverDistance >= ClosestCoverDistance) { continue; }
+
+        // Check to make sure it is available if unoccupied flag is set
+        if (MustBeUnoccupied && (*It)->CoverActor->IsOccupiedByOther(OtherAgent)) { continue; }
 
         // Assign as closest
         ClosestCoverDistance = CoverDistance;
