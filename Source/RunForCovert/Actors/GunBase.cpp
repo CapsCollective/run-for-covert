@@ -7,8 +7,6 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/DamageType.h"
 
-#define OUT
-
 AGunBase::AGunBase()
 {
 	PrimaryActorTick.bCanEverTick = false;

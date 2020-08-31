@@ -5,7 +5,6 @@
 #include "Engine/World.h"
 #include "Math/UnrealMathUtility.h"
 
-#define OUT
 
 ACover::ACover()
 {

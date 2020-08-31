@@ -4,8 +4,6 @@
 #include "CoverPointComponent.h"
 #include "Engine/World.h"
 
-#define OUT
-
 UCoverPointComponent::UCoverPointComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;

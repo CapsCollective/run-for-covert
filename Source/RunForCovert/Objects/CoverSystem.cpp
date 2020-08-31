@@ -60,7 +60,7 @@ TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     TArray<UCoverNode*> OpenSet;
     UCoverNode* StartNode = GetClosestCover(Agent);
     UCoverNode* EndNode = GetClosestCover(Enemy, true, Agent);
-    assert(StartNode && EndNode);
+    check(StartNode && EndNode);
 
     // Reset the GScore of all nodes in the collection
     for (auto It = CoverNodes.CreateConstIterator(); It; It++)
