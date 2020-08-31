@@ -77,14 +77,21 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Starter Content Ignored
-
 Content/StarterContent/*
 
+# VSCode files
 VSCode Files
 /.vscode/*
+
+# XCode files
 BuildingEscape.code-workspace
 
 # CMake files
 cmake-build-debug/*
 CMakeLists.txt
+
+# IntelliJ files
+/.idea/*
+
+# Editor config files
 Config/DefaultEditorSettings.ini
