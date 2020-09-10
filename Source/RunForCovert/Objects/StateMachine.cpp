@@ -5,10 +5,8 @@
 
 void UStateMachine::OnEnter(AEnemyAIController& Owner)
 {
-}
-
-void UStateMachine::OnExit(AEnemyAIController& Owner)
-{
+    // Initialise the first run state
+    CurrentState->OnEnter(Owner);
 }
 
 void UStateMachine::OnUpdate(AEnemyAIController& Owner)
@@ -36,6 +34,7 @@ void UStateMachine::OnUpdate(AEnemyAIController& Owner)
 
 void UStateMachine::Initialise()
 {
+    // Set the first defined state in the map as the first current state
     TArray<UState*> Keys;
     StateTransitions.GetKeys(OUT Keys);
     CurrentState = Keys[0];

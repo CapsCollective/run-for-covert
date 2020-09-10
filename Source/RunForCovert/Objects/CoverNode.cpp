@@ -5,5 +5,5 @@
 
 float UCoverNode::FScore()
 {
-    return 0.f;
+    return GScore + HScore;
 }

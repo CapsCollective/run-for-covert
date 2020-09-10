@@ -14,6 +14,8 @@ class RUNFORCOVERT_API UEnemyStateMachine : public UStateMachine
 
 public:
 
+    // Public overrides
+
     virtual void Initialise() override;
 	
 };

@@ -7,15 +7,6 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
-void UPatrolState::OnEnter(AEnemyAIController& Owner)
-{
-}
-
-void UPatrolState::OnExit(AEnemyAIController& Owner)
-{
-
-}
-
 void UPatrolState::OnUpdate(AEnemyAIController& Owner)
 {
     if(!PatrolPoint)

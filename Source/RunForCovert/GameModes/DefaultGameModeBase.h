@@ -20,6 +20,7 @@ public:
     // Public functions
 
     class UCoverSystem* GetCoverSystem();
+
     class UPatrolSystem* GetPatrolSystem();
 
 protected:

@@ -8,12 +8,13 @@
 #include "../Objects/States/EnemyStateMachine.h"
 #include "../GameModes/DefaultGameModeBase.h"
 
+
 AEnemyAIController::AEnemyAIController()
 {
     PrimaryActorTick.bCanEverTick = true;
 
     // Set field default values
-    HasFired = false;
+    HasFinishedFiring = false;
     TakenValidCover = false;
 }
 
@@ -22,8 +23,8 @@ void AEnemyAIController::BeginPlay()
     Super::BeginPlay();
 
     // TODO this will need to be fixed when dealing with multiple players
+    // Get references to player and the controlled agent
     Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
     Agent = Cast<AEnemyCharacterBase>(GetPawn());
 
     // Get a reference to the game mode (used as a service locator)
@@ -33,9 +34,12 @@ void AEnemyAIController::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("Failed to find game mode"))
         return;
     }
+
+    // Populate references to various systems
     CoverSystem = GameMode->GetCoverSystem();
     PatrolSystem = GameMode->GetPatrolSystem();
-    
+
+    // Setup agent state machine
     StateMachine = NewObject<UEnemyStateMachine>();
     StateMachine->Initialise();
 }
@@ -46,5 +50,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     if (!(Player && Agent && CoverSystem)) { return; }
+
+    // Tick state machine
     StateMachine->OnUpdate(*this);
 }

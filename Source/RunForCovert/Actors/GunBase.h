@@ -16,10 +16,6 @@ public:
 
 	AGunBase();
 
-    // Public overrides
-
-    virtual void Tick(float DeltaTime) override;
-
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Combat")
@@ -34,12 +30,6 @@ public:
     // Public functions
 
     bool Fire(AController* Controller, FVector LaunchDirection);
-
-protected:
-
-    // Protected overrides
-
-	virtual void BeginPlay() override;
 
 private:
 

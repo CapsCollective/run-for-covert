@@ -10,18 +10,9 @@ UHealthComponent::UHealthComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+    // Set field default values
     MaxHealth = 100.f;
     CurrentHealth = MaxHealth;
-}
-
-void UHealthComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void UHealthComponent::OnTakeDamage(float Damage)

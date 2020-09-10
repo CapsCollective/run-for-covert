@@ -14,9 +14,13 @@ class RUNFORCOVERT_API UMoveCoverState : public UState
 
 public:
 
+    // Public overrides
+
     virtual void OnUpdate(AEnemyAIController& Owner) override;
 
 private:
+
+    // Private fields
 
     UPROPERTY()
     class UCoverPointComponent* CoverPoint;

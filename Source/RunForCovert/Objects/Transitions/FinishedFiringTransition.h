@@ -6,15 +6,16 @@
 #include "../Transition.h"
 #include "FinishedFiringTransition.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UFinishedFiringTransition : public UTransition
 {
 	GENERATED_BODY()
 
 public:
+
+    // Public override
+
     virtual bool ToTransition(AEnemyAIController& Owner) const override;
 	
 };

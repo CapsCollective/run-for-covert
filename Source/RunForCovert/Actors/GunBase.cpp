@@ -24,16 +24,6 @@ AGunBase::AGunBase()
     LastFireTime = 0.f;
 }
 
-void AGunBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AGunBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
 {
     if (!Controller) { return false; }

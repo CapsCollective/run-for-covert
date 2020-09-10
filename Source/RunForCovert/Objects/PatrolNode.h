@@ -6,9 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "PatrolNode.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UPatrolNode : public UObject
 {

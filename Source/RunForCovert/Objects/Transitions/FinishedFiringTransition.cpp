@@ -5,5 +5,5 @@
 
 bool UFinishedFiringTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner.HasFired;
+    return Owner.HasFinishedFiring;
 }

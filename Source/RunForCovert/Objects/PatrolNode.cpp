@@ -5,5 +5,5 @@
 
 float UPatrolNode::FScore()
 {
-    return 0.f;
+    return GScore + HScore;
 }

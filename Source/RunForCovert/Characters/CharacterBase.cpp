@@ -5,7 +5,7 @@
 
 ACharacterBase::ACharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 
@@ -27,11 +27,6 @@ void ACharacterBase::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("Child actor does not inherit from AGunBase."))
         return;
     }
-}
-
-void ACharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

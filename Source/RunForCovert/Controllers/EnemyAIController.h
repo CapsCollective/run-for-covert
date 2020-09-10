@@ -37,7 +37,7 @@ public:
 
     bool TakenValidCover;
 
-    bool HasFired;
+    bool HasFinishedFiring;
     
 protected:
 
@@ -48,9 +48,6 @@ protected:
 private:
 
     // Private fields
-
-    UPROPERTY()
-    TArray<class APatrol*> PatrolPath;
 
     UPROPERTY()
     class UStateMachine* StateMachine;

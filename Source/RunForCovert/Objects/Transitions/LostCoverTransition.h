@@ -16,6 +16,8 @@ class RUNFORCOVERT_API ULostCoverTransition : public UTransition
 
 public:
 
+    // Public override
+
     virtual bool ToTransition(AEnemyAIController& Owner) const override;
 	
 };

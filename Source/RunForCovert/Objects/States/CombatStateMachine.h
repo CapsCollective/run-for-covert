@@ -6,9 +6,7 @@
 #include "../StateMachine.h"
 #include "CombatStateMachine.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UCombatStateMachine : public UStateMachine
 {
@@ -16,6 +14,7 @@ class RUNFORCOVERT_API UCombatStateMachine : public UStateMachine
 
 public:
 
+    // Public overrides
+
     virtual void Initialise() override;
-    virtual void OnEnter(AEnemyAIController& Owner) override;
 };

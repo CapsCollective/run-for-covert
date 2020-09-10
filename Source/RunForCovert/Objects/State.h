@@ -3,14 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RunForCovert/Characters/EnemyCharacterBase.h"
 #include "RunForCovert/Controllers/EnemyAIController.h"
-#include "UObject/NoExportTypes.h"
 #include "State.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class RUNFORCOVERT_API UState : public UObject
 {

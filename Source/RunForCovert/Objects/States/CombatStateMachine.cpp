@@ -32,8 +32,3 @@ void UCombatStateMachine::Initialise()
     // Initialise to first state
     Super::Initialise();
 }
-
-void UCombatStateMachine::OnEnter(AEnemyAIController& Owner)
-{
-    CurrentState->OnEnter(Owner);
-}

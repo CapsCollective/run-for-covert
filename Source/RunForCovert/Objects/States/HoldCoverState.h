@@ -14,6 +14,10 @@ class RUNFORCOVERT_API UHoldCoverState : public UState
 
 public:
 
+    UHoldCoverState();
+
+    // Public overrides
+
 	virtual void OnEnter(AEnemyAIController& Owner) override;
 
 	virtual void OnExit(AEnemyAIController& Owner) override;
@@ -24,8 +28,8 @@ private:
 
     // Private fields
 
-    float TimeToCover = 2.f;
+    float TimeToCover;
 
-    float TimeStarted = 0.f;
+    float TimeStarted;
 
 };

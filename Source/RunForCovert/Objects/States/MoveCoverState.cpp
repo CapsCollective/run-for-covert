@@ -9,6 +9,7 @@ void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
 {
     if (CoverPoint)
     {
+        // Check if the agent has arrived at the current cover point
         if (FVector::Dist(Owner.Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
         {
             // Flag that a valid cover position has been taken if it provides cover
@@ -16,13 +17,13 @@ void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
             {
                 Owner.TakenValidCover = true;
             }
-
             PreviousCoverPoint = CoverPoint;
             CoverPoint = nullptr;
         }
     }
     else if (CoverPath.Num() > 0)
     {
+        // Check a potential new cover actor
         ACover *Cover = CoverPath.Pop();
         if (!Cover->IsOccupiedByOther(Owner.Agent))
         {
@@ -41,6 +42,7 @@ void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
     }
     else
     {
+        // Generate a new path towards the player
         CoverPath = Owner.CoverSystem->FindCoverPath(Owner.Agent, Owner.Player);
     }
 }

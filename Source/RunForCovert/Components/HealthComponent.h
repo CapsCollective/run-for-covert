@@ -17,10 +17,6 @@ public:
 
 	UHealthComponent();
 
-    // Public overrides
-
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Health")
@@ -29,12 +25,6 @@ public:
     // Public functions
 
     void OnTakeDamage(float Damage);
-
-protected:
-
-    // Protected overrides
-
-	virtual void BeginPlay() override;
 
 private:
 

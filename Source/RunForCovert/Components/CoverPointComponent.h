@@ -15,7 +15,7 @@ class RUNFORCOVERT_API UCoverPointComponent : public USceneComponent
 
 public:	
 
-	UCoverPointComponent(); // TODO cover points should be lockable for multiple AI to coordinate
+	UCoverPointComponent();
 
     // Public functions
 

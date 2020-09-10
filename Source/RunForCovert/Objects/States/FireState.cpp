@@ -20,7 +20,7 @@ void UFireState::OnEnter(AEnemyAIController& Owner)
 
 void UFireState::OnExit(AEnemyAIController& Owner)
 {
-    Owner.HasFired = false;
+    Owner.HasFinishedFiring = false;
     TimesFired = 0;
     Owner.Agent->SetCrouching(true);
 }
@@ -32,7 +32,7 @@ void UFireState::OnUpdate(AEnemyAIController& Owner)
     {
         if (Owner.Agent->FireWeapon() && ++TimesFired >= TimesToFire)
         {
-            Owner.HasFired = true;
+            Owner.HasFinishedFiring = true;
         }
     }
 }

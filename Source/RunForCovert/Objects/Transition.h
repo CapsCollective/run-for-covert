@@ -4,18 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "RunForCovert/Controllers/EnemyAIController.h"
-#include "UObject/NoExportTypes.h"
 #include "Transition.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UTransition : public UObject
 {
 	GENERATED_BODY()
 
-	public:
+public:
 	
 	virtual bool ToTransition(AEnemyAIController& Owner) const;
+
 };

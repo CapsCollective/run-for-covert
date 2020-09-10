@@ -5,5 +5,5 @@
 
 bool UFiringRangeTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner.Agent->GetDistanceTo(Owner.Player) < Owner.Agent->FiringRange;
+    return !Owner.TakenValidCover && Owner.Agent->GetDistanceTo(Owner.Player) < Owner.Agent->FiringRange;
 }
