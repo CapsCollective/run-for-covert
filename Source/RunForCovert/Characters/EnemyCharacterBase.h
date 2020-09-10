@@ -41,6 +41,11 @@ public:
 	float SeenPlayerFor;
 	bool bSeePlayer;
 	bool bChasePlayer;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool IsCrouching;
+	
+	void SetCrouching(bool Crouching);
 	
 protected:
 

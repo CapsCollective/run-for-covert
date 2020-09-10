@@ -17,7 +17,7 @@ class RUNFORCOVERT_API UState : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void OnEnter();
-	virtual void OnExit();
+	virtual void OnEnter(AEnemyAIController* Owner);
+	virtual void OnExit(AEnemyAIController* Owner);
 	virtual void OnUpdate(AEnemyAIController* Owner);
 };

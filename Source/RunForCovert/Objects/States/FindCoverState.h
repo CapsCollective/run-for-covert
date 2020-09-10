@@ -15,8 +15,8 @@ class RUNFORCOVERT_API UFindCoverState : public UState
 	GENERATED_BODY()
 
 public:
-	virtual void OnEnter() override;
-	virtual void OnExit() override;
+	virtual void OnEnter(AEnemyAIController* Owner) override;
+	virtual void OnExit(AEnemyAIController* Owner) override;
 	virtual void OnUpdate(AEnemyAIController* Owner) override;
 
 private:

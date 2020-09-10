@@ -4,11 +4,11 @@
 #include "State.h"
 
 
-void UState::OnEnter()
+void UState::OnEnter(AEnemyAIController* Owner)
 {
 }
 
-void UState::OnExit()
+void UState::OnExit(AEnemyAIController* Owner)
 {
 }
 

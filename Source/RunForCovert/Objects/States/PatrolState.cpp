@@ -7,19 +7,19 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
-void UPatrolState::OnEnter()
+void UPatrolState::OnEnter(AEnemyAIController* Owner)
 {
 }
 
-void UPatrolState::OnExit()
+void UPatrolState::OnExit(AEnemyAIController* Owner)
 {
+
 }
 
 void UPatrolState::OnUpdate(AEnemyAIController* Owner)
 {
     if(!Owner)
     {
-        //UE_LOG(LogTemp, Warning, TEXT("DOIGJSDOGJ"));
         return;
     }
     

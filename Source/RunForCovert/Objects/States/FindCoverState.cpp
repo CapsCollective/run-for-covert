@@ -7,11 +7,12 @@
 #include "RunForCovert/Actors/Cover.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 
-void UFindCoverState::OnEnter()
+void UFindCoverState::OnEnter(AEnemyAIController* Owner)
 {
+
 }
 
-void UFindCoverState::OnExit()
+void UFindCoverState::OnExit(AEnemyAIController* Owner)
 {
 }
 

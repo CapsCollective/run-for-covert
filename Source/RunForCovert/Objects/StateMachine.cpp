@@ -3,11 +3,11 @@
 
 #include "StateMachine.h"
 
-void UStateMachine::OnEnter()
+void UStateMachine::OnEnter(AEnemyAIController* Owner)
 {
 }
 
-void UStateMachine::OnExit()
+void UStateMachine::OnExit(AEnemyAIController* Owner)
 {
 }
 
@@ -23,7 +23,9 @@ void UStateMachine::OnUpdate(AEnemyAIController* Owner)
         {
             if(TransPair.Key->ToTransition(Owner))
             {
+                CurrentState->OnExit(Owner);
                 CurrentState = TransPair.Value;
+                CurrentState->OnEnter(Owner);
                 break;
             }
         }
