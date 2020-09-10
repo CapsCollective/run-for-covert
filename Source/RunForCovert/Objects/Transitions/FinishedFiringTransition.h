@@ -13,5 +13,8 @@ UCLASS()
 class RUNFORCOVERT_API UFinishedFiringTransition : public UTransition
 {
 	GENERATED_BODY()
+
+public:
+    virtual bool ToTransition(AEnemyAIController& Owner) const override;
 	
 };

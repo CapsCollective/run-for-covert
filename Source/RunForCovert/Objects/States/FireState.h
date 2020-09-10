@@ -16,8 +16,8 @@ class RUNFORCOVERT_API UFireState : public UState
 
 public:
 
-    virtual void OnEnter() override;
-    virtual void OnExit() override;
-    virtual void OnUpdate(AEnemyAIController* Owner) override;
+    virtual void OnEnter(AEnemyAIController& Owner);
+    virtual void OnExit(AEnemyAIController& Owner);
+    virtual void OnUpdate(AEnemyAIController& Owner);
 	
 };

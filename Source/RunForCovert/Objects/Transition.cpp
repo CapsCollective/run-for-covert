@@ -3,7 +3,7 @@
 
 #include "Transition.h"
 
-bool UTransition::ToTransition(AEnemyAIController* Owner) const
+bool UTransition::ToTransition(AEnemyAIController& Owner) const
 {
     return false;
 }

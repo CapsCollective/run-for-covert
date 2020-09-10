@@ -3,15 +3,15 @@
 
 #include "StateMachine.h"
 
-void UStateMachine::OnEnter(AEnemyAIController* Owner)
+void UStateMachine::OnEnter(AEnemyAIController& Owner)
 {
 }
 
-void UStateMachine::OnExit(AEnemyAIController* Owner)
+void UStateMachine::OnExit(AEnemyAIController& Owner)
 {
 }
 
-void UStateMachine::OnUpdate(AEnemyAIController* Owner)
+void UStateMachine::OnUpdate(AEnemyAIController& Owner)
 {
     if(!CurrentState){ return; }
     if(StateTransitions.Num() == 0) { return; }

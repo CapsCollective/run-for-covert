@@ -3,7 +3,7 @@
 
 #include "PlayerSeenTransition.h"
 
-bool UPlayerSeenTransition::ToTransition(AEnemyAIController* Owner) const
+bool UPlayerSeenTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner->bPlayerSeen();
+    return Owner.bPlayerSeen();
 }

@@ -3,7 +3,7 @@
 
 #include "PlayerUnseenTransition.h"
 
-bool UPlayerUnseenTransition::ToTransition(AEnemyAIController* Owner) const
+bool UPlayerUnseenTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return !Owner->bPlayerSeen();
+    return !Owner.bPlayerSeen();
 }

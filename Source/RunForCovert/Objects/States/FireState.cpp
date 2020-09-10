@@ -3,18 +3,19 @@
 
 #include "FireState.h"
 
-void UFireState::OnEnter()
+void UFireState::OnEnter(AEnemyAIController& Owner)
 {
-    // Uncrouch
+    Owner.Agent->SetCrouching(false);
 }
 
-void UFireState::OnExit()
+void UFireState::OnExit(AEnemyAIController& Owner)
 {
-    // Crouch
+    Owner.HasFired = false;
 }
 
-void UFireState::OnUpdate(AEnemyAIController* Owner)
+void UFireState::OnUpdate(AEnemyAIController& Owner)
 {
     // Fire at the player
-    Owner->FireAtPlayer();
+    Owner.FireAtPlayer();
+    Owner.HasFired = true;
 }

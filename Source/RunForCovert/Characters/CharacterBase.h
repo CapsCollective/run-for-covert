@@ -28,11 +28,6 @@ public:
     UPROPERTY(VisibleAnywhere)
     UHealthComponent* Health;
 
-    UFUNCTION(BlueprintNativeEvent)
-    void OnTakeDamage();
-
-    void OnTakeDamage_Implementation();
-
 protected:
 
     // Protected overrides

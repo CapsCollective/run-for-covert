@@ -38,7 +38,21 @@ public:
     class UPatrolSystem* PatrolSystem;
 
     bool bPlayerSeen();
+
     bool bSeePlayer();
+
+    // Public fields
+
+    UPROPERTY()
+    class UCoverPointComponent* CoverPoint;
+
+    UPROPERTY()
+    TArray<class ACover*> CoverPath;
+
+    UPROPERTY()
+    UCoverPointComponent* PreviousCoverPoint;
+
+    bool HasFired;
     
 protected:
 
@@ -50,25 +64,8 @@ private:
 
     // Private fields
 
-
-    UPROPERTY()
-    TArray<class ACover*> CoverPath;
-
-    // TODO the below fields are simply for demonstration purposes and can be removed
-
-    UPROPERTY()
-    FTimerHandle TimerHandle;
-
-    UPROPERTY()
-    class UCoverPointComponent* CoverPoint;
-
     UPROPERTY()
     TArray<class APatrol*> PatrolPath;
-
-    UPROPERTY()
-    UCoverPointComponent* PreviousCoverPoint;
-
-    int32 RepeatedAction;
 
     UPROPERTY()
     class UStateMachine* StateMachine;

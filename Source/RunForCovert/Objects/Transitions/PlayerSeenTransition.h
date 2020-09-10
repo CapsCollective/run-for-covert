@@ -15,5 +15,5 @@ class RUNFORCOVERT_API UPlayerSeenTransition : public UTransition
 	GENERATED_BODY()
 
 public:
-	virtual bool ToTransition(AEnemyAIController* Owner) const override;
+	virtual bool ToTransition(AEnemyAIController& Owner) const override;
 };

@@ -7,41 +7,36 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
-void UPatrolState::OnEnter(AEnemyAIController* Owner)
+void UPatrolState::OnEnter(AEnemyAIController& Owner)
 {
 }
 
-void UPatrolState::OnExit(AEnemyAIController* Owner)
+void UPatrolState::OnExit(AEnemyAIController& Owner)
 {
 
 }
 
-void UPatrolState::OnUpdate(AEnemyAIController* Owner)
+void UPatrolState::OnUpdate(AEnemyAIController& Owner)
 {
-    if(!Owner)
-    {
-        return;
-    }
-    
     if(!PatrolPoint)
     {
-        PatrolPoint = Owner->PatrolSystem->FindClosestValidPatrolPoint(Owner->Agent);
+        PatrolPoint = Owner.PatrolSystem->FindClosestValidPatrolPoint(Owner.Agent);
     }
     else
     {
-        if(FVector::Dist(Owner->Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
+        if(FVector::Dist(Owner.Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
         {
             PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
         }
         else
         {
-            if(!Owner->bSeePlayer())
+            if(!Owner.bSeePlayer())
             {
-                Owner->MoveToLocation(PatrolPoint->GetActorLocation());
+                Owner.MoveToLocation(PatrolPoint->GetActorLocation());
             }
             else
             {
-                Owner->MoveToLocation(Owner->Agent->GetActorLocation());
+                Owner.MoveToLocation(Owner.Agent->GetActorLocation());
             }   
         }
     }

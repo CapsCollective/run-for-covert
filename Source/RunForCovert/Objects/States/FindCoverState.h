@@ -6,27 +6,16 @@
 #include "../State.h"
 #include "FindCoverState.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UFindCoverState : public UState
 {
 	GENERATED_BODY()
 
 public:
-	virtual void OnEnter(AEnemyAIController* Owner) override;
-	virtual void OnExit(AEnemyAIController* Owner) override;
-	virtual void OnUpdate(AEnemyAIController* Owner) override;
 
-private:
+	virtual void OnEnter(AEnemyAIController& Owner) override;
+	virtual void OnExit(AEnemyAIController& Owner) override;
+	virtual void OnUpdate(AEnemyAIController& Owner) override;
 
-	UPROPERTY()
-	TArray<class ACover*> CoverPath;
-	
-	UPROPERTY()
-	class UCoverPointComponent* CoverPoint;
-
-	UPROPERTY()
-	UCoverPointComponent* PreviousCoverPoint;
 };

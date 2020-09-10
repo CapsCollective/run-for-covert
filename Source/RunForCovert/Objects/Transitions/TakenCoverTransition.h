@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "../Transition.h"
-#include "PlayerUnseenTransition.generated.h"
+#include "TakenCoverTransition.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class RUNFORCOVERT_API UPlayerUnseenTransition : public UTransition
+class RUNFORCOVERT_API UTakenCoverTransition : public UTransition
 {
 	GENERATED_BODY()
 

@@ -8,10 +8,6 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ACharacterBase::OnTakeDamage_Implementation()
-{
-    OnTakeDamage();
-}
 
 void ACharacterBase::BeginPlay()
 {
@@ -51,7 +47,6 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
 
     if (!Health) { return 0.f; }
     Health->OnTakeDamage(DamageAmount);
-    OnTakeDamage();
     return DamageAmount;
 }
 

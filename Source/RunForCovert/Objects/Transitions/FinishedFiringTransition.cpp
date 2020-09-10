@@ -3,3 +3,7 @@
 
 #include "FinishedFiringTransition.h"
 
+bool UFinishedFiringTransition::ToTransition(AEnemyAIController& Owner) const
+{
+    return Owner.HasFired;
+}

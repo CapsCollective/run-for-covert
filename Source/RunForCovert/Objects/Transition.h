@@ -17,5 +17,5 @@ class RUNFORCOVERT_API UTransition : public UObject
 
 	public:
 	
-	virtual bool ToTransition(AEnemyAIController* Owner) const;
+	virtual bool ToTransition(AEnemyAIController& Owner) const;
 };
