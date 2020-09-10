@@ -26,7 +26,7 @@ public:
     virtual void OnExit() override;
     virtual void OnUpdate(AEnemyAIController* Owner) override;
 
-    void Initialise();
+    virtual void Initialise();
     TransitionMap StateTransitions;
     
     UPROPERTY()

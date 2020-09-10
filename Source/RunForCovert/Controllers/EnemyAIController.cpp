@@ -8,10 +8,12 @@
 #include "TimerManager.h"
 #include "EngineUtils.h"
 #include "../Objects/StateMachine.h"
+#include "../Objects/States/CombatStateMachine.h"
 #include "../GameModes/DefaultGameModeBase.h"
 #include "RunForCovert/Objects/States/FindCoverState.h"
 #include "RunForCovert/Objects/States/PatrolState.h"
 #include "RunForCovert/Objects/Transitions/PlayerSeenTransition.h"
+#include "RunForCovert/Objects/Transitions/PlayerUnseenTransition.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -21,7 +23,6 @@ AEnemyAIController::AEnemyAIController()
     RepeatedAction = 0;
     CoverPoint = nullptr;
     PreviousCoverPoint = nullptr;
-    CurrentAgentState = AgentState::PATROL;
 }
 
 bool AEnemyAIController::bPlayerSeen()
@@ -56,23 +57,20 @@ void AEnemyAIController::BeginPlay()
     }
     CoverSystem = GameMode->GetCoverSystem();
     PatrolSystem = GameMode->GetPatrolSystem();
-
-    // typedef TPair<UTransition*, UState*> TransitionStatePair;
-    // typedef TArray<TransitionStatePair> Transitions;
-    // typedef TMap<UState*, Transitions> TransitionMap;
     
     StateMachine = NewObject<UStateMachine>();
-    TMap<UState*, TArray<TPair<UTransition*, UState*>>> StateMachineSomething;
 
     UPatrolState* PatrolState = NewObject<UPatrolState>();
-    UFindCoverState* FindCoverState = NewObject<UFindCoverState>();
-    UPlayerSeenTransition* PlayerSeenTransition = NewObject<UPlayerSeenTransition>();
-    
-    StateMachineSomething.Add(NewObject<UPatrolState>(), {
-        TPair<UTransition*, UState*>(PlayerSeenTransition, FindCoverState),
+    UCombatStateMachine* CombatStateMachine = NewObject<UCombatStateMachine>();
+    CombatStateMachine->Initialise();
+
+    StateMachine->StateTransitions.Add(PatrolState, {
+        TPair<UTransition*, UState*>(NewObject<UPlayerSeenTransition>(), CombatStateMachine),
+    });
+    StateMachine->StateTransitions.Add(CombatStateMachine, {
+            TPair<UTransition*, UState*>(NewObject<UPlayerUnseenTransition>(), PatrolState),
     });
 
-    StateMachine->StateTransitions = StateMachineSomething;
     StateMachine->Initialise();
 }
 

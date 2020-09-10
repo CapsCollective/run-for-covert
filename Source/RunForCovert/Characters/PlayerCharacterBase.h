@@ -44,7 +44,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     USkeletalMeshComponent* Arms;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	UAIPerceptionStimuliSourceComponent* AIStimulusSource;
 	
     // Input methods
