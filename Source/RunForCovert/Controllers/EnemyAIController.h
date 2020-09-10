@@ -53,6 +53,8 @@ public:
     UCoverPointComponent* PreviousCoverPoint;
 
     bool HasFired;
+
+    bool TakenCover;
     
 protected:
 

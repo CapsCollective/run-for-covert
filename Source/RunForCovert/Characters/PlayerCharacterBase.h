@@ -73,6 +73,9 @@ protected:
 
     virtual void Fire() override;
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnFired();
+
 private:
 
     // Private fields

@@ -16,6 +16,7 @@ AEnemyAIController::AEnemyAIController()
     CoverPoint = nullptr;
     PreviousCoverPoint = nullptr;
     HasFired = false;
+    TakenCover = false;
 }
 
 bool AEnemyAIController::bPlayerSeen()
@@ -50,22 +51,6 @@ void AEnemyAIController::BeginPlay()
     StateMachine = NewObject<UEnemyStateMachine>();
     StateMachine->Initialise();
 }
-
-
-//  TODO implement desired AI behaviours:
-//      - Sensing
-//      - Patrolling
-//      - Investigating
-//      - Combat
-//
-//  TODO Potential combat behaviour:
-//      1) On alert, run to nearest valid cover ("valid" meaning away from player line of sight)
-//      2) Generate cover path toward player
-//      3) Fire from cover location while cover is valid
-//      4) Check if next cover point in path is valid
-//          4.a) If so, advance to next cover point
-//          4.b) Else generate new valid path and move
-//      5) If the player gets line of sight while agent takes cover, go to step 1
 
 
 void AEnemyAIController::Tick(float DeltaTime)

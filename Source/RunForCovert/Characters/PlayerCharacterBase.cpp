@@ -88,7 +88,10 @@ void APlayerCharacterBase::LookRight(float Amount)
 void APlayerCharacterBase::Fire()
 {
     if (!GetGun()) { return; }
-    GetGun()->Fire(GetController(), Camera->GetForwardVector());
+    if (GetGun()->Fire(GetController(), Camera->GetForwardVector()))
+    {
+        OnFired();
+    }
 }
 
 void APlayerCharacterBase::SprintStart()

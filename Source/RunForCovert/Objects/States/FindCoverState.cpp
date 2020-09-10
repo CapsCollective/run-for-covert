@@ -19,14 +19,12 @@ void UFindCoverState::OnEnter(AEnemyAIController& Owner)
 
 void UFindCoverState::OnExit(AEnemyAIController& Owner)
 {
+    Owner.TakenCover = false;
 }
 
 void UFindCoverState::OnUpdate(AEnemyAIController& Owner)
 {
-    if (!Owner.CoverPoint) {
-        UE_LOG(LogTemp, Error, TEXT("No cover point"))
-        return;
-    }
+    if (!Owner.CoverPoint) { return; }
     // Move towards the cover
     Owner.MoveToLocation(Owner.CoverPoint->GetComponentLocation());
 
@@ -35,5 +33,6 @@ void UFindCoverState::OnUpdate(AEnemyAIController& Owner)
     {
         Owner.Agent->SetCrouching(true);
         Owner.CoverPoint = nullptr;
+        Owner.TakenCover = true;
     }
 }

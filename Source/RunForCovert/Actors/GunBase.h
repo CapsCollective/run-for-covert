@@ -28,9 +28,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundBase* FireSound;
 
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    float MaxFireRate;
+
     // Public functions
 
-    void Fire(AController* Controller, FVector LaunchDirection);
+    bool Fire(AController* Controller, FVector LaunchDirection);
 
 protected:
 
@@ -47,5 +50,9 @@ private:
 
     UPROPERTY(VisibleAnywhere)
     USceneComponent* MuzzlePosition;
+
+    // Private fields
+
+    float LastFireTime;
 
 };

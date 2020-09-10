@@ -20,6 +20,8 @@ AGunBase::AGunBase()
 
     // Set field default values
     GunDamage = 10.f;
+    MaxFireRate = 1.f;
+    LastFireTime = 0.f;
 }
 
 void AGunBase::BeginPlay()
@@ -32,9 +34,13 @@ void AGunBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
+bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
 {
-    if (!Controller) { return; }
+    if (!Controller) { return false; }
+
+    // Check if the gun is within max fire rate and update
+    if (LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) { return false; }
+    LastFireTime = GetWorld()->GetTimeSeconds();
 
     // Play firing sound
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
@@ -53,7 +59,7 @@ void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     {
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
-        if (!HitActor) { return; }
+        if (!HitActor) { return true; }
         FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
                                                           Result.HitResult.ImpactNormal, nullptr);
         HitActor->TakeDamage(GunDamage,DamageEvent, Controller,GetOwner());
@@ -67,4 +73,6 @@ void AGunBase::Fire(AController* Controller, FVector LaunchDirection)
                 It + 1 ? FColor::Green : FColor::Red,false,4.f
         );
     }
+
+    return true;
 }
