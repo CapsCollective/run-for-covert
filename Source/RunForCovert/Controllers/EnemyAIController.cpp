@@ -7,7 +7,11 @@
 #include "../Characters/EnemyCharacterBase.h"
 #include "TimerManager.h"
 #include "EngineUtils.h"
+#include "../Objects/StateMachine.h"
 #include "../GameModes/DefaultGameModeBase.h"
+#include "RunForCovert/Objects/States/FindCoverState.h"
+#include "RunForCovert/Objects/States/PatrolState.h"
+#include "RunForCovert/Objects/Transitions/PlayerSeenTransition.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -17,6 +21,17 @@ AEnemyAIController::AEnemyAIController()
     RepeatedAction = 0;
     CoverPoint = nullptr;
     PreviousCoverPoint = nullptr;
+    CurrentAgentState = AgentState::PATROL;
+}
+
+bool AEnemyAIController::bPlayerSeen()
+{
+    return Agent->bChasePlayer;
+}
+
+bool AEnemyAIController::bSeePlayer()
+{
+    return Agent->bSeePlayer;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -40,6 +55,25 @@ void AEnemyAIController::BeginPlay()
         return;
     }
     CoverSystem = GameMode->GetCoverSystem();
+    PatrolSystem = GameMode->GetPatrolSystem();
+
+    // typedef TPair<UTransition*, UState*> TransitionStatePair;
+    // typedef TArray<TransitionStatePair> Transitions;
+    // typedef TMap<UState*, Transitions> TransitionMap;
+    
+    StateMachine = NewObject<UStateMachine>();
+    TMap<UState*, TArray<TPair<UTransition*, UState*>>> StateMachineSomething;
+
+    UPatrolState* PatrolState = NewObject<UPatrolState>();
+    UFindCoverState* FindCoverState = NewObject<UFindCoverState>();
+    UPlayerSeenTransition* PlayerSeenTransition = NewObject<UPlayerSeenTransition>();
+    
+    StateMachineSomething.Add(NewObject<UPatrolState>(), {
+        TPair<UTransition*, UState*>(PlayerSeenTransition, FindCoverState),
+    });
+
+    StateMachine->StateTransitions = StateMachineSomething;
+    StateMachine->Initialise();
 }
 
 
@@ -64,7 +98,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     if (!(Player && Agent && CoverSystem)) { return; }
-
+    StateMachine->OnUpdate(this);
 
     // TODO there's definitely better ways of doing all this, but this is
     //  just some example code to show how the cover system can be used
@@ -91,36 +125,53 @@ void AEnemyAIController::Tick(float DeltaTime)
 //    }
 
     // Uncomment this to see the AI path towards the nearest cover to the player
-    if (CoverPoint)
-    {
-        if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
-        {
-            PreviousCoverPoint = CoverPoint;
-            CoverPoint = nullptr;
-        }
-    }
-    else if (CoverPath.Num() > 0)
-    {
-        ACover *Cover = CoverPath.Pop();
-        if (!Cover->IsOccupiedByOther(Agent))
-        {
-            // Find a valid (or failing that, the first) cover point on the cover
-            UCoverPointComponent *NewCoverPoint = Cover->FindValidCoverPoint(Player->GetActorLocation());
-            if (!NewCoverPoint) { NewCoverPoint = Cover->GetFirstCover(); }
+    // if (CoverPoint)
+    // {
+    //     if (FVector::Dist(Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
+    //     {
+    //         PreviousCoverPoint = CoverPoint;
+    //         CoverPoint = nullptr;
+    //     }
+    // }
+    // else if (CoverPath.Num() > 0)
+    // {
+    //     ACover *Cover = CoverPath.Pop();
+    //     if (!Cover->IsOccupiedByOther(Agent))
+    //     {
+    //         // Find a valid (or failing that, the first) cover point on the cover
+    //         UCoverPointComponent *NewCoverPoint = Cover->FindValidCoverPoint(Player->GetActorLocation());
+    //         if (!NewCoverPoint) { NewCoverPoint = Cover->GetFirstCover(); }
+    //
+    //         // Attempt to claim the new cover point, releasing the previous one in the process
+    //         if (NewCoverPoint->TrySetOccupation(Agent))
+    //         {
+    //             CoverPoint = NewCoverPoint;
+    //             if (PreviousCoverPoint) { PreviousCoverPoint->ReleaseOccupation(Agent); }
+    //             MoveToLocation(CoverPoint->GetComponentLocation());
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     CoverPath = CoverSystem->FindCoverPath(Agent, Player);
+    // }
 
-            // Attempt to claim the new cover point, releasing the previous one in the process
-            if (NewCoverPoint->TrySetOccupation(Agent))
-            {
-                CoverPoint = NewCoverPoint;
-                if (PreviousCoverPoint) { PreviousCoverPoint->ReleaseOccupation(Agent); }
-                MoveToLocation(CoverPoint->GetComponentLocation());
-            }
-        }
-    }
-    else
-    {
-        CoverPath = CoverSystem->FindCoverPath(Agent, Player);
-    }
+    
+    // if(PatrolPoint == nullptr)
+    // {
+    //     PatrolPoint = PatrolSystem->FindClosestValidPatrolPoint(Agent);
+    // }
+    // else
+    // {
+    //     if(FVector::Dist(Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
+    //     {
+    //         PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
+    //     }
+    //     else
+    //     {
+    //         MoveToLocation(PatrolPoint->GetActorLocation());    
+    //     }
+    // }
 }
 
 void AEnemyAIController::FireAtPlayer()

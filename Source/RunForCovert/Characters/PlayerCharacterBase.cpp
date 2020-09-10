@@ -22,6 +22,8 @@ APlayerCharacterBase::APlayerCharacterBase()
     Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
     Arms->SetupAttachment(Camera);
 
+    AIStimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AI Stimulus Source"));
+    
 	// Set field default values
     MoveSpeed = 100.f;
     LookSpeed = 1.f;

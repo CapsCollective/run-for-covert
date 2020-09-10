@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "RunForCovert/Objects/CoverSystem.h"
+#include "RunForCovert/Objects/PatrolSystem.h"
+
 #include "DefaultGameModeBase.generated.h"
 
 UCLASS()
@@ -18,6 +20,7 @@ public:
     // Public functions
 
     class UCoverSystem* GetCoverSystem();
+    class UPatrolSystem* GetPatrolSystem();
 
 protected:
 
@@ -31,5 +34,7 @@ private:
 
     UPROPERTY()
     UCoverSystem* CoverSystem;
-	
+
+    UPROPERTY()
+    UPatrolSystem* PatrolSystem;
 };

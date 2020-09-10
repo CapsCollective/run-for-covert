@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "RunForCovert/Characters/EnemyCharacterBase.h"
+
 #include "EnemyAIController.generated.h"
+
+UENUM()
+enum class AgentState : uint8 
+{
+    PATROL,
+    ENGAGE,
+    EVADE
+};
 
 UCLASS()
 class RUNFORCOVERT_API AEnemyAIController : public AAIController
@@ -24,6 +34,23 @@ public:
 
     void FireAtPlayer();
 
+    AgentState CurrentAgentState;
+
+    UPROPERTY()
+    APawn* Player;
+
+    UPROPERTY()
+    class AEnemyCharacterBase* Agent;
+    
+    UPROPERTY()
+    class UCoverSystem* CoverSystem;
+
+    UPROPERTY()
+    class UPatrolSystem* PatrolSystem;
+
+    bool bPlayerSeen();
+    bool bSeePlayer();
+    
 protected:
 
     // Protected overrides
@@ -34,14 +61,6 @@ private:
 
     // Private fields
 
-    UPROPERTY()
-    APawn* Player;
-
-    UPROPERTY()
-    class AEnemyCharacterBase* Agent;
-
-    UPROPERTY()
-    class UCoverSystem* CoverSystem;
 
     UPROPERTY()
     TArray<class ACover*> CoverPath;
@@ -55,8 +74,14 @@ private:
     class UCoverPointComponent* CoverPoint;
 
     UPROPERTY()
+    TArray<class APatrol*> PatrolPath;
+
+    UPROPERTY()
     UCoverPointComponent* PreviousCoverPoint;
 
     int32 RepeatedAction;
 
+    UPROPERTY()
+    class UStateMachine* StateMachine;
+    
 };

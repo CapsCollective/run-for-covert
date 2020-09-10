@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CharacterBase.h"
+#include "Perception/AIPerceptionComponent.h"
+
 #include "EnemyCharacterBase.generated.h"
 
 UCLASS()
@@ -23,10 +25,23 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAIPerceptionComponent* PerceptionComponent;
+	
     // Public methods
 
     void FireWeapon();
 
+	UFUNCTION()
+	void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
+
+	UPROPERTY()
+	float TimeToSeePlayer;
+
+	float SeenPlayerFor;
+	bool bSeePlayer;
+	bool bChasePlayer;
+	
 protected:
 
     // Protected overrides

@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CharacterBase.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
@@ -33,7 +35,7 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
     float SprintMultiplier;
-
+	
     // Components
 
     UPROPERTY(VisibleAnywhere)
@@ -42,6 +44,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     USkeletalMeshComponent* Arms;
 
+	UPROPERTY(EditAnywhere)
+	UAIPerceptionStimuliSourceComponent* AIStimulusSource;
+	
     // Input methods
 
     void MoveForward(float Amount);
