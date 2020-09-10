@@ -30,7 +30,7 @@ void UPatrolState::OnUpdate(AEnemyAIController& Owner)
         }
         else
         {
-            if(!Owner.bSeePlayer())
+            if(!Owner.Agent->bSeePlayer)
             {
                 Owner.MoveToLocation(PatrolPoint->GetActorLocation());
             }

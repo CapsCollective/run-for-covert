@@ -5,27 +5,25 @@
 #include "RunForCovert/Actors/Cover.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 
-void UMoveCoverState::OnEnter(AEnemyAIController& Owner)
-{
-}
-
-void UMoveCoverState::OnExit(AEnemyAIController& Owner)
-{
-}
-
 void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
 {
-    if (Owner.CoverPoint)
+    if (CoverPoint)
     {
-        if (FVector::Dist(Owner.Agent->GetActorLocation(), Owner.CoverPoint->GetComponentLocation()) < 100.f)
+        if (FVector::Dist(Owner.Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
         {
-            Owner.PreviousCoverPoint = Owner.CoverPoint;
-            Owner.CoverPoint = nullptr;
+            // Flag that a valid cover position has been taken if it provides cover
+            if (CoverPoint->DoesProvideCover(Owner.Player->GetActorLocation()))
+            {
+                Owner.TakenValidCover = true;
+            }
+
+            PreviousCoverPoint = CoverPoint;
+            CoverPoint = nullptr;
         }
     }
-    else if (Owner.CoverPath.Num() > 0)
+    else if (CoverPath.Num() > 0)
     {
-        ACover *Cover = Owner.CoverPath.Pop();
+        ACover *Cover = CoverPath.Pop();
         if (!Cover->IsOccupiedByOther(Owner.Agent))
         {
             // Find a valid (or failing that, the first) cover point on the cover
@@ -35,14 +33,14 @@ void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
             // Attempt to claim the new cover point, releasing the previous one in the process
             if (NewCoverPoint->TrySetOccupation(Owner.Agent))
             {
-                Owner.CoverPoint = NewCoverPoint;
-                if (Owner.PreviousCoverPoint) { Owner.PreviousCoverPoint->ReleaseOccupation(Owner.Agent); }
-                Owner.MoveToLocation(Owner.CoverPoint->GetComponentLocation());
+                CoverPoint = NewCoverPoint;
+                if (PreviousCoverPoint) { PreviousCoverPoint->ReleaseOccupation(Owner.Agent); }
+                Owner.MoveToLocation(CoverPoint->GetComponentLocation());
             }
         }
     }
     else
     {
-        Owner.CoverPath = Owner.CoverSystem->FindCoverPath(Owner.Agent, Owner.Player);
+        CoverPath = Owner.CoverSystem->FindCoverPath(Owner.Agent, Owner.Player);
     }
 }

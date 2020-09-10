@@ -21,6 +21,11 @@ public:
     virtual void OnUpdate(AEnemyAIController& Owner);
 
 private:
-	float Timer;
+
+	// Private fields
+
+	float TimeToFire = 2.f;
+
+	float TimeStarted = 0.f;
 	
 };

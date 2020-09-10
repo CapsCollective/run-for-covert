@@ -4,18 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "../State.h"
-#include "FindCoverState.generated.h"
+#include "HoldCoverState.generated.h"
 
 
 UCLASS()
-class RUNFORCOVERT_API UFindCoverState : public UState
+class RUNFORCOVERT_API UHoldCoverState : public UState
 {
 	GENERATED_BODY()
 
 public:
 
 	virtual void OnEnter(AEnemyAIController& Owner) override;
+
 	virtual void OnExit(AEnemyAIController& Owner) override;
+
 	virtual void OnUpdate(AEnemyAIController& Owner) override;
+
+private:
+
+    // Private fields
+
+    float TimeToCover = 2.f;
+
+    float TimeStarted = 0.f;
 
 };

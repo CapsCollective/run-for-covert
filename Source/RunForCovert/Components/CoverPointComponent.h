@@ -19,7 +19,7 @@ public:
 
     // Public functions
 
-    bool DoesProvideCover(FVector &CoverFromPosition);
+    bool DoesProvideCover(FVector CoverFromPosition);
 
     bool TrySetOccupation(class AActor* Actor);
 

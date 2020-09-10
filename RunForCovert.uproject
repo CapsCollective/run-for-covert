@@ -14,11 +14,5 @@
 				"CoreUObject"
 			]
 		}
-	],
-	"Plugins": [
-		{
-			"Name": "RiderLink",
-			"Enabled": true
-		}
 	]
 }

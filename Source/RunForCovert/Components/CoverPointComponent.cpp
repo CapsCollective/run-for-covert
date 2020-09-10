@@ -12,7 +12,7 @@ UCoverPointComponent::UCoverPointComponent()
     Occupier = nullptr;
 }
 
-bool UCoverPointComponent::DoesProvideCover(FVector &CoverFromPosition)
+bool UCoverPointComponent::DoesProvideCover(FVector CoverFromPosition)
 {
     // Perform ray-trace between cover point and point to take cover from
     FHitResult Hit;

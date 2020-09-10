@@ -5,5 +5,5 @@
 
 bool UPlayerSeenTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner.bPlayerSeen();
+    return Owner.Agent->bChasePlayer;
 }

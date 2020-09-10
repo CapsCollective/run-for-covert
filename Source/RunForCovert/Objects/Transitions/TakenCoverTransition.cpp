@@ -5,5 +5,5 @@
 
 bool UTakenCoverTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner.TakenCover;
+    return Owner.TakenValidCover;
 }

@@ -37,24 +37,11 @@ public:
     UPROPERTY()
     class UPatrolSystem* PatrolSystem;
 
-    bool bPlayerSeen();
-
-    bool bSeePlayer();
-
     // Public fields
 
-    UPROPERTY()
-    class UCoverPointComponent* CoverPoint;
-
-    UPROPERTY()
-    TArray<class ACover*> CoverPath;
-
-    UPROPERTY()
-    UCoverPointComponent* PreviousCoverPoint;
+    bool TakenValidCover;
 
     bool HasFired;
-
-    bool TakenCover;
     
 protected:
 

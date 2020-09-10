@@ -25,11 +25,11 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
 
-    UPROPERTY(EditAnywhere, Category = "Effects")
-    USoundBase* FireSound;
-
     UPROPERTY(EditAnywhere, Category = "Combat")
     float MaxFireRate;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    USoundBase* FireSound;
 
     // Public functions
 

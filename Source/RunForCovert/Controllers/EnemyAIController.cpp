@@ -13,20 +13,8 @@ AEnemyAIController::AEnemyAIController()
     PrimaryActorTick.bCanEverTick = true;
 
     // Set field default values
-    CoverPoint = nullptr;
-    PreviousCoverPoint = nullptr;
     HasFired = false;
-    TakenCover = false;
-}
-
-bool AEnemyAIController::bPlayerSeen()
-{
-    return Agent->bChasePlayer;
-}
-
-bool AEnemyAIController::bSeePlayer()
-{
-    return Agent->bSeePlayer;
+    TakenValidCover = false;
 }
 
 void AEnemyAIController::BeginPlay()
