@@ -23,6 +23,11 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AEnemyCharacterBase::SetCrouching(bool Crouching)
+{
+    IsCrouching = Crouching;
+}
+
 void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
