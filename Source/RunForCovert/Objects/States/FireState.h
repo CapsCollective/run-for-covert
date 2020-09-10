@@ -19,5 +19,8 @@ public:
     virtual void OnEnter(AEnemyAIController& Owner);
     virtual void OnExit(AEnemyAIController& Owner);
     virtual void OnUpdate(AEnemyAIController& Owner);
+
+private:
+	float Timer;
 	
 };

@@ -26,6 +26,7 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
     IsCrouching = Crouching;
+    UE_LOG(LogTemp, Warning, TEXT("SETTING CROUCH %i"), Crouching)
 }
 
 void AEnemyCharacterBase::BeginPlay()
