@@ -28,7 +28,12 @@ void UCombatStateMachine::Initialise()
 //    StateTransitions.Add(MoveCoverState, {
 //            TPair<UTransition*, UState*>(NewObject<UFinishedMovingTransition>(), FindCoverState),
 //    });
-
+    
     // Initialise to first state
     Super::Initialise();
+}
+
+void UCombatStateMachine::OnEnter(AEnemyAIController& Owner)
+{
+    CurrentState->OnEnter(Owner);
 }

@@ -17,4 +17,5 @@ class RUNFORCOVERT_API UCombatStateMachine : public UStateMachine
 public:
 
     virtual void Initialise() override;
+    virtual void OnEnter(AEnemyAIController& Owner) override;
 };

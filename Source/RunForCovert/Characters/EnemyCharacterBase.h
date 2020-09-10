@@ -42,9 +42,9 @@ public:
 	bool bSeePlayer;
 	bool bChasePlayer;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool IsCrouching;
-	
+
 	void SetCrouching(bool Crouching);
 	
 protected:

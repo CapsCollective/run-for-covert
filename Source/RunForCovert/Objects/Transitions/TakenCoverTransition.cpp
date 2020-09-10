@@ -5,5 +5,5 @@
 
 bool UTakenCoverTransition::ToTransition(AEnemyAIController& Owner) const
 {
-    return Owner.CoverPoint;
+    return Owner.CoverPoint != nullptr;
 }
