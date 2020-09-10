@@ -28,6 +28,11 @@ public:
     UPROPERTY(VisibleAnywhere)
     UHealthComponent* Health;
 
+    UFUNCTION(BlueprintNativeEvent)
+    void OnTakeDamage();
+
+    void OnTakeDamage_Implementation();
+
 protected:
 
     // Protected overrides
@@ -37,6 +42,7 @@ protected:
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,
                              class AController* EventInstigator, AActor* DamageCauser) override;
 
+    
     // Protected virtual methods
 
     virtual void Fire();

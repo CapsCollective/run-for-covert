@@ -34,7 +34,6 @@ void APatrol::AddNode(UPatrolNode* NewNode)
 
 	for (auto& It : AdjacentNodes)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IDK"))
 		Node->AdjacentNodes.Add(It->Node);
 	}
 }

@@ -21,7 +21,6 @@ AEnemyAIController::AEnemyAIController()
     RepeatedAction = 0;
     CoverPoint = nullptr;
     PreviousCoverPoint = nullptr;
-    CurrentAgentState = AgentState::PATROL;
 }
 
 bool AEnemyAIController::bPlayerSeen()

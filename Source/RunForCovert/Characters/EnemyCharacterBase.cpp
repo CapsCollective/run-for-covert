@@ -3,8 +3,11 @@
 
 #include "EnemyCharacterBase.h"
 
+
+#include "PlayerCharacterBase.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISense_Damage.h"
 
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
@@ -25,8 +28,11 @@ void AEnemyCharacterBase::BeginPlay()
 	Super::BeginPlay();
     PerceptionComponent = FindComponentByClass<UAIPerceptionComponent>();
     
-    if(!PerceptionComponent) { UE_LOG(LogTemp, Error, TEXT("NO PERCEPTION COMPONENT FOUND")) }
+    if(!PerceptionComponent) { UE_LOG(LogTemp, Error, TEXT("NO PERCEPTION COMPONENT FOUND"))}
+    else
+    {
         PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyCharacterBase::SeePlayer);
+    }
 }
 
 void AEnemyCharacterBase::Tick(float DeltaTime)
@@ -42,7 +48,6 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
         else
         {
             // Chase Player
-            UE_LOG(LogTemp, Warning, TEXT("Chasing Player"))
             bChasePlayer = true;
         }
     }
@@ -60,12 +65,16 @@ void AEnemyCharacterBase::FireWeapon()
 
 void AEnemyCharacterBase::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
-    if(Stimulus.WasSuccessfullySensed())
+    APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
+    if(pcb)
     {
-        bSeePlayer = true;
-    }
-    else
-    {
-        bSeePlayer = false;
+        if(Stimulus.WasSuccessfullySensed())
+        {
+            bSeePlayer = true;
+        }
+        else
+        {
+            bSeePlayer = false;
+        }
     }
 }

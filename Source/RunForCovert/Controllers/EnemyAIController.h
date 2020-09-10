@@ -8,14 +8,6 @@
 
 #include "EnemyAIController.generated.h"
 
-UENUM()
-enum class AgentState : uint8 
-{
-    PATROL,
-    ENGAGE,
-    EVADE
-};
-
 UCLASS()
 class RUNFORCOVERT_API AEnemyAIController : public AAIController
 {
@@ -33,8 +25,6 @@ public:
     // Public functions
 
     void FireAtPlayer();
-
-    AgentState CurrentAgentState;
 
     UPROPERTY()
     APawn* Player;
