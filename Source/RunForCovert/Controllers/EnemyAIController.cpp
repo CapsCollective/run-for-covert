@@ -48,9 +48,3 @@ void AEnemyAIController::Tick(float DeltaTime)
     if (!(Player && Agent && CoverSystem)) { return; }
     StateMachine->OnUpdate(*this);
 }
-
-void AEnemyAIController::FireAtPlayer()
-{
-    if (!Agent) { return; }
-    Agent->FireWeapon();
-}

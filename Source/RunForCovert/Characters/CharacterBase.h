@@ -40,7 +40,7 @@ protected:
     
     // Protected virtual methods
 
-    virtual void Fire();
+    virtual bool Fire();
 
     // Protected getters
 

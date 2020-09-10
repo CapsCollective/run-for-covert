@@ -42,7 +42,7 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Jump);
 
-    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Fire);
+    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::FireWeapon);
 
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::SprintStart);
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &APlayerCharacterBase::SprintEnd);
@@ -85,11 +85,20 @@ void APlayerCharacterBase::LookRight(float Amount)
     AddControllerYawInput(Amount * LookSpeed);
 }
 
-void APlayerCharacterBase::Fire()
+void APlayerCharacterBase::FireWeapon()
 {
-    if (!GetGun()) { return; }
-    if (!GetGun()->Fire(GetController(), Camera->GetForwardVector())) { return; }
-    OnFired();
+    Fire();
+}
+
+bool APlayerCharacterBase::Fire()
+{
+    if (!GetGun()) { return false; }
+    if (GetGun()->Fire(GetController(), Camera->GetForwardVector()))
+    {
+        OnFired();
+        return true;
+    }
+    return false;
 }
 
 void APlayerCharacterBase::SprintStart()

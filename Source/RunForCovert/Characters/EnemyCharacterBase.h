@@ -24,28 +24,35 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAIPerceptionComponent* PerceptionComponent;
 	
     // Public methods
 
-    void FireWeapon();
+    bool FireWeapon();
 
 	UFUNCTION()
 	void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
 
-	UPROPERTY()
+    void SetCrouching(bool Crouching);
+
+	// Public fields
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAIPerceptionComponent* PerceptionComponent;
+
+    UPROPERTY(BlueprintReadWrite)
+    bool IsCrouching;
+
+    UPROPERTY(EditAnywhere)
+    float FiringRange;
+
+	UPROPERTY(EditAnywhere)
 	float TimeToSeePlayer;
 
 	float SeenPlayerFor;
+
 	bool bSeePlayer;
+
 	bool bChasePlayer;
-
-	UPROPERTY(BlueprintReadWrite)
-	bool IsCrouching;
-
-	void SetCrouching(bool Crouching);
 	
 protected:
 

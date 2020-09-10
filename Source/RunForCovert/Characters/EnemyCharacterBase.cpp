@@ -16,6 +16,7 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 	// Setup components
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
     TimeToSeePlayer = 1.5f;
+    FiringRange = 500.f;
 }
 
 void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -63,9 +64,9 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
     }
 }
 
-void AEnemyCharacterBase::FireWeapon()
+bool AEnemyCharacterBase::FireWeapon()
 {
-    Fire();
+    return Fire();
 }
 
 void AEnemyCharacterBase::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)

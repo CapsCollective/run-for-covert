@@ -21,10 +21,6 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    // Public functions
-
-    void FireAtPlayer();
-
     UPROPERTY()
     APawn* Player;
 

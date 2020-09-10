@@ -65,13 +65,15 @@ public:
 
     void CrouchEnd();
 
+    void FireWeapon();
+
 protected:
 
 	// Protected overrides
 
 	virtual void BeginPlay() override;
 
-    virtual void Fire() override;
+    virtual bool Fire() override;
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();

@@ -3,6 +3,15 @@
 
 #include "FireState.h"
 
+UFireState::UFireState()
+{
+    // Set field default values
+    TimesToFire = 3;
+    TimesFired = 0;
+    FireDelay = 1.f;
+    TimeStarted = 0.f;
+}
+
 void UFireState::OnEnter(AEnemyAIController& Owner)
 {
     TimeStarted = Owner.GetWorld()->GetTimeSeconds();
@@ -12,15 +21,18 @@ void UFireState::OnEnter(AEnemyAIController& Owner)
 void UFireState::OnExit(AEnemyAIController& Owner)
 {
     Owner.HasFired = false;
+    TimesFired = 0;
+    Owner.Agent->SetCrouching(true);
 }
 
 void UFireState::OnUpdate(AEnemyAIController& Owner)
 {
     // Fire at the player once the timer ends
-    if (TimeStarted + TimeToFire <= Owner.GetWorld()->GetTimeSeconds())
+    if (TimeStarted + FireDelay <= Owner.GetWorld()->GetTimeSeconds())
     {
-        Owner.FireAtPlayer();
-        Owner.Agent->SetCrouching(true);
-        Owner.HasFired = true;
+        if (Owner.Agent->FireWeapon() && ++TimesFired >= TimesToFire)
+        {
+            Owner.HasFired = true;
+        }
     }
 }

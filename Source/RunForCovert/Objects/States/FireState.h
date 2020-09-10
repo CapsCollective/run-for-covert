@@ -6,9 +6,7 @@
 #include "../State.h"
 #include "FireState.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UFireState : public UState
 {
@@ -16,16 +14,26 @@ class RUNFORCOVERT_API UFireState : public UState
 
 public:
 
+    UFireState();
+
+    // Public overrides
+
     virtual void OnEnter(AEnemyAIController& Owner);
+
     virtual void OnExit(AEnemyAIController& Owner);
+
     virtual void OnUpdate(AEnemyAIController& Owner);
 
 private:
 
 	// Private fields
 
-	float TimeToFire = 2.f;
+    int32 TimesToFire;
 
-	float TimeStarted = 0.f;
+    int32 TimesFired;
+
+	float FireDelay;
+
+	float TimeStarted;
 	
 };

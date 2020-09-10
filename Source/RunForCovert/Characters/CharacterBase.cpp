@@ -55,8 +55,8 @@ AGunBase* ACharacterBase::GetGun()
     return Gun;
 }
 
-void ACharacterBase::Fire()
+bool ACharacterBase::Fire()
 {
-    if (!GetGun()) { return; }
-    GetGun()->Fire(GetController(), GetActorForwardVector());
+    if (!GetGun()) { return false; }
+    return GetGun()->Fire(GetController(), GetActorForwardVector());
 }

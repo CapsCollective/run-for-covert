@@ -5,7 +5,7 @@
 #include "HoldCoverState.h"
 #include "FireState.h"
 #include "MoveCoverState.h"
-#include "../Transitions/FinishedMovingTransition.h"
+#include "../Transitions/FiringRangeTransition.h"
 #include "../Transitions/FinishedFiringTransition.h"
 #include "../Transitions/TakenCoverTransition.h"
 #include "../Transitions/LostCoverTransition.h"
@@ -15,19 +15,19 @@ void UCombatStateMachine::Initialise()
     // Create state objects
     UMoveCoverState* MoveCoverState = NewObject<UMoveCoverState>();
     UHoldCoverState* HoldCoverState = NewObject<UHoldCoverState>();
-    //UFireState* FireState = NewObject<UFireState>();
+    UFireState* FireState = NewObject<UFireState>();
 
     // Add state transitions to state machine
     StateTransitions.Add(MoveCoverState, {
             TPair<UTransition*, UState*>(NewObject<UTakenCoverTransition>(), HoldCoverState),
-            //TPair<UTransition*, UState*>(NewObject<UTakenCoverTransition>(), FireState),
     });
     StateTransitions.Add(HoldCoverState, {
+            TPair<UTransition*, UState*>(NewObject<UFiringRangeTransition>(), FireState),
             TPair<UTransition*, UState*>(NewObject<ULostCoverTransition>(), MoveCoverState),
     });
-//    StateTransitions.Add(FireState, {
-//            TPair<UTransition*, UState*>(NewObject<UFinishedFiringTransition>(), HoldCoverState),
-//    });
+    StateTransitions.Add(FireState, {
+            TPair<UTransition*, UState*>(NewObject<UFinishedFiringTransition>(), HoldCoverState),
+    });
     
     // Initialise to first state
     Super::Initialise();

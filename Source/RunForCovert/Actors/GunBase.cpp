@@ -20,7 +20,7 @@ AGunBase::AGunBase()
 
     // Set field default values
     GunDamage = 10.f;
-    MaxFireRate = 1.f;
+    MaxFireRate = .5f;
     LastFireTime = 0.f;
 }
 
