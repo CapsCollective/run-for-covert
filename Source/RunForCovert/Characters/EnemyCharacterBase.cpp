@@ -5,6 +5,7 @@
 
 
 #include "PlayerCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Damage.h"
@@ -17,6 +18,18 @@ AEnemyCharacterBase::AEnemyCharacterBase()
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
     TimeToSeePlayer = 1.5f;
     FiringRange = 500.f;
+    
+    PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
+    SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight Config");
+    if(SightConfig){
+        SightConfig->SightRadius = 1000.0f;
+        SightConfig->PeripheralVisionAngleDegrees = 60.0f;
+        SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+        SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+        PerceptionComponent->ConfigureSense(*SightConfig);
+    }
+    
 }
 
 void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -32,13 +45,13 @@ void AEnemyCharacterBase::SetCrouching(bool Crouching)
 void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-    PerceptionComponent = FindComponentByClass<UAIPerceptionComponent>();
     
     if(!PerceptionComponent) { UE_LOG(LogTemp, Error, TEXT("NO PERCEPTION COMPONENT FOUND"))}
     else
     {
         PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyCharacterBase::SeePlayer);
     }
+    GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void AEnemyCharacterBase::Tick(float DeltaTime)

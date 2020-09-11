@@ -3,8 +3,15 @@
 
 #include "PatrolState.h"
 #include "CombatStateMachine.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
+
+
+void UPatrolState::OnExit(AEnemyAIController& Owner)
+{
+    Owner.Agent->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+}
 
 void UPatrolState::OnUpdate(AEnemyAIController& Owner)
 {

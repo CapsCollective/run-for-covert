@@ -16,6 +16,8 @@ public:
 
     // Public overrides
 
+    virtual void OnExit(AEnemyAIController& Owner) override;
+
 	virtual void OnUpdate(AEnemyAIController& Owner) override;
 
     virtual UClass* ToTransition(AEnemyAIController& Owner) const override;
