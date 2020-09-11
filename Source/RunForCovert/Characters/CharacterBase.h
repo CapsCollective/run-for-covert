@@ -33,7 +33,7 @@ public:
     // Public fields
 
     UPROPERTY(BlueprintReadWrite)
-    bool IsDead;
+    bool bIsDead;
 
 protected:
 

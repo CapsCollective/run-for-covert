@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
-
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
@@ -77,10 +76,4 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();
-
-private:
-
-    // Private fields
-
-    float DefaultCapsuleHeight;
 };

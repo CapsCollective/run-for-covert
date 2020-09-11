@@ -28,7 +28,6 @@ APlayerCharacterBase::APlayerCharacterBase()
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
-    DefaultCapsuleHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -50,10 +49,6 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::CrouchStart);
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
 }
-
-//  TODO implement desired player behaviours:
-//      - Crouch behind cover
-//      - Silent movement while crouching
 
 void APlayerCharacterBase::BeginPlay()
 {
@@ -113,10 +108,10 @@ void APlayerCharacterBase::SprintEnd()
 
 void APlayerCharacterBase::CrouchStart()
 {
-    GetCapsuleComponent()->SetCapsuleHalfHeight(DefaultCapsuleHeight/2);
+    Crouch();
 }
 
 void APlayerCharacterBase::CrouchEnd()
 {
-    GetCapsuleComponent()->SetCapsuleHalfHeight(DefaultCapsuleHeight);
+    UnCrouch();
 }

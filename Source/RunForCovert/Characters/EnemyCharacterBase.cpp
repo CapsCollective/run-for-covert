@@ -2,13 +2,11 @@
 
 
 #include "EnemyCharacterBase.h"
-
-
 #include "PlayerCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "Perception/AISense_Damage.h"
+
 
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
@@ -39,7 +37,7 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
-    IsCrouching = Crouching;
+    Crouching ? Crouch() : UnCrouch();
 }
 
 void AEnemyCharacterBase::BeginPlay()
