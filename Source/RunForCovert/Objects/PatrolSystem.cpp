@@ -23,8 +23,6 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
         PatrolNodes.Add(NewNode);
     }
 
-    // Generate the graph connections
-    //GenerateGraph(10000.0f);
     DisplayDebugGraph(2.f);
 
     for(UPatrolNode* Node : PatrolNodes)
@@ -33,6 +31,7 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
     }
 }
 
+// Finds the closes valid patrol point
 APatrol* UPatrolSystem::FindClosestValidPatrolPoint(AActor* Agent)
 {
     // Iterate through all cover points in world
@@ -51,6 +50,7 @@ APatrol* UPatrolSystem::FindClosestValidPatrolPoint(AActor* Agent)
     return ClosestPatrolPoint;
 }
 
+// Returns the path that the AI should take.
 TArray<APatrol*> UPatrolSystem::FindPath(AActor* Agent, AActor* Enemy)
 {
     // Set up the search for values
@@ -113,6 +113,7 @@ TArray<APatrol*> UPatrolSystem::FindPath(AActor* Agent, AActor* Enemy)
     return TArray<APatrol*>();
 }
 
+// Returns the closest patrol point to the AI
 UPatrolNode* UPatrolSystem::GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
 {
     // Iterate through all cover points in world
@@ -123,9 +124,6 @@ UPatrolNode* UPatrolSystem::GetClosestPatrol(AActor* Actor, bool MustBeUnoccupie
         // Check if the current point is closer
         float CoverDistance = (*It)->PatrolActor->GetDistanceTo(Actor);
         if (CoverDistance >= ClosestCoverDistance) { continue; }
-
-        // Check to make sure it is available if unoccupied flag is set
-        // if (MustBeUnoccupied && (*It)->PatrolActor->IsOccupiedByOther(OtherAgent)) { continue; }
 
         // Assign as closest
         ClosestCoverDistance = CoverDistance;

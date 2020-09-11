@@ -11,6 +11,7 @@
 
 #include "EnemyCharacterBase.generated.h"
 
+class UAISenseConfig_Damage;
 UCLASS()
 class RUNFORCOVERT_API AEnemyCharacterBase : public ACharacterBase
 {

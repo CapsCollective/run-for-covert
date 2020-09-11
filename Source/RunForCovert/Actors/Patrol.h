@@ -28,11 +28,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
-	// UPROPERTY()
-	// TArray<UCoverPointComponent*> CoverPoints;
 	void AddNode(UPatrolNode* NewNode);
 	
 private:

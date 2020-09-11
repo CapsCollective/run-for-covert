@@ -8,16 +8,6 @@
 // Sets default values
 APatrol::APatrol()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
-	// Populate the cover points field
-	// GetComponents(OUT CoverPoints);
-	//
-	// if (CoverPoints.Num() <= 0)
-	// {
-	// 	UE_LOG(LogTemp, Error, TEXT("No cover points found for %s"), *GetName())
-	// }
 	
 }
 
@@ -36,12 +26,5 @@ void APatrol::AddNode(UPatrolNode* NewNode)
 	{
 		Node->AdjacentNodes.Add(It->Node);
 	}
-}
-
-// Called every frame
-void APatrol::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

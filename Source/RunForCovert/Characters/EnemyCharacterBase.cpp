@@ -7,6 +7,7 @@
 #include "PlayerCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Damage.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISense_Damage.h"
 
@@ -18,8 +19,10 @@ AEnemyCharacterBase::AEnemyCharacterBase()
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
     TimeToSeePlayer = 1.5f;
     FiringRange = 500.f;
-    
+
+    // Sets up the Perception component
     PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
+    // Sets up the sight config
     SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight Config");
     if(SightConfig){
         SightConfig->SightRadius = 1000.0f;
@@ -29,7 +32,6 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 
         PerceptionComponent->ConfigureSense(*SightConfig);
     }
-    
 }
 
 void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -37,6 +39,8 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+// Set the crouching field
+// Used by states to animate the character
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
     IsCrouching = Crouching;
@@ -58,6 +62,8 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    // If the player has been noticed by the player for TimeToSeePlayer seconds
+    // They will flip the boolean changing the state from Patrol to Combat
     if(bSeePlayer)
     {
         if(SeenPlayerFor < TimeToSeePlayer)
@@ -82,8 +88,11 @@ bool AEnemyCharacterBase::FireWeapon()
     return Fire();
 }
 
+// The Perception Component delegate
 void AEnemyCharacterBase::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
+    // Checks if the detected Stimulus is the player or not
+    // If it is, check bSeePlayer to true
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
     if(pcb)
     {

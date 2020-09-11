@@ -20,6 +20,7 @@ class RUNFORCOVERT_API UPatrolNode : public UObject
 	UPROPERTY()
 	class APatrol* PatrolActor;
 
+	// Holds a reference to the adjacent nodes of the point.
 	UPROPERTY()
 	TArray<UPatrolNode*> AdjacentNodes;
 	
