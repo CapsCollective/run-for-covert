@@ -7,12 +7,13 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
-
+// When the state is exited, set the speed of the Agent to 600
 void UPatrolState::OnExit()
 {
     Owner->Agent->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 }
 
+// Run every Tick by that StateMachine
 void UPatrolState::OnUpdate()
 {
     // if no PatrolPoint is found find the closes one
@@ -41,6 +42,7 @@ void UPatrolState::OnUpdate()
     }
 }
 
+// Transition handling
 UClass* UPatrolState::ToTransition() const
 {
     return Owner->Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;
