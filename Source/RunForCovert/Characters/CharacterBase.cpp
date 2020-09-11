@@ -6,6 +6,9 @@
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+    // Set field default values
+    IsDead = false;
 }
 
 
@@ -33,6 +36,11 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ACharacterBase::OnDeath()
+{
+    IsDead = true;
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,

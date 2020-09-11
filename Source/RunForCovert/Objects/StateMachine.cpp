@@ -13,13 +13,16 @@ void UStateMachine::OnUpdate()
 {
     if(States.Num() == 0 || !CurrentState) { return; }
 
+    // Check for any valid transitions on the current state
     UClass* Transition = CurrentState->ToTransition();
     if(Transition)
     {
+        // Find the new state object
         for (auto It = States.CreateConstIterator(); It; It++)
         {
             if ((*It)->IsA(Transition))
             {
+                // Run state machine transition
                 CurrentState->OnExit();
                 CurrentState = *It;
                 CurrentState->OnEnter();

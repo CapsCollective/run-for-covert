@@ -21,10 +21,19 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    // Public functions
+
+    void OnDeath();
+
     // Components
 
     UPROPERTY(VisibleAnywhere)
     UHealthComponent* Health;
+
+    // Public fields
+
+    UPROPERTY(BlueprintReadWrite)
+    bool IsDead;
 
 protected:
 

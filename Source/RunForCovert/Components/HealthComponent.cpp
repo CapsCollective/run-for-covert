@@ -31,6 +31,7 @@ void UHealthComponent::OnDeath()
 
     if (!Character) { return; }
 
+    Character->OnDeath();
     Character->DetachFromControllerPendingDestroy();
     Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
