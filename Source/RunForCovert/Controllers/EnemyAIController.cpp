@@ -41,7 +41,7 @@ void AEnemyAIController::BeginPlay()
 
     // Setup agent state machine
     StateMachine = NewObject<UEnemyStateMachine>();
-    StateMachine->Initialise();
+    StateMachine->Initialise(this);
 }
 
 
@@ -52,5 +52,5 @@ void AEnemyAIController::Tick(float DeltaTime)
     if (!(Player && Agent && CoverSystem)) { return; }
 
     // Tick state machine
-    StateMachine->OnUpdate(*this);
+    StateMachine->OnUpdate();
 }

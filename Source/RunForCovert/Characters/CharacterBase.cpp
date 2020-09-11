@@ -2,10 +2,15 @@
 
 
 #include "CharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+    // Set field default values
+    bIsDead = false;
 }
 
 
@@ -27,12 +32,20 @@ void ACharacterBase::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("Child actor does not inherit from AGunBase."))
         return;
     }
+
+    // Enable character crouching
+    GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ACharacterBase::OnDeath()
+{
+    bIsDead = true;
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,

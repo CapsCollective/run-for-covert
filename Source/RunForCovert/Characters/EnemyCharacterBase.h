@@ -45,9 +45,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAISenseConfig_Sight* SightConfig;
 
-    UPROPERTY(BlueprintReadWrite)
-    bool IsCrouching;
-
     UPROPERTY(EditAnywhere)
     float FiringRange;
 

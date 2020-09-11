@@ -13,32 +13,32 @@ UFireState::UFireState()
     TimeStarted = 0.f;
 }
 
-void UFireState::OnEnter(AEnemyAIController& Owner)
+void UFireState::OnEnter()
 {
-    TimeStarted = Owner.GetWorld()->GetTimeSeconds();
-    Owner.Agent->SetCrouching(false);
+    TimeStarted = Owner->GetWorld()->GetTimeSeconds();
+    Owner->Agent->SetCrouching(false);
 }
 
-void UFireState::OnExit(AEnemyAIController& Owner)
+void UFireState::OnExit()
 {
-    Owner.HasFinishedFiring = false;
+    Owner->HasFinishedFiring = false;
     TimesFired = 0;
-    Owner.Agent->SetCrouching(true);
+    Owner->Agent->SetCrouching(true);
 }
 
-void UFireState::OnUpdate(AEnemyAIController& Owner)
+void UFireState::OnUpdate()
 {
     // Fire at the player once the timer ends
-    if (TimeStarted + FireDelay <= Owner.GetWorld()->GetTimeSeconds())
+    if (TimeStarted + FireDelay <= Owner->GetWorld()->GetTimeSeconds())
     {
-        if (Owner.Agent->FireWeapon() && ++TimesFired >= TimesToFire)
+        if (Owner->Agent->FireWeapon() && ++TimesFired >= TimesToFire)
         {
-            Owner.HasFinishedFiring = true;
+            Owner->HasFinishedFiring = true;
         }
     }
 }
 
-UClass* UFireState::ToTransition(AEnemyAIController& Owner) const
+UClass* UFireState::ToTransition() const
 {
-    return Owner.HasFinishedFiring ? UHoldCoverState::StaticClass() : nullptr;
+    return Owner->HasFinishedFiring ? UHoldCoverState::StaticClass() : nullptr;
 }

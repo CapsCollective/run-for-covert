@@ -16,11 +16,11 @@ public:
 
     // Public overrides
 
-    virtual void Initialise() override;
+    virtual void Initialise(AEnemyAIController* Owner) override;
     
-    virtual void OnEnter(AEnemyAIController& Owner) override;
+    virtual void OnEnter() override;
 
-    virtual void OnUpdate(AEnemyAIController& Owner) override;
+    virtual void OnUpdate() override;
 
     // Public fields
 

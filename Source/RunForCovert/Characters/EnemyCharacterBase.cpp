@@ -2,14 +2,12 @@
 
 
 #include "EnemyCharacterBase.h"
-
-
 #include "PlayerCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Damage.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "Perception/AISense_Damage.h"
+
 
 AEnemyCharacterBase::AEnemyCharacterBase()
 {
@@ -43,7 +41,7 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 // Used by states to animate the character
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
-    IsCrouching = Crouching;
+    Crouching ? Crouch() : UnCrouch();
 }
 
 void AEnemyCharacterBase::BeginPlay()
