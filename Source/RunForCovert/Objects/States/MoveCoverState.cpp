@@ -4,6 +4,7 @@
 #include "MoveCoverState.h"
 #include "RunForCovert/Actors/Cover.h"
 #include "RunForCovert/Objects/CoverSystem.h"
+#include "HoldCoverState.h"
 
 void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
 {
@@ -45,4 +46,9 @@ void UMoveCoverState::OnUpdate(AEnemyAIController& Owner)
         // Generate a new path towards the player
         CoverPath = Owner.CoverSystem->FindCoverPath(Owner.Agent, Owner.Player);
     }
+}
+
+UClass* UMoveCoverState::ToTransition(AEnemyAIController& Owner) const
+{
+    return Owner.TakenValidCover ? UHoldCoverState::StaticClass() : nullptr;
 }

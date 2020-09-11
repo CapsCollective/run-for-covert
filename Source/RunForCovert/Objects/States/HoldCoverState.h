@@ -24,6 +24,8 @@ public:
 
 	virtual void OnUpdate(AEnemyAIController& Owner) override;
 
+    virtual UClass* ToTransition(AEnemyAIController& Owner) const override;
+
 private:
 
     // Private fields

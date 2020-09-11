@@ -2,6 +2,7 @@
 
 
 #include "FireState.h"
+#include "HoldCoverState.h"
 
 UFireState::UFireState()
 {
@@ -35,4 +36,9 @@ void UFireState::OnUpdate(AEnemyAIController& Owner)
             Owner.HasFinishedFiring = true;
         }
     }
+}
+
+UClass* UFireState::ToTransition(AEnemyAIController& Owner) const
+{
+    return Owner.HasFinishedFiring ? UHoldCoverState::StaticClass() : nullptr;
 }

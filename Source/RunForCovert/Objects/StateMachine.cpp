@@ -11,31 +11,30 @@ void UStateMachine::OnEnter(AEnemyAIController& Owner)
 
 void UStateMachine::OnUpdate(AEnemyAIController& Owner)
 {
-    if(!CurrentState){ return; }
-    if(StateTransitions.Num() == 0) { return; }
-    
-    auto It = StateTransitions.Find(CurrentState);
-    if(It)
+    if(States.Num() == 0 || !CurrentState) { return; }
+
+    UClass* Transition = CurrentState->ToTransition(Owner);
+    if(Transition)
     {
-        for(TransitionStatePair TransPair : *It)
+        for (auto It = States.CreateConstIterator(); It; It++)
         {
-            if(TransPair.Key->ToTransition(Owner))
+            if ((*It)->IsA(Transition))
             {
                 CurrentState->OnExit(Owner);
-                CurrentState = TransPair.Value;
+                CurrentState = *It;
                 CurrentState->OnEnter(Owner);
                 break;
             }
         }
     }
-    
+
     CurrentState->OnUpdate(Owner);
 }
 
 void UStateMachine::Initialise()
 {
+    if (States.Num() == 0) { return; }
+
     // Set the first defined state in the map as the first current state
-    TArray<UState*> Keys;
-    StateTransitions.GetKeys(OUT Keys);
-    CurrentState = Keys[0];
+    CurrentState = States[0];
 }

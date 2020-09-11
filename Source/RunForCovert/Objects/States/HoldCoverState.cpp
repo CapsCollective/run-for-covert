@@ -2,6 +2,8 @@
 
 
 #include "HoldCoverState.h"
+#include "FireState.h"
+#include "MoveCoverState.h"
 
 UHoldCoverState::UHoldCoverState()
 {
@@ -30,4 +32,17 @@ void UHoldCoverState::OnUpdate(AEnemyAIController& Owner)
     {
         Owner.TakenValidCover = false;
     }
+}
+
+UClass* UHoldCoverState::ToTransition(AEnemyAIController& Owner) const
+{
+    if (!Owner.TakenValidCover && Owner.Agent->GetDistanceTo(Owner.Player) < Owner.Agent->FiringRange)
+    {
+        return UFireState::StaticClass();
+    }
+    else if (!Owner.TakenValidCover)
+    {
+        return UMoveCoverState::StaticClass();
+    }
+    return nullptr;
 }

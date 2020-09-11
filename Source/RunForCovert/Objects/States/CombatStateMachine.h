@@ -16,9 +16,12 @@ public:
 
     // Public overrides
 
+    virtual void Initialise() override;
+
     virtual void OnEnter(AEnemyAIController& Owner);
 
     virtual void OnExit(AEnemyAIController& Owner);
 
-    virtual void Initialise() override;
+    virtual UClass* ToTransition(AEnemyAIController& Owner) const override;
+
 };

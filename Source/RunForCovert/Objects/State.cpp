@@ -3,6 +3,10 @@
 
 #include "State.h"
 
+void UState::Initialise()
+{
+    // Virtual base method definition
+}
 
 void UState::OnEnter(AEnemyAIController& Owner)
 {
@@ -17,4 +21,10 @@ void UState::OnExit(AEnemyAIController& Owner)
 void UState::OnUpdate(AEnemyAIController& Owner)
 {
     // Virtual base method definition
+}
+
+UClass* UState::ToTransition(AEnemyAIController& Owner) const
+{
+    // Virtual base method definition
+    return nullptr;
 }

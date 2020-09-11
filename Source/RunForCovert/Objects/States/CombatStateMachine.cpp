@@ -5,30 +5,17 @@
 #include "HoldCoverState.h"
 #include "FireState.h"
 #include "MoveCoverState.h"
-#include "../Transitions/FiringRangeTransition.h"
-#include "../Transitions/FinishedFiringTransition.h"
-#include "../Transitions/TakenCoverTransition.h"
-#include "../Transitions/LostCoverTransition.h"
+#include "PatrolState.h"
 
 void UCombatStateMachine::Initialise()
 {
     // Create state objects
-    UMoveCoverState* MoveCoverState = NewObject<UMoveCoverState>();
-    UHoldCoverState* HoldCoverState = NewObject<UHoldCoverState>();
-    UFireState* FireState = NewObject<UFireState>();
+    States = {
+            NewObject<UMoveCoverState>(),
+            NewObject<UHoldCoverState>(),
+            NewObject<UFireState>(),
+    };
 
-    // Add state transitions to state machine
-    StateTransitions.Add(MoveCoverState, {
-            TPair<UTransition*, UState*>(NewObject<UTakenCoverTransition>(), HoldCoverState),
-    });
-    StateTransitions.Add(HoldCoverState, {
-            TPair<UTransition*, UState*>(NewObject<UFiringRangeTransition>(), FireState),
-            TPair<UTransition*, UState*>(NewObject<ULostCoverTransition>(), MoveCoverState),
-    });
-    StateTransitions.Add(FireState, {
-            TPair<UTransition*, UState*>(NewObject<UFinishedFiringTransition>(), HoldCoverState),
-    });
-    
     // Initialise to first state
     Super::Initialise();
 }
@@ -43,4 +30,9 @@ void UCombatStateMachine::OnExit(AEnemyAIController& Owner)
 {
     // Remove the agent's player focus
     Owner.ClearFocus(EAIFocusPriority::Gameplay);
+}
+
+UClass* UCombatStateMachine::ToTransition(AEnemyAIController& Owner) const
+{
+    return !Owner.Agent->bChasePlayer ? UPatrolState::StaticClass() : nullptr;
 }

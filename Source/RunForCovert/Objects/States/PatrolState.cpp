@@ -2,8 +2,7 @@
 
 
 #include "PatrolState.h"
-
-
+#include "CombatStateMachine.h"
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
@@ -31,4 +30,9 @@ void UPatrolState::OnUpdate(AEnemyAIController& Owner)
             }   
         }
     }
+}
+
+UClass* UPatrolState::ToTransition(AEnemyAIController& Owner) const
+{
+    return Owner.Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;
 }
