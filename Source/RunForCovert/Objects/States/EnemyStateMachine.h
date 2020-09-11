@@ -16,6 +16,6 @@ public:
 
     // Public overrides
 
-    virtual void Initialise() override;
+    virtual void Initialise(AEnemyAIController* Owner) override;
 	
 };

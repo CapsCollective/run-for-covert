@@ -7,7 +7,7 @@
 #include "MoveCoverState.h"
 #include "PatrolState.h"
 
-void UCombatStateMachine::Initialise()
+void UCombatStateMachine::Initialise(AEnemyAIController* Owner)
 {
     // Create state objects
     States = {
@@ -17,22 +17,22 @@ void UCombatStateMachine::Initialise()
     };
 
     // Initialise to first state
-    Super::Initialise();
+    Super::Initialise(Owner);
 }
 
-void UCombatStateMachine::OnEnter(AEnemyAIController& Owner)
+void UCombatStateMachine::OnEnter()
 {
     // Set the agent to focus on the player
-    Owner.SetFocus(Owner.Player, EAIFocusPriority::Gameplay);
+    Owner->SetFocus(Owner->Player, EAIFocusPriority::Gameplay);
 }
 
-void UCombatStateMachine::OnExit(AEnemyAIController& Owner)
+void UCombatStateMachine::OnExit()
 {
     // Remove the agent's player focus
-    Owner.ClearFocus(EAIFocusPriority::Gameplay);
+    Owner->ClearFocus(EAIFocusPriority::Gameplay);
 }
 
-UClass* UCombatStateMachine::ToTransition(AEnemyAIController& Owner) const
+UClass* UCombatStateMachine::ToTransition() const
 {
-    return !Owner.Agent->bChasePlayer ? UPatrolState::StaticClass() : nullptr;
+    return !Owner->Agent->bChasePlayer ? UPatrolState::StaticClass() : nullptr;
 }

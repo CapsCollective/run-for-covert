@@ -12,35 +12,35 @@ UHoldCoverState::UHoldCoverState()
     TimeStarted = 0.f;
 }
 
-void UHoldCoverState::OnEnter(AEnemyAIController& Owner)
+void UHoldCoverState::OnEnter()
 {
     // Initiate agent crouching and start the timer
-    Owner.Agent->SetCrouching(true);
-    TimeStarted = Owner.GetWorld()->GetTimeSeconds();
+    Owner->Agent->SetCrouching(true);
+    TimeStarted = Owner->GetWorld()->GetTimeSeconds();
 }
 
-void UHoldCoverState::OnExit(AEnemyAIController& Owner)
+void UHoldCoverState::OnExit()
 {
     // Reset crouching
-    Owner.Agent->SetCrouching(false);
+    Owner->Agent->SetCrouching(false);
 }
 
-void UHoldCoverState::OnUpdate(AEnemyAIController& Owner)
+void UHoldCoverState::OnUpdate()
 {
     // Nullify cover validity once the timer ends
-    if (TimeStarted + TimeToCover <= Owner.GetWorld()->GetTimeSeconds())
+    if (TimeStarted + TimeToCover <= Owner->GetWorld()->GetTimeSeconds())
     {
-        Owner.TakenValidCover = false;
+        Owner->TakenValidCover = false;
     }
 }
 
-UClass* UHoldCoverState::ToTransition(AEnemyAIController& Owner) const
+UClass* UHoldCoverState::ToTransition() const
 {
-    if (!Owner.TakenValidCover && Owner.Agent->GetDistanceTo(Owner.Player) < Owner.Agent->FiringRange)
+    if (!Owner->TakenValidCover && Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange)
     {
         return UFireState::StaticClass();
     }
-    else if (!Owner.TakenValidCover)
+    else if (!Owner->TakenValidCover)
     {
         return UMoveCoverState::StaticClass();
     }

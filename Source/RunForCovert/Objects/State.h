@@ -15,14 +15,21 @@ public:
 
     // Public virtual functions
 
-    virtual void Initialise();
+    virtual void Initialise(AEnemyAIController* Owner);
 
-	virtual void OnEnter(AEnemyAIController& Owner);
+	virtual void OnEnter();
 
-	virtual void OnExit(AEnemyAIController& Owner);
+	virtual void OnExit();
 
-	virtual void OnUpdate(AEnemyAIController& Owner);
+	virtual void OnUpdate();
 
-    virtual UClass* ToTransition(AEnemyAIController& Owner) const;
+    virtual UClass* ToTransition() const;
+
+protected:
+
+    // Protected fields
+
+    UPROPERTY()
+    AEnemyAIController* Owner;
 
 };

@@ -3,38 +3,46 @@
 
 #include "StateMachine.h"
 
-void UStateMachine::OnEnter(AEnemyAIController& Owner)
+void UStateMachine::OnEnter()
 {
     // Initialise the first run state
-    CurrentState->OnEnter(Owner);
+    CurrentState->OnEnter();
 }
 
-void UStateMachine::OnUpdate(AEnemyAIController& Owner)
+void UStateMachine::OnUpdate()
 {
     if(States.Num() == 0 || !CurrentState) { return; }
 
-    UClass* Transition = CurrentState->ToTransition(Owner);
+    UClass* Transition = CurrentState->ToTransition();
     if(Transition)
     {
         for (auto It = States.CreateConstIterator(); It; It++)
         {
             if ((*It)->IsA(Transition))
             {
-                CurrentState->OnExit(Owner);
+                CurrentState->OnExit();
                 CurrentState = *It;
-                CurrentState->OnEnter(Owner);
+                CurrentState->OnEnter();
                 break;
             }
         }
     }
 
-    CurrentState->OnUpdate(Owner);
+    CurrentState->OnUpdate();
 }
 
-void UStateMachine::Initialise()
+void UStateMachine::Initialise(AEnemyAIController* Owner)
 {
     if (States.Num() == 0) { return; }
 
     // Set the first defined state in the map as the first current state
     CurrentState = States[0];
+
+    // Initialise all owned states
+    for (auto It = States.CreateConstIterator(); It; It++)
+    {
+        (*It)->Initialise(Owner);
+    }
+
+    Super::Initialise(Owner);
 }

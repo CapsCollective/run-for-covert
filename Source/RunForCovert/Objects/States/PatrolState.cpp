@@ -8,38 +8,38 @@
 #include "RunForCovert/Objects/PatrolSystem.h"
 
 
-void UPatrolState::OnExit(AEnemyAIController& Owner)
+void UPatrolState::OnExit()
 {
-    Owner.Agent->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+    Owner->Agent->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 }
 
-void UPatrolState::OnUpdate(AEnemyAIController& Owner)
+void UPatrolState::OnUpdate()
 {
     if(!PatrolPoint)
     {
-        PatrolPoint = Owner.PatrolSystem->FindClosestValidPatrolPoint(Owner.Agent);
+        PatrolPoint = Owner->PatrolSystem->FindClosestValidPatrolPoint(Owner->Agent);
     }
     else
     {
-        if(FVector::Dist(Owner.Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
+        if(FVector::Dist(Owner->Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
         {
             PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
         }
         else
         {
-            if(!Owner.Agent->bSeePlayer)
+            if(!Owner->Agent->bSeePlayer)
             {
-                Owner.MoveToLocation(PatrolPoint->GetActorLocation());
+                Owner->MoveToLocation(PatrolPoint->GetActorLocation());
             }
             else
             {
-                Owner.MoveToLocation(Owner.Agent->GetActorLocation());
+                Owner->MoveToLocation(Owner->Agent->GetActorLocation());
             }   
         }
     }
 }
 
-UClass* UPatrolState::ToTransition(AEnemyAIController& Owner) const
+UClass* UPatrolState::ToTransition() const
 {
-    return Owner.Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;
+    return Owner->Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;
 }
