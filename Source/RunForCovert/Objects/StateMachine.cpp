@@ -21,9 +21,11 @@ void UStateMachine::OnUpdate(AEnemyAIController& Owner)
         {
             if(TransPair.Key->ToTransition(Owner))
             {
-                CurrentState->OnExit(Owner);
+                if(CurrentState)
+                    CurrentState->OnExit(Owner);
                 CurrentState = TransPair.Value;
-                CurrentState->OnEnter(Owner);
+                if(CurrentState)
+                    CurrentState->OnEnter(Owner);
                 break;
             }
         }

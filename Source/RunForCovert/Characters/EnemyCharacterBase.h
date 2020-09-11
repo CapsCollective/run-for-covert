@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+
 
 #include "EnemyCharacterBase.generated.h"
 
@@ -38,6 +40,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAIPerceptionComponent* PerceptionComponent;
+
+	UPROPERTY(EditAnywhere)
+	UAISenseConfig_Sight* SightConfig;
 
     UPROPERTY(BlueprintReadWrite)
     bool IsCrouching;

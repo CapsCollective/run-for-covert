@@ -18,6 +18,7 @@ public:
 
 	virtual void OnUpdate(AEnemyAIController& Owner) override;
 
+    virtual void OnExit(AEnemyAIController& Owner) override;
 private:
 
     // Private fields
