@@ -16,5 +16,9 @@ public:
 
     // Public overrides
 
+    virtual void OnEnter(AEnemyAIController& Owner);
+
+    virtual void OnExit(AEnemyAIController& Owner);
+
     virtual void Initialise() override;
 };

@@ -32,3 +32,15 @@ void UCombatStateMachine::Initialise()
     // Initialise to first state
     Super::Initialise();
 }
+
+void UCombatStateMachine::OnEnter(AEnemyAIController& Owner)
+{
+    // Set the agent to focus on the player
+    Owner.SetFocus(Owner.Player, EAIFocusPriority::Gameplay);
+}
+
+void UCombatStateMachine::OnExit(AEnemyAIController& Owner)
+{
+    // Remove the agent's player focus
+    Owner.ClearFocus(EAIFocusPriority::Gameplay);
+}
