@@ -6,14 +6,18 @@
 #include "../States/PatrolState.h"
 
 
-void UEnemyStateMachine::Initialise(AEnemyAIController* Owner)
+void UEnemyStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
+    Owner = ObjectOwner;
+    
     // Create state objects
     UCombatStateMachine* CombatStateMachine = NewObject<UCombatStateMachine>();
     CombatStateMachine->Initialise(Owner);
+    UPatrolState* PatrolState = NewObject<UPatrolState>();
+    PatrolState->Initialise(Owner);
 
     States = {
-            NewObject<UPatrolState>(),
+            PatrolState,
             CombatStateMachine
     };
 

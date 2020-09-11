@@ -7,8 +7,10 @@
 #include "MoveCoverState.h"
 #include "PatrolState.h"
 
-void UCombatStateMachine::Initialise(AEnemyAIController* Owner)
+void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
+    Owner = ObjectOwner;
+    
     // Create state objects
     States = {
             NewObject<UMoveCoverState>(),

@@ -34,10 +34,10 @@ void UStateMachine::OnUpdate()
     CurrentState->OnUpdate();
 }
 
-void UStateMachine::Initialise(AEnemyAIController* Owner)
+void UStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
     if (States.Num() == 0) { return; }
-
+    Owner = ObjectOwner;
     // Set the first defined state in the map as the first current state
     CurrentState = States[0];
 
