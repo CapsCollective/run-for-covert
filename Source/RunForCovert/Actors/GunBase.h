@@ -24,6 +24,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float MaxFireRate;
 
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    float BulletSpeed;
+
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    float BulletSpread;
+
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundBase* FireSound;
 

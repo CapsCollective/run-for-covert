@@ -22,6 +22,8 @@ AGunBase::AGunBase()
     GunDamage = 10.f;
     MaxFireRate = .5f;
     LastFireTime = 0.f;
+    BulletSpeed = 10000.f;
+    BulletSpread = 0.f;
 }
 
 bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
@@ -40,7 +42,7 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     FPredictProjectilePathParams Params = FPredictProjectilePathParams(
             1.f,
             MuzzlePosition->GetComponentLocation(),
-            LaunchDirection * 10000.f,
+            FMath::VRand() * BulletSpread + LaunchDirection * BulletSpeed,
             2.f,
             ECC_WorldDynamic,
             GetParentActor()
