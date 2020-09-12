@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "CoverNode.generated.h"
+#include "GraphNode.generated.h"
 
 /**
  * While this would ideally be a struct, Unreal hates struct pointers
  * with a passion.
  */
 UCLASS()
-class RUNFORCOVERT_API UCoverNode : public UObject
+class RUNFORCOVERT_API UGraphNode : public UObject
 {
 
 	GENERATED_BODY()
@@ -21,13 +21,13 @@ public:
     // Public fields
 
     UPROPERTY()
-    class ACover* CoverActor;
+    AActor* Actor;
 
     UPROPERTY()
-    UCoverNode* CameFrom;
+    UGraphNode* CameFrom;
 
     UPROPERTY()
-    TArray<UCoverNode*> AdjacentCover;
+    TArray<UGraphNode*> AdjacentNodes;
 
     float GScore;
 
@@ -36,5 +36,11 @@ public:
     // Public functions
 
     float FScore();
+
+    template<typename T>
+    T* GetActor() // Template functions must be defined in header files
+    {
+        return Cast<T>(Actor);
+    }
 	
 };

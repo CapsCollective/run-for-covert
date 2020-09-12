@@ -3,6 +3,7 @@
 
 #include "CoverSystem.h"
 #include "EngineUtils.h"
+#include "GraphNode.h"
 #include "RunForCovert/Actors/Cover.h"
 #include "DrawDebugHelpers.h"
 
@@ -22,9 +23,9 @@ void UCoverSystem::Initialise(UWorld* InWorld)
     for (ACover* Cover : TActorRange<ACover>(World))
     {
         // Add cover node list
-        UCoverNode* NewNode = NewObject<UCoverNode>();
-        NewNode->CoverActor = Cover;
-        CoverNodes.Add(NewNode);
+        UGraphNode* NewNode = NewObject<UGraphNode>();
+        NewNode->Actor = Cover;
+        GraphNodes.Add(NewNode);
     }
 
     // Generate the graph connections
@@ -37,14 +38,14 @@ UCoverPointComponent* UCoverSystem::FindClosestValidCoverPoint(AActor* Agent, AA
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
     UCoverPointComponent* ClosestCoverPoint = nullptr;
-    for (auto It = CoverNodes.CreateConstIterator(); It; It++)
+    for (auto It = GraphNodes.CreateConstIterator(); It; It++)
     {
         // Check if the current point is closer than stored
-        float CoverDistance = (*It)->CoverActor->GetDistanceTo(Agent);
+        float CoverDistance = (*It)->Actor->GetDistanceTo(Agent);
         if (CoverDistance >= ClosestCoverDistance) { continue; }
 
         // Check if it actually provides cover from the enemy
-        UCoverPointComponent* PotentialCover = (*It)->CoverActor->FindValidCoverPoint(Enemy->GetActorLocation());
+        UCoverPointComponent* PotentialCover = (*It)->GetActor<ACover>()->FindValidCoverPoint(Enemy->GetActorLocation());
         if (PotentialCover)
         {
             ClosestCoverDistance = CoverDistance;
@@ -57,54 +58,54 @@ UCoverPointComponent* UCoverSystem::FindClosestValidCoverPoint(AActor* Agent, AA
 TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
 {
     // Set up the search for values
-    TArray<UCoverNode*> OpenSet;
-    UCoverNode* StartNode = GetClosestCover(Agent);
-    UCoverNode* EndNode = GetClosestCover(Enemy, true, Agent);
+    TArray<UGraphNode*> OpenSet;
+    UGraphNode* StartNode = GetClosestCover(Agent);
+    UGraphNode* EndNode = GetClosestCover(Enemy, true, Agent);
     check(StartNode && EndNode);
 
     // Reset the GScore of all nodes in the collection
-    for (auto It = CoverNodes.CreateConstIterator(); It; It++)
+    for (auto It = GraphNodes.CreateConstIterator(); It; It++)
     {
         (*It)->GScore = TNumericLimits<float>::Max();
     }
 
     // Setup start node and add to open set
     StartNode->GScore = 0.f;
-    StartNode->HScore = StartNode->CoverActor->GetDistanceTo(EndNode->CoverActor);
+    StartNode->HScore = StartNode->Actor->GetDistanceTo(EndNode->Actor);
     OpenSet.Add(StartNode);
 
     // Iterate through open set while the collection contains items
     while (OpenSet.Num() > 0)
     {
         // Get the node with the lowest FScore
-        OpenSet.Sort([](UCoverNode &A, UCoverNode &B){ return A.FScore() < B.FScore(); });
-        UCoverNode* CurrentNode = OpenSet.Pop();
+        OpenSet.Sort([](UGraphNode &A, UGraphNode &B){ return A.FScore() < B.FScore(); });
+        UGraphNode* CurrentNode = OpenSet.Pop();
 
         // Once the end node is reached, generate and return a path
         if (CurrentNode == EndNode) {
             TArray<ACover*> Path;
-            Path.Push(EndNode->CoverActor);
+            Path.Push(EndNode->GetActor<ACover>());
             CurrentNode = EndNode;
             while (CurrentNode != StartNode)
             {
                 CurrentNode = CurrentNode->CameFrom;
-                Path.Add(CurrentNode->CoverActor);
+                Path.Add(CurrentNode->GetActor<ACover>());
             }
             DisplayDebugPath(&Path, .5f);
             return Path;
         }
 
         // Explore each cover node adjacent to current
-        for (UCoverNode* ConnectedNode : CurrentNode->AdjacentCover)
+        for (UGraphNode* ConnectedNode : CurrentNode->AdjacentNodes)
         {
             // Calculate tentative node GScore and check if it's better than the node it comes from
-            float TentativeGScore = CurrentNode->GScore + CurrentNode->CoverActor->GetDistanceTo(ConnectedNode->CoverActor);
+            float TentativeGScore = CurrentNode->GScore + CurrentNode->Actor->GetDistanceTo(ConnectedNode->Actor);
             if (TentativeGScore < ConnectedNode->GScore)
             {
                 // Set scores and add to open set
                 ConnectedNode->CameFrom = CurrentNode;
                 ConnectedNode->GScore = TentativeGScore;
-                ConnectedNode->HScore = ConnectedNode->CoverActor->GetDistanceTo(EndNode->CoverActor);
+                ConnectedNode->HScore = ConnectedNode->Actor->GetDistanceTo(EndNode->Actor);
                 if (!OpenSet.Contains(ConnectedNode))
                 {
                     OpenSet.Add(ConnectedNode);
@@ -116,19 +117,19 @@ TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     return TArray<ACover*>();
 }
 
-UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
+UGraphNode* UCoverSystem::GetClosestCover(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
 {
     // Iterate through all cover points in world
     float ClosestCoverDistance = TNumericLimits<float>::Max();
-    UCoverNode* ClosestCover = nullptr;
-    for (auto It = CoverNodes.CreateConstIterator(); It; It++)
+    UGraphNode* ClosestCover = nullptr;
+    for (auto It = GraphNodes.CreateConstIterator(); It; It++)
     {
         // Check if the current point is closer
-        float CoverDistance = (*It)->CoverActor->GetDistanceTo(Actor);
+        float CoverDistance = (*It)->Actor->GetDistanceTo(Actor);
         if (CoverDistance >= ClosestCoverDistance) { continue; }
 
         // Check to make sure it is available if unoccupied flag is set
-        if (MustBeUnoccupied && (*It)->CoverActor->IsOccupiedByOther(OtherAgent)) { continue; }
+        if (MustBeUnoccupied && (*It)->GetActor<ACover>()->IsOccupiedByOther(OtherAgent)) { continue; }
 
         // Assign as closest
         ClosestCoverDistance = CoverDistance;
@@ -140,14 +141,14 @@ UCoverNode* UCoverSystem::GetClosestCover(AActor* Actor, bool MustBeUnoccupied, 
 void UCoverSystem::GenerateGraph(float Radius)
 {
     // Generate a random geometric graph of R depth between cover items
-    for (UCoverNode* CurrentNode : CoverNodes)
+    for (UGraphNode* CurrentNode : GraphNodes)
     {
-        for (UCoverNode* Node : CoverNodes)
+        for (UGraphNode* Node : GraphNodes)
         {
             // Check that they are within the radius and not itself
-            if (Node->CoverActor->GetDistanceTo(CurrentNode->CoverActor) <= Radius && Node->CoverActor != CurrentNode->CoverActor)
+            if (Node->Actor->GetDistanceTo(CurrentNode->Actor) <= Radius && Node->Actor != CurrentNode->Actor)
             {
-                CurrentNode->AdjacentCover.Add(Node);
+                CurrentNode->AdjacentNodes.Add(Node);
             }
         }
     }
@@ -156,12 +157,12 @@ void UCoverSystem::GenerateGraph(float Radius)
 void UCoverSystem::DisplayDebugGraph(float DisplayTime)
 {
     // Display debug lines
-    for (UCoverNode* Node : CoverNodes)
+    for (UGraphNode* Node : GraphNodes)
     {
-        for (UCoverNode* ConnectedNode : Node->AdjacentCover)
+        for (UGraphNode* ConnectedNode : Node->AdjacentNodes)
         {
-            DrawDebugLine(World, Node->CoverActor->GetActorLocation(),
-                          ConnectedNode->CoverActor->GetActorLocation(), FColor::Green, false, DisplayTime);
+            DrawDebugLine(World, Node->Actor->GetActorLocation(),
+                          ConnectedNode->Actor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
 }

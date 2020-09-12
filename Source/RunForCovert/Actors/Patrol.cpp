@@ -3,8 +3,9 @@
 
 #include "Patrol.h"
 #include "EngineUtils.h"
+#include "../Objects/GraphNode.h"
 
-void APatrol::AddNode(UPatrolNode* NewNode)
+void APatrol::AddNode(UGraphNode* NewNode)
 {
 	Node = NewNode;
 

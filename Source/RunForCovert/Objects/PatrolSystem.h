@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PatrolNode.h"
 #include "UObject/NoExportTypes.h"
 #include "PatrolSystem.generated.h"
 
@@ -19,7 +18,7 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	void Initialise(UWorld* InWorld);
 
-	class APatrol* FindClosestValidPatrolPoint(AActor* Agent);
+	class APatrol* FindClosestPatrolPoint(AActor* Agent);
 
 	TArray<APatrol*> FindPath(AActor* Agent, AActor* Enemy);
 
@@ -28,14 +27,14 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 	// Private fields
 
 	UPROPERTY()
-	TArray<UPatrolNode*> PatrolNodes;
+	TArray<class UGraphNode*> GraphNodes;
 
 	UPROPERTY()
 	UWorld* World;
 
 	// Private methods
 
-	UPatrolNode* GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
+	UGraphNode* GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
 
 	void GenerateGraph(float Radius);
 

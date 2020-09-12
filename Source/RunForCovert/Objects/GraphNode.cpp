@@ -1,9 +1,9 @@
 // Caps Collective 2020
 
 
-#include "PatrolNode.h"
+#include "GraphNode.h"
 
-float UPatrolNode::FScore()
+float UGraphNode::FScore()
 {
     return GScore + HScore;
 }

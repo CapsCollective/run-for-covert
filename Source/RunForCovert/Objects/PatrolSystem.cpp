@@ -1,5 +1,8 @@
+// Caps Collective 2020
+
 #include "PatrolSystem.h"
 #include "EngineUtils.h"
+#include "GraphNode.h"
 #include "RunForCovert/Actors/Patrol.h"
 #include "DrawDebugHelpers.h"
 
@@ -9,37 +12,37 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
     // Set the world reference
     World = InWorld;
 
-    // Populate a list of nodes representing all cover actors in the
+    // Populate a list of nodes representing all patrol actors in the
     // world wrapped in objects specifying graph attributes
-    for (APatrol* Cover : TActorRange<APatrol>(World))
+    for (APatrol* Patrol : TActorRange<APatrol>(World))
     {
-        // Add cover node list
-        UPatrolNode* NewNode = NewObject<UPatrolNode>();
-        NewNode->PatrolActor = Cover;
-        PatrolNodes.Add(NewNode);
+        // Add patrol node list
+        UGraphNode* NewNode = NewObject<UGraphNode>();
+        NewNode->Actor = Patrol;
+        GraphNodes.Add(NewNode);
     }
 
     DisplayDebugGraph(2.f);
 
-    for(UPatrolNode* Node : PatrolNodes)
+    for(UGraphNode* Node : GraphNodes)
     {
-        Node->PatrolActor->AddNode(Node);
+        Node->GetActor<APatrol>()->AddNode(Node);
     }
 }
 
-// Finds the closes valid patrol point
-APatrol* UPatrolSystem::FindClosestValidPatrolPoint(AActor* Agent)
+// Finds the closest patrol point
+APatrol* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
 {
-    // Iterate through all cover points in world
-    float ClosestCoverDistance = TNumericLimits<float>::Max();
+    // Iterate through all patrol points in world
+    float ClosestPatrolDistance = TNumericLimits<float>::Max();
     APatrol* ClosestPatrolPoint = nullptr;
-    for (APatrol* Cover : TActorRange<APatrol>(World))
+    for (APatrol* Patrol : TActorRange<APatrol>(World))
     {
-        float CoverDistance = Cover->GetDistanceTo(Agent);
-        if (CoverDistance <= ClosestCoverDistance)
+        float PatrolDistance = Patrol->GetDistanceTo(Agent);
+        if (PatrolDistance <= ClosestPatrolDistance)
         {
-            ClosestCoverDistance = CoverDistance;
-            ClosestPatrolPoint = Cover;
+            ClosestPatrolDistance = PatrolDistance;
+            ClosestPatrolPoint = Patrol;
         }
     }
     
@@ -50,54 +53,54 @@ APatrol* UPatrolSystem::FindClosestValidPatrolPoint(AActor* Agent)
 TArray<APatrol*> UPatrolSystem::FindPath(AActor* Agent, AActor* Enemy)
 {
     // Set up the search for values
-    TArray<UPatrolNode*> OpenSet;
-    UPatrolNode* StartNode = GetClosestPatrol(Agent);
-    UPatrolNode* EndNode = GetClosestPatrol(Enemy, true, Agent);
+    TArray<UGraphNode*> OpenSet;
+    UGraphNode* StartNode = GetClosestPatrol(Agent);
+    UGraphNode* EndNode = GetClosestPatrol(Enemy, true, Agent);
     check(StartNode && EndNode);
 
     // Reset the GScore of all nodes in the collection
-    for (auto It = PatrolNodes.CreateConstIterator(); It; It++)
+    for (auto It = GraphNodes.CreateConstIterator(); It; It++)
     {
         (*It)->GScore = TNumericLimits<float>::Max();
     }
 
     // Setup start node and add to open set
     StartNode->GScore = 0.f;
-    StartNode->HScore = StartNode->PatrolActor->GetDistanceTo(EndNode->PatrolActor);
+    StartNode->HScore = StartNode->Actor->GetDistanceTo(EndNode->Actor);
     OpenSet.Add(StartNode);
 
     // Iterate through open set while the collection contains items
     while (OpenSet.Num() > 0)
     {
         // Get the node with the lowest FScore
-        OpenSet.Sort([](UPatrolNode &A, UPatrolNode &B){ return A.FScore() < B.FScore(); });
-        UPatrolNode* CurrentNode = OpenSet.Pop();
+        OpenSet.Sort([](UGraphNode &A, UGraphNode &B){ return A.FScore() < B.FScore(); });
+        UGraphNode* CurrentNode = OpenSet.Pop();
 
         // Once the end node is reached, generate and return a path
         if (CurrentNode == EndNode) {
             TArray<APatrol*> Path;
-            Path.Push(EndNode->PatrolActor);
+            Path.Push(EndNode->GetActor<APatrol>());
             CurrentNode = EndNode;
             while (CurrentNode != StartNode)
             {
                 CurrentNode = CurrentNode->CameFrom;
-                Path.Add(CurrentNode->PatrolActor);
+                Path.Add(CurrentNode->GetActor<APatrol>());
             }
             DisplayDebugPath(&Path, .5f);
             return Path;
         }
 
-        // Explore each cover node adjacent to current
-        for (UPatrolNode* ConnectedNode : CurrentNode->AdjacentNodes)
+        // Explore each patrol node adjacent to current
+        for (UGraphNode* ConnectedNode : CurrentNode->AdjacentNodes)
         {
             // Calculate tentative node GScore and check if it's better than the node it comes from
-            float TentativeGScore = CurrentNode->GScore + CurrentNode->PatrolActor->GetDistanceTo(ConnectedNode->PatrolActor);
+            float TentativeGScore = CurrentNode->GScore + CurrentNode->Actor->GetDistanceTo(ConnectedNode->Actor);
             if (TentativeGScore < ConnectedNode->GScore)
             {
                 // Set scores and add to open set
                 ConnectedNode->CameFrom = CurrentNode;
                 ConnectedNode->GScore = TentativeGScore;
-                ConnectedNode->HScore = ConnectedNode->PatrolActor->GetDistanceTo(EndNode->PatrolActor);
+                ConnectedNode->HScore = ConnectedNode->Actor->GetDistanceTo(EndNode->Actor);
                 if (!OpenSet.Contains(ConnectedNode))
                 {
                     OpenSet.Add(ConnectedNode);
@@ -110,49 +113,33 @@ TArray<APatrol*> UPatrolSystem::FindPath(AActor* Agent, AActor* Enemy)
 }
 
 // Returns the closest patrol point to the AI
-UPatrolNode* UPatrolSystem::GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
+UGraphNode* UPatrolSystem::GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied, AActor* OtherAgent)
 {
-    // Iterate through all cover points in world
-    float ClosestCoverDistance = TNumericLimits<float>::Max();
-    UPatrolNode* ClosestCover = nullptr;
-    for (auto It = PatrolNodes.CreateConstIterator(); It; It++)
+    // Iterate through all patrol points in world
+    float ClosestPatrolDistance = TNumericLimits<float>::Max();
+    UGraphNode* ClosestPatrol = nullptr;
+    for (auto It = GraphNodes.CreateConstIterator(); It; It++)
     {
         // Check if the current point is closer
-        float CoverDistance = (*It)->PatrolActor->GetDistanceTo(Actor);
-        if (CoverDistance >= ClosestCoverDistance) { continue; }
+        float PatrolDistance = (*It)->Actor->GetDistanceTo(Actor);
+        if (PatrolDistance >= ClosestPatrolDistance) { continue; }
 
         // Assign as closest
-        ClosestCoverDistance = CoverDistance;
-        ClosestCover = *It;
+        ClosestPatrolDistance = PatrolDistance;
+        ClosestPatrol = *It;
     }
-    return ClosestCover;
-}
-
-void UPatrolSystem::GenerateGraph(float Radius)
-{
-    // Generate a random geometric graph of R depth between cover items
-    for (UPatrolNode* CurrentNode : PatrolNodes)
-    {
-        for (UPatrolNode* Node : PatrolNodes)
-        {
-            // Check that they are within the radius and not itself
-            if (Node->PatrolActor->GetDistanceTo(CurrentNode->PatrolActor) <= Radius && Node->PatrolActor != CurrentNode->PatrolActor)
-            {
-                CurrentNode->AdjacentNodes.Add(Node);
-            }
-        }
-    }
+    return ClosestPatrol;
 }
 
 void UPatrolSystem::DisplayDebugGraph(float DisplayTime)
 {
     // Display debug lines
-    for (UPatrolNode* Node : PatrolNodes)
+    for (UGraphNode* Node : GraphNodes)
     {
-        for (UPatrolNode* ConnectedNode : Node->AdjacentNodes)
+        for (UGraphNode* ConnectedNode : Node->AdjacentNodes)
         {
-            DrawDebugLine(World, Node->PatrolActor->GetActorLocation(),
-                          ConnectedNode->PatrolActor->GetActorLocation(), FColor::Green, false, DisplayTime);
+            DrawDebugLine(World, Node->Actor->GetActorLocation(),
+                          ConnectedNode->Actor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
 }

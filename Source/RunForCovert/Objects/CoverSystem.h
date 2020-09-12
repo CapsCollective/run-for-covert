@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoverNode.h"
 #include "CoverSystem.generated.h"
 
 UCLASS()
@@ -22,7 +21,7 @@ public:
 
     class UCoverPointComponent* FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
-    TArray<ACover*> FindCoverPath(AActor* Agent, AActor* Enemy);
+    TArray<class ACover*> FindCoverPath(AActor* Agent, AActor* Enemy);
 
 private:
 
@@ -31,14 +30,14 @@ private:
     float CoverRadius;
 
     UPROPERTY()
-    TArray<UCoverNode*> CoverNodes;
+    TArray<class UGraphNode*> GraphNodes;
 
     UPROPERTY()
     UWorld* World;
 
     // Private methods
 
-    UCoverNode* GetClosestCover(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
+    UGraphNode* GetClosestCover(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
 
     void GenerateGraph(float Radius);
 
