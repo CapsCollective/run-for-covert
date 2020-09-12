@@ -7,42 +7,36 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
-// When the state is exited, set the speed of the Agent to 600
 void UPatrolState::OnExit()
 {
+    // When the state is exited, set the speed of the agent to 600
     Owner->Agent->GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 }
 
-// Run every Tick by that StateMachine
 void UPatrolState::OnUpdate()
 {
-    // if no PatrolPoint is found find the closes one
     if(!PatrolPoint)
     {
-        PatrolPoint = Owner->PatrolSystem->FindClosestValidPatrolPoint(Owner->Agent);
+        // Find the closes patrol point if null
+        PatrolPoint = Owner->PatrolSystem->FindClosestPatrolPoint(Owner->Agent);
+    }
+    else if(FVector::Dist(Owner->Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
+    {
+        // Select a random adjacent node as next target
+        PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
+    }
+    else if(!Owner->Agent->bSeenPlayer)
+    {
+        // Move to the following patrol point
+        Owner->MoveToLocation(PatrolPoint->GetActorLocation());
     }
     else
     {
-        if(FVector::Dist(Owner->Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
-        {
-            PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
-        }
-        else
-        {
-            if(!Owner->Agent->bSeePlayer)
-            {
-                Owner->MoveToLocation(PatrolPoint->GetActorLocation());
-            }
-            // If the player IS seen, stop in place
-            else
-            {
-                Owner->MoveToLocation(Owner->Agent->GetActorLocation());
-            }   
-        }
+        // Stop in place if the player is seen
+        Owner->StopMovement();
     }
 }
 
-// Transition handling
 UClass* UPatrolState::ToTransition() const
 {
     return Owner->Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;

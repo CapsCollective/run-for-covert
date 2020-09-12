@@ -20,26 +20,18 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	class APatrol* FindClosestPatrolPoint(AActor* Agent);
 
-	TArray<APatrol*> FindPath(AActor* Agent, AActor* Enemy);
-
 	private:
 
 	// Private fields
 
 	UPROPERTY()
-	TArray<class UGraphNode*> GraphNodes;
+	TArray<class APatrol*> PatrolPoints;
 
 	UPROPERTY()
 	UWorld* World;
 
 	// Private methods
 
-	UGraphNode* GetClosestPatrol(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
-
-	void GenerateGraph(float Radius);
-
 	void DisplayDebugGraph(float DisplayTime);
-
-	void DisplayDebugPath(TArray<APatrol*>* Path, float DisplayTime);
 
 };

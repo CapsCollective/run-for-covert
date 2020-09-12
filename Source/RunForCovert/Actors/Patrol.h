@@ -16,13 +16,9 @@ public:
     // Public fields
 
 	UPROPERTY(VisibleAnywhere)
-	class UGraphNode* Node;
+	APatrol* Node;
 
 	UPROPERTY(EditAnywhere)
 	TArray<APatrol*> AdjacentNodes;
-
-	// Public functions
-
-    void AddNode(UGraphNode* NewNode);
 	
 };
