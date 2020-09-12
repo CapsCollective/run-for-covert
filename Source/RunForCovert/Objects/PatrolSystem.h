@@ -7,17 +7,13 @@
 #include "UObject/NoExportTypes.h"
 #include "PatrolSystem.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RUNFORCOVERT_API UPatrolSystem : public UObject
 {
 	GENERATED_BODY()
 	
 	public:
-
-	UPatrolSystem();
 
 	// Public functions
 

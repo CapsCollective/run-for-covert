@@ -3,10 +3,6 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "DrawDebugHelpers.h"
 
-UPatrolSystem::UPatrolSystem()
-{
-
-}
 
 void UPatrolSystem::Initialise(UWorld* InWorld)
 {
