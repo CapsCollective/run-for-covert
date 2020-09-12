@@ -46,5 +46,8 @@ void UStateMachine::Initialise(AEnemyAIController* ObjectOwner)
         (*It)->Initialise(ObjectOwner);
     }
 
+    // Enter the current state
+    CurrentState->OnEnter();
+
     Super::Initialise(ObjectOwner);
 }

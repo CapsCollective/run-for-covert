@@ -7,6 +7,12 @@
 #include "RunForCovert/Actors/Patrol.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
+void UPatrolState::OnEnter()
+{
+    // When the state is exited, set the speed of the agent to 600
+    Owner->Agent->GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+}
+
 void UPatrolState::OnExit()
 {
     // When the state is exited, set the speed of the agent to 600

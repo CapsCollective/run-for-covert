@@ -14,13 +14,10 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 
 	// Setup components
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
-    TimeToSeePlayer = 1.5f;
-    FiringRange = 500.f;
-
-    // Sets up the Perception component
     PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
-    // Sets up the sight config
     SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight Config");
+
+    // Set up the sight config
     if(SightConfig){
         SightConfig->SightRadius = 1000.0f;
         SightConfig->PeripheralVisionAngleDegrees = 60.0f;
@@ -29,6 +26,10 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 
         PerceptionComponent->ConfigureSense(*SightConfig);
     }
+
+    // Set field default values
+    TimeToSeePlayer = 1.5f;
+    FiringRange = 500.f;
 }
 
 void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -36,23 +37,19 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-// Set the crouching field
-// Used by states to animate the character
+
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
+    // Set the crouching field
     Crouching ? Crouch() : UnCrouch();
 }
 
 void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-    
-    if(!PerceptionComponent) { UE_LOG(LogTemp, Error, TEXT("NO PERCEPTION COMPONENT FOUND"))}
-    else
-    {
-        PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyCharacterBase::SeePlayer);
-    }
-    GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+
+	// Register perception delegate method
+    PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyCharacterBase::SeePlayer);
 }
 
 void AEnemyCharacterBase::Tick(float DeltaTime)
@@ -81,11 +78,9 @@ bool AEnemyCharacterBase::FireWeapon()
     return Fire();
 }
 
-// The Perception Component delegate
 void AEnemyCharacterBase::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
-    // Checks if the detected Stimulus is the player or not
-    // If it is, check bSeenPlayer to true
+    // Check bSeenPlayer to true if the detected Stimulus is the player or not
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
     if(pcb)
     {

@@ -22,17 +22,22 @@ void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 
 void UCombatStateMachine::OnEnter()
 {
+    Super::OnEnter();
+
     // Set the agent to focus on the player
     Owner->SetFocus(Owner->Player, EAIFocusPriority::Gameplay);
 }
 
 void UCombatStateMachine::OnExit()
 {
+    Super::OnExit();
+
     // Remove the agent's player focus
     Owner->ClearFocus(EAIFocusPriority::Gameplay);
 }
 
 UClass* UCombatStateMachine::ToTransition() const
 {
-    return !Owner->Agent->bChasingPlayer ? UPatrolState::StaticClass() : nullptr;
+    // TODO re-enable returning to patrol mode
+    return /*!Owner->Agent->bChasingPlayer ? UPatrolState::StaticClass() :*/ nullptr;
 }

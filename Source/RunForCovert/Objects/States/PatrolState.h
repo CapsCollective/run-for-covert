@@ -16,6 +16,8 @@ public:
 
     // Public overrides
 
+    virtual void OnEnter() override;
+
     virtual void OnExit() override;
 
 	virtual void OnUpdate() override;
