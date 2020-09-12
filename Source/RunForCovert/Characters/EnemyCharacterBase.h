@@ -7,8 +7,6 @@
 #include "CharacterBase.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-
-
 #include "EnemyCharacterBase.generated.h"
 
 class UAISenseConfig_Damage;
@@ -37,7 +35,7 @@ public:
 
     void SetCrouching(bool Crouching);
 
-	// Public fields
+    // Components
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAIPerceptionComponent* PerceptionComponent;
@@ -45,22 +43,28 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAISenseConfig_Sight* SightConfig;
 
+    // Public fields
+
     UPROPERTY(EditAnywhere)
     float FiringRange;
 
 	UPROPERTY(EditAnywhere)
 	float TimeToSeePlayer;
 
-	float SeenPlayerFor;
+	bool bSeenPlayer;
 
-	bool bSeePlayer;
-
-	bool bChasePlayer;
+	bool bChasingPlayer;
 	
 protected:
 
     // Protected overrides
 
 	virtual void BeginPlay() override;
+
+private:
+
+    // Private fields
+
+    float SeenPlayerFor;
 
 };

@@ -39,5 +39,5 @@ void UPatrolState::OnUpdate()
 
 UClass* UPatrolState::ToTransition() const
 {
-    return Owner->Agent->bChasePlayer ? UCombatStateMachine::StaticClass() : nullptr;
+    return Owner->Agent->bChasingPlayer ? UCombatStateMachine::StaticClass() : nullptr;
 }

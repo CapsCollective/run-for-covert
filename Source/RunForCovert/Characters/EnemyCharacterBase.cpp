@@ -5,7 +5,6 @@
 #include "PlayerCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
-#include "Perception/AISenseConfig_Damage.h"
 #include "Perception/AISenseConfig_Sight.h"
 
 
@@ -62,22 +61,18 @@ void AEnemyCharacterBase::Tick(float DeltaTime)
 
     // If the player has been noticed by the player for TimeToSeePlayer seconds
     // They will flip the boolean changing the state from Patrol to Combat
-    if(bSeePlayer)
+    if(bSeenPlayer)
     {
-        if(SeenPlayerFor < TimeToSeePlayer)
+        // Start chasing player if they have been seen long enough
+        if(!(bChasingPlayer = SeenPlayerFor > TimeToSeePlayer))
         {
             SeenPlayerFor += DeltaTime;
         }
-        else
-        {
-            // Chase Player
-            bChasePlayer = true;
-        }
     }
-    else
+    else if(SeenPlayerFor > 0.0f)
     {
-        if(SeenPlayerFor > 0.0f)
-            SeenPlayerFor -= DeltaTime;
+        // Apply cooldown to agent perception of player
+        SeenPlayerFor -= DeltaTime;
     }
 }
 
@@ -90,17 +85,10 @@ bool AEnemyCharacterBase::FireWeapon()
 void AEnemyCharacterBase::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
     // Checks if the detected Stimulus is the player or not
-    // If it is, check bSeePlayer to true
+    // If it is, check bSeenPlayer to true
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
     if(pcb)
     {
-        if(Stimulus.WasSuccessfullySensed())
-        {
-            bSeePlayer = true;
-        }
-        else
-        {
-            bSeePlayer = false;
-        }
+        bSeenPlayer = Stimulus.WasSuccessfullySensed();
     }
 }
