@@ -9,8 +9,6 @@
 
 void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
-    Owner = ObjectOwner;
-    
     // Create state objects
     States = {
             NewObject<UMoveCoverState>(),
@@ -19,7 +17,7 @@ void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
     };
 
     // Initialise to first state
-    Super::Initialise(Owner);
+    Super::Initialise(ObjectOwner);
 }
 
 void UCombatStateMachine::OnEnter()

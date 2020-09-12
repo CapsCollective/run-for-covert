@@ -37,15 +37,14 @@ void UStateMachine::OnUpdate()
 void UStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
     if (States.Num() == 0) { return; }
-    Owner = ObjectOwner;
     // Set the first defined state in the map as the first current state
     CurrentState = States[0];
 
     // Initialise all owned states
     for (auto It = States.CreateConstIterator(); It; It++)
     {
-        (*It)->Initialise(Owner);
+        (*It)->Initialise(ObjectOwner);
     }
 
-    Super::Initialise(Owner);
+    Super::Initialise(ObjectOwner);
 }

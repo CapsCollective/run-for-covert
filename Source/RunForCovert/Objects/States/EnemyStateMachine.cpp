@@ -8,19 +8,14 @@
 
 void UEnemyStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
-    Owner = ObjectOwner;
-    
     // Create state objects
     UCombatStateMachine* CombatStateMachine = NewObject<UCombatStateMachine>();
     CombatStateMachine->Initialise(Owner);
-    UPatrolState* PatrolState = NewObject<UPatrolState>();
-    PatrolState->Initialise(Owner);
-
     States = {
-            PatrolState,
+            NewObject<UPatrolState>(),
             CombatStateMachine
     };
 
     // Initialise to first state
-    Super::Initialise(Owner);
+    Super::Initialise(ObjectOwner);
 }
