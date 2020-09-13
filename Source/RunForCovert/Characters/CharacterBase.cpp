@@ -3,6 +3,7 @@
 
 #include "CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 
 ACharacterBase::ACharacterBase()
@@ -46,6 +47,10 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ACharacterBase::OnDeath()
 {
     bIsDead = true;
+
+    // Detach the character from their controller and disable collision
+    DetachFromControllerPendingDestroy();
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,

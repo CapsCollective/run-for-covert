@@ -3,8 +3,6 @@
 
 #include "HealthComponent.h"
 #include "RunForCovert/Characters/CharacterBase.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/Controller.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -25,13 +23,9 @@ void UHealthComponent::OnTakeDamage(float Damage)
 
 void UHealthComponent::OnDeath()
 {
-    UE_LOG(LogTemp, Warning, TEXT("%s died!"), *GetOwner()->GetName())
-
     ACharacterBase* Character = Cast<ACharacterBase>(GetOwner());
-
     if (!Character) { return; }
 
+    // Inform the character of their death
     Character->OnDeath();
-    Character->DetachFromControllerPendingDestroy();
-    Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
