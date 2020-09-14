@@ -22,8 +22,6 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-    virtual void Tick(float DeltaTime) override;
-
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
@@ -69,8 +67,6 @@ public:
 protected:
 
 	// Protected overrides
-
-	virtual void BeginPlay() override;
 
     virtual bool Fire() override;
 

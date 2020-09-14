@@ -3,10 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "CharacterBase.h"
-#include "Perception/AIPerceptionComponent.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "EnemyCharacterBase.generated.h"
 
 class UAISenseConfig_Damage;
@@ -22,26 +19,18 @@ public:
 
     // Public overrides
 
-    virtual void Tick(float DeltaTime) override;
-
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
     // Public methods
 
     bool FireWeapon();
 
-	UFUNCTION()
-	void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
-
     void SetCrouching(bool Crouching);
 
     // Components
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UAIPerceptionComponent* PerceptionComponent;
-
-	UPROPERTY(EditAnywhere)
-	UAISenseConfig_Sight* SightConfig;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    class UAIPerceptionComponent* PerceptionComponent;
 
     // Public fields
 
@@ -50,21 +39,5 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float TimeToSeePlayer;
-
-	bool bSeenPlayer;
-
-	bool bChasingPlayer;
-	
-protected:
-
-    // Protected overrides
-
-	virtual void BeginPlay() override;
-
-private:
-
-    // Private fields
-
-    float SeenPlayerFor;
 
 };

@@ -11,7 +11,7 @@
 
 APlayerCharacterBase::APlayerCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
     // Setup components
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
@@ -49,16 +49,6 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::CrouchStart);
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
-}
-
-void APlayerCharacterBase::BeginPlay()
-{
-    Super::BeginPlay();
-}
-
-void APlayerCharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void APlayerCharacterBase::MoveForward(float Amount)

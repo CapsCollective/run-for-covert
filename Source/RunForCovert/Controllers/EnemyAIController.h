@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "RunForCovert/Characters/EnemyCharacterBase.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "EnemyAIController.generated.h"
 
 UCLASS()
@@ -20,6 +20,13 @@ public:
     // Public overrides
 
     virtual void Tick(float DeltaTime) override;
+
+    // Public functions
+
+    UFUNCTION()
+    void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
+
+    // Public fields
 
     UPROPERTY()
     APawn* Player;

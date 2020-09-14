@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RunForCovert/Controllers/EnemyAIController.h"
+#include "RunForCovert/Characters/EnemyCharacterBase.h"
 #include "State.generated.h"
 
 UCLASS()

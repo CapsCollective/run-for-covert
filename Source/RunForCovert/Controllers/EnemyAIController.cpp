@@ -1,10 +1,14 @@
 // Caps Collective 2020
 
 
-#include "EnemyAIController.h"
-#include "RunForCovert/Actors/Cover.h"
-#include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
+#include "EnemyAIController.h"
+#include "Kismet/GameplayStatics.h"
+#include "RunForCovert/Characters/EnemyCharacterBase.h"
+#include "RunForCovert/Characters/PlayerCharacterBase.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Sight.h"
 #include "../Objects/States/EnemyStateMachine.h"
 #include "../GameModes/DefaultGameModeBase.h"
 
@@ -27,6 +31,17 @@ void AEnemyAIController::BeginPlay()
     Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     Agent = Cast<AEnemyCharacterBase>(GetPawn());
 
+    // Set up the sight config
+    UAISenseConfig_Sight* SightConfig = NewObject<UAISenseConfig_Sight>();
+    SightConfig->SightRadius = 1000.0f;
+    SightConfig->PeripheralVisionAngleDegrees = 60.0f;
+    SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+    Agent->PerceptionComponent->ConfigureSense(*SightConfig);
+
+    // Register perception delegate method
+    Agent->PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
+
     // Get a reference to the game mode (used as a service locator)
     ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
     if (!GameMode)
@@ -43,7 +58,6 @@ void AEnemyAIController::BeginPlay()
     StateMachine = NewObject<UEnemyStateMachine>();
     StateMachine->Initialise(this);
 }
-
 
 void AEnemyAIController::Tick(float DeltaTime)
 {
@@ -69,4 +83,14 @@ void AEnemyAIController::Tick(float DeltaTime)
 
     // Tick state machine
     StateMachine->OnUpdate();
+}
+
+void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
+{
+    // Check bSeenPlayer to true if the detected Stimulus is the player or not
+    APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
+    if(pcb)
+    {
+        bSeenPlayer = Stimulus.WasSuccessfullySensed();
+    }
 }
