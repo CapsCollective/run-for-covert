@@ -20,6 +20,7 @@ AEnemyAIController::AEnemyAIController()
     // Set field default values
     bHasFinishedFiring = false;
     bTakenValidCover = false;
+    SenseState = EnemySenseState::DEFAULT;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -67,10 +68,14 @@ void AEnemyAIController::Tick(float DeltaTime)
 
     // If the player has been noticed by the player for TimeToSeePlayer seconds
     // They will flip the boolean changing the state from Patrol to Combat
-    if(bSeenPlayer)
+    if(SenseState == EnemySenseState::PLAYER_SEEN)
     {
         // Start chasing player if they have been seen long enough
-        if(!(bChasingPlayer = SeenPlayerFor > Agent->TimeToSeePlayer))
+        if (SeenPlayerFor > Agent->TimeToSeePlayer)
+        {
+            SenseState = EnemySenseState::CHASING_PLAYER;
+        }
+        else
         {
             SeenPlayerFor += DeltaTime;
         }
@@ -89,8 +94,8 @@ void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
     // Check bSeenPlayer to true if the detected Stimulus is the player or not
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
-    if(pcb)
+    if(pcb && Stimulus.WasSuccessfullySensed())
     {
-        bSeenPlayer = Stimulus.WasSuccessfullySensed();
+        SenseState = EnemySenseState::PLAYER_SEEN;
     }
 }

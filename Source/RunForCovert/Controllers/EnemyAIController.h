@@ -7,6 +7,13 @@
 #include "Perception/AIPerceptionTypes.h"
 #include "EnemyAIController.generated.h"
 
+UENUM()
+enum class EnemySenseState : uint8 {
+    DEFAULT,
+    PLAYER_SEEN,
+    CHASING_PLAYER,
+};
+
 UCLASS()
 class RUNFORCOVERT_API AEnemyAIController : public AAIController
 {
@@ -40,15 +47,14 @@ public:
     UPROPERTY()
     class UPatrolSystem* PatrolSystem;
 
+    UPROPERTY()
+    EnemySenseState SenseState;
+
     // TODO convert these fields into blackboard values
 
     bool bTakenValidCover;
 
     bool bHasFinishedFiring;
-
-    bool bSeenPlayer;
-
-    bool bChasingPlayer;
     
 protected:
 
