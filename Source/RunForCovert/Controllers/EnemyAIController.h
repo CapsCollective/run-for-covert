@@ -33,11 +33,15 @@ public:
     UPROPERTY()
     class UPatrolSystem* PatrolSystem;
 
-    // Public fields
+    // TODO convert these fields into blackboard values
 
-    bool TakenValidCover;
+    bool bTakenValidCover;
 
-    bool HasFinishedFiring;
+    bool bHasFinishedFiring;
+
+    bool bSeenPlayer;
+
+    bool bChasingPlayer;
     
 protected:
 
@@ -51,5 +55,7 @@ private:
 
     UPROPERTY()
     class UStateMachine* StateMachine;
+
+    float SeenPlayerFor;
     
 };

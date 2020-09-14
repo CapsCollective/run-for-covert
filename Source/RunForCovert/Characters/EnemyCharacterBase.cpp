@@ -54,23 +54,6 @@ void AEnemyCharacterBase::BeginPlay()
 
 void AEnemyCharacterBase::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-    // If the player has been noticed by the player for TimeToSeePlayer seconds
-    // They will flip the boolean changing the state from Patrol to Combat
-    if(bSeenPlayer)
-    {
-        // Start chasing player if they have been seen long enough
-        if(!(bChasingPlayer = SeenPlayerFor > TimeToSeePlayer))
-        {
-            SeenPlayerFor += DeltaTime;
-        }
-    }
-    else if(SeenPlayerFor > 0.0f)
-    {
-        // Apply cooldown to agent perception of player
-        SeenPlayerFor -= DeltaTime;
-    }
 }
 
 bool AEnemyCharacterBase::FireWeapon()

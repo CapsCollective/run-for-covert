@@ -3,6 +3,8 @@
 
 #include "DefaultGameModeBase.h"
 #include "Engine/World.h"
+#include "RunForCovert/Objects/CoverSystem.h"
+#include "RunForCovert/Objects/PatrolSystem.h"
 
 void ADefaultGameModeBase::BeginPlay()
 {

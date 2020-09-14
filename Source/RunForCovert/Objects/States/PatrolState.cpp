@@ -31,7 +31,7 @@ void UPatrolState::OnUpdate()
         // Select a random adjacent node as next target
         PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
     }
-    else if(!Owner->Agent->bSeenPlayer)
+    else if(!Owner->bSeenPlayer)
     {
         // Move to the following patrol point
         Owner->MoveToLocation(PatrolPoint->GetActorLocation());
@@ -45,5 +45,5 @@ void UPatrolState::OnUpdate()
 
 UClass* UPatrolState::ToTransition() const
 {
-    return Owner->Agent->bChasingPlayer ? UCombatStateMachine::StaticClass() : nullptr;
+    return Owner->bChasingPlayer ? UCombatStateMachine::StaticClass() : nullptr;
 }

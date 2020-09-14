@@ -16,7 +16,7 @@ void UMoveCoverState::OnUpdate()
             // Flag that a valid cover position has been taken if it provides cover
             if (CoverPoint->DoesProvideCover(Owner->Player->GetActorLocation()))
             {
-                Owner->TakenValidCover = true;
+                Owner->bTakenValidCover = true;
             }
             PreviousCoverPoint = CoverPoint;
             CoverPoint = nullptr;
@@ -50,5 +50,5 @@ void UMoveCoverState::OnUpdate()
 
 UClass* UMoveCoverState::ToTransition() const
 {
-    return Owner->TakenValidCover ? UHoldCoverState::StaticClass() : nullptr;
+    return Owner->bTakenValidCover ? UHoldCoverState::StaticClass() : nullptr;
 }

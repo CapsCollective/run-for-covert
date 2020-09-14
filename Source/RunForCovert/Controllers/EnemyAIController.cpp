@@ -14,8 +14,8 @@ AEnemyAIController::AEnemyAIController()
     PrimaryActorTick.bCanEverTick = true;
 
     // Set field default values
-    HasFinishedFiring = false;
-    TakenValidCover = false;
+    bHasFinishedFiring = false;
+    bTakenValidCover = false;
 }
 
 void AEnemyAIController::BeginPlay()
@@ -50,6 +50,22 @@ void AEnemyAIController::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 
     if (!(Player && Agent && CoverSystem)) { return; }
+
+    // If the player has been noticed by the player for TimeToSeePlayer seconds
+    // They will flip the boolean changing the state from Patrol to Combat
+    if(bSeenPlayer)
+    {
+        // Start chasing player if they have been seen long enough
+        if(!(bChasingPlayer = SeenPlayerFor > Agent->TimeToSeePlayer))
+        {
+            SeenPlayerFor += DeltaTime;
+        }
+    }
+    else if(SeenPlayerFor > 0.0f)
+    {
+        // Apply cooldown to agent perception of player
+        SeenPlayerFor -= DeltaTime;
+    }
 
     // Tick state machine
     StateMachine->OnUpdate();

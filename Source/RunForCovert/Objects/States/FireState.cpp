@@ -21,7 +21,7 @@ void UFireState::OnEnter()
 
 void UFireState::OnExit()
 {
-    Owner->HasFinishedFiring = false;
+    Owner->bHasFinishedFiring = false;
     TimesFired = 0;
     Owner->Agent->SetCrouching(true);
 }
@@ -33,12 +33,12 @@ void UFireState::OnUpdate()
     {
         if (Owner->Agent->FireWeapon() && ++TimesFired >= TimesToFire)
         {
-            Owner->HasFinishedFiring = true;
+            Owner->bHasFinishedFiring = true;
         }
     }
 }
 
 UClass* UFireState::ToTransition() const
 {
-    return Owner->HasFinishedFiring ? UHoldCoverState::StaticClass() : nullptr;
+    return Owner->bHasFinishedFiring ? UHoldCoverState::StaticClass() : nullptr;
 }

@@ -30,17 +30,17 @@ void UHoldCoverState::OnUpdate()
     // Nullify cover validity once the timer ends
     if (TimeStarted + TimeToCover <= Owner->GetWorld()->GetTimeSeconds())
     {
-        Owner->TakenValidCover = false;
+        Owner->bTakenValidCover = false;
     }
 }
 
 UClass* UHoldCoverState::ToTransition() const
 {
-    if (!Owner->TakenValidCover && Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange)
+    if (!Owner->bTakenValidCover && Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange)
     {
         return UFireState::StaticClass();
     }
-    else if (!Owner->TakenValidCover)
+    else if (!Owner->bTakenValidCover)
     {
         return UMoveCoverState::StaticClass();
     }

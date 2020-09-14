@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "RunForCovert/Objects/CoverSystem.h"
-#include "RunForCovert/Objects/PatrolSystem.h"
-
 #include "DefaultGameModeBase.generated.h"
 
 UCLASS()
