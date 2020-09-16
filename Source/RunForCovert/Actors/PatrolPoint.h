@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Patrol.generated.h"
+#include "PatrolPoint.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API APatrol : public AActor
+class RUNFORCOVERT_API APatrolPoint : public AActor
 {
 	GENERATED_BODY()
 	
@@ -16,9 +16,9 @@ public:
     // Public fields
 
 	UPROPERTY(VisibleAnywhere)
-	APatrol* Node;
+	APatrolPoint* Node;
 
 	UPROPERTY(EditAnywhere)
-	TArray<APatrol*> AdjacentNodes;
+	TArray<APatrolPoint*> AdjacentNodes;
 	
 };

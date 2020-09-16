@@ -29,5 +29,5 @@ private:
     // Private fields
 
     UPROPERTY(VisibleAnywhere)
-    class APatrol* PatrolPoint;
+    class APatrolPoint* PatrolPoint;
 };

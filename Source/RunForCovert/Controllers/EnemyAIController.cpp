@@ -1,8 +1,8 @@
 // Caps Collective 2020
 
 
-#include "EngineUtils.h"
 #include "EnemyAIController.h"
+#include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "RunForCovert/Characters/EnemyCharacterBase.h"
 #include "RunForCovert/Characters/PlayerCharacterBase.h"
@@ -96,7 +96,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     StateMachine->OnUpdate();
 }
 
-void AEnemyAIController::SeePlayer(AActor* ActorSensed, const FAIStimulus& Stimulus)
+void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
     // Check bSeenPlayer to true if the detected Stimulus is the player or not
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);

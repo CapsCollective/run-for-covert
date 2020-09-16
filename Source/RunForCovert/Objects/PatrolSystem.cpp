@@ -2,7 +2,7 @@
 
 #include "PatrolSystem.h"
 #include "EngineUtils.h"
-#include "RunForCovert/Actors/Patrol.h"
+#include "RunForCovert/Actors/PatrolPoint.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -11,12 +11,12 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
     // Set the world reference
     World = InWorld;
 
-    // Populate a list of nodes representing all patrol actors in the
+    // Populate a list of nodes representing all patrol point actors in the
     // world wrapped in objects specifying graph attributes
-    for (APatrol* Patrol : TActorRange<APatrol>(World))
+    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
     {
-        // Add patrol node list
-        PatrolPoints.Add(Patrol);
+        // Add patrol point to list
+        PatrolPoints.Add(PatrolPoint);
     }
 
     // Display the graph connections
@@ -24,18 +24,18 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
 }
 
 // Finds the closest patrol point
-APatrol* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
+APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
 {
     // Iterate through all patrol points in world
-    float ClosestPatrolDistance = TNumericLimits<float>::Max();
-    APatrol* ClosestPatrolPoint = nullptr;
-    for (APatrol* Patrol : TActorRange<APatrol>(World))
+    float ClosestDistance = TNumericLimits<float>::Max();
+    APatrolPoint* ClosestPatrolPoint = nullptr;
+    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
     {
-        float PatrolDistance = Patrol->GetDistanceTo(Agent);
-        if (PatrolDistance <= ClosestPatrolDistance)
+        float Distance = PatrolPoint->GetDistanceTo(Agent);
+        if (Distance <= ClosestDistance)
         {
-            ClosestPatrolDistance = PatrolDistance;
-            ClosestPatrolPoint = Patrol;
+            ClosestDistance = Distance;
+            ClosestPatrolPoint = PatrolPoint;
         }
     }
     
@@ -45,9 +45,9 @@ APatrol* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
 void UPatrolSystem::DisplayDebugGraph(float DisplayTime)
 {
     // Display debug lines
-    for (APatrol* Node : PatrolPoints)
+    for (APatrolPoint* Node : PatrolPoints)
     {
-        for (APatrol* ConnectedNode : Node->AdjacentNodes)
+        for (APatrolPoint* ConnectedNode : Node->AdjacentNodes)
         {
             DrawDebugLine(World, Node->GetActorLocation(),
                           ConnectedNode->GetActorLocation(), FColor::Orange, false, DisplayTime);

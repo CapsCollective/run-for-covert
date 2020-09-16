@@ -17,14 +17,14 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	void Initialise(UWorld* InWorld);
 
-	class APatrol* FindClosestPatrolPoint(AActor* Agent);
+	class APatrolPoint* FindClosestPatrolPoint(AActor* Agent);
 
 	private:
 
 	// Private fields
 
 	UPROPERTY()
-	TArray<class APatrol*> PatrolPoints;
+	TArray<class APatrolPoint*> PatrolPoints;
 
 	UPROPERTY()
 	UWorld* World;

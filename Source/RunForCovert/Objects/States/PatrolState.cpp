@@ -4,7 +4,7 @@
 #include "PatrolState.h"
 #include "CombatStateMachine.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "RunForCovert/Actors/Patrol.h"
+#include "RunForCovert/Actors/PatrolPoint.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 
 void UPatrolState::OnEnter()
