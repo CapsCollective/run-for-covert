@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
+#include "RunForCovert/Objects/LevelGenerator.h"
 
 void ADefaultGameModeBase::BeginPlay()
 {
@@ -16,6 +17,9 @@ void ADefaultGameModeBase::BeginPlay()
 
     PatrolSystem = NewObject<UPatrolSystem>();
     PatrolSystem->Initialise(GetWorld());
+
+    LevelGenerator = NewObject<ULevelGenerator>();
+    LevelGenerator->Initialise(GetWorld());
 }
 
 UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
@@ -26,4 +30,9 @@ UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
 UPatrolSystem* ADefaultGameModeBase::GetPatrolSystem()
 {
     return PatrolSystem;
+}
+
+ULevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
+{
+    return LevelGenerator;
 }
