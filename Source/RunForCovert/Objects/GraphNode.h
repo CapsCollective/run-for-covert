@@ -34,7 +34,7 @@ public:
 
     // Public functions
 
-    float FScore();
+    float FScore() const;
 
     template<typename T>
     T* GetActor() // Template functions must be defined in header files

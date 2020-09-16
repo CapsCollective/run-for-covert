@@ -3,7 +3,7 @@
 
 #include "GraphNode.h"
 
-float UGraphNode::FScore()
+float UGraphNode::FScore() const
 {
     return GScore + HScore;
 }

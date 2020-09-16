@@ -19,6 +19,7 @@ AGunBase::AGunBase()
     MuzzlePosition->SetupAttachment(GunMesh);
 
     // Set field default values
+    FireSound = nullptr;
     GunDamage = 10.f;
     MaxFireRate = .5f;
     LastFireTime = 0.f;

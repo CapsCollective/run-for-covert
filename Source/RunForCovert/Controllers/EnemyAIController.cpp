@@ -18,6 +18,12 @@ AEnemyAIController::AEnemyAIController()
     PrimaryActorTick.bCanEverTick = true;
 
     // Set field default values
+    Player = nullptr;
+    Agent = nullptr;
+    PatrolSystem = nullptr;
+    StateMachine = nullptr;
+    CoverSystem = nullptr;
+    SeenPlayerFor = 0.f;
     bHasFinishedFiring = false;
     bTakenValidCover = false;
     SenseState = EnemySenseState::DEFAULT;
@@ -90,7 +96,7 @@ void AEnemyAIController::Tick(float DeltaTime)
     StateMachine->OnUpdate();
 }
 
-void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
+void AEnemyAIController::SeePlayer(AActor* ActorSensed, const FAIStimulus& Stimulus)
 {
     // Check bSeenPlayer to true if the detected Stimulus is the player or not
     APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);

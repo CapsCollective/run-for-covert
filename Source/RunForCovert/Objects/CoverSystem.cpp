@@ -10,6 +10,7 @@
 UCoverSystem::UCoverSystem()
 {
     // Set field default values
+    World = nullptr;
     CoverRadius = 1000.f;
 }
 
@@ -61,7 +62,7 @@ TArray<ACover*> UCoverSystem::FindCoverPath(AActor* Agent, AActor* Enemy)
     TArray<UGraphNode*> OpenSet;
     UGraphNode* StartNode = GetClosestCover(Agent);
     UGraphNode* EndNode = GetClosestCover(Enemy, true, Agent);
-    check(StartNode && EndNode);
+    check(StartNode && EndNode)
 
     // Reset the GScore of all nodes in the collection
     for (auto It = GraphNodes.CreateConstIterator(); It; It++)

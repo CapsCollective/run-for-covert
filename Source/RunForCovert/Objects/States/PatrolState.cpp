@@ -31,7 +31,7 @@ void UPatrolState::OnUpdate()
         // Select a random adjacent node as next target
         PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
     }
-    else if(!(Owner->SenseState == EnemySenseState::PLAYER_SEEN))
+    else if(Owner->SenseState != EnemySenseState::PLAYER_SEEN)
     {
         // Move to the following patrol point
         Owner->MoveToLocation(PatrolPoint->GetActorLocation());

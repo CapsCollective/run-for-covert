@@ -3,6 +3,7 @@
 
 #include "FireState.h"
 #include "HoldCoverState.h"
+#include "Engine/World.h"
 
 UFireState::UFireState()
 {

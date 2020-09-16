@@ -4,7 +4,6 @@
 #include "EnemyCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionComponent.h"
 
 
@@ -13,7 +12,6 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Setup components
-    Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
     PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
 
     // Set field default values

@@ -31,7 +31,7 @@ public:
     // Public functions
 
     UFUNCTION()
-    void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
+    void SeePlayer(AActor* ActorSensed, const FAIStimulus& Stimulus);
 
     // Public fields
 

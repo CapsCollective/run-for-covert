@@ -4,6 +4,7 @@
 #include "HoldCoverState.h"
 #include "FireState.h"
 #include "MoveCoverState.h"
+#include "Engine/World.h"
 
 UHoldCoverState::UHoldCoverState()
 {

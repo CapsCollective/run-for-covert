@@ -11,6 +11,8 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = false;
 
     // Set field default values
+    Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+    Gun = nullptr;
     bIsDead = false;
 }
 

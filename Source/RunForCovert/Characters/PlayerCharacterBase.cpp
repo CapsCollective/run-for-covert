@@ -14,8 +14,6 @@ APlayerCharacterBase::APlayerCharacterBase()
 	PrimaryActorTick.bCanEverTick = false;
 
     // Setup components
-    Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
-
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(GetCapsuleComponent());
 
