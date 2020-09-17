@@ -39,9 +39,16 @@ void ALevelGenerator::BeginPlay()
 
             UE_LOG(LogTemp, Warning, TEXT("Rotating map"))
 
-            MapHandle->SetActorRotation(
-                    FRotator(0.f, 180.f, 0.f) -
-                    NewAttachmentPoint->GetActorRotation() - ExistingAttachmentPoint->GetActorRotation());
+            FRotator NewRotation;
+
+            UE_LOG(LogTemp, Warning, TEXT("Rotation Exist: %s"), *ExistingAttachmentPoint->GetActorRotation().ToString())
+            UE_LOG(LogTemp, Warning, TEXT("Rotation New: %s"), *NewAttachmentPoint->GetActorRotation().ToString())
+
+            NewRotation.Yaw = 180.f + (ExistingAttachmentPoint->GetActorRotation().Yaw + NewAttachmentPoint->GetActorRotation().Yaw);
+
+            UE_LOG(LogTemp, Warning, TEXT("Rotation Final: %s"), *NewRotation.ToString())
+
+            MapHandle->SetActorRotation(NewRotation);
             MapHandle->SetActorLocation(
                     ExistingAttachmentPoint->GetActorLocation() +
                     (MapHandle->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
