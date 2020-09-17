@@ -20,7 +20,7 @@ public:
 
     class UPatrolSystem* GetPatrolSystem();
 
-    class ULevelGenerator* GetLevelGenerator();
+    class ALevelGenerator* GetLevelGenerator();
 
 protected:
 
@@ -39,5 +39,5 @@ private:
     UPatrolSystem* PatrolSystem;
 
     UPROPERTY()
-    ULevelGenerator* LevelGenerator;
+    ALevelGenerator* LevelGenerator;
 };

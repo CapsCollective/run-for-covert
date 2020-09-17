@@ -3,9 +3,10 @@
 
 #include "DefaultGameModeBase.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
-#include "RunForCovert/Objects/LevelGenerator.h"
+#include "RunForCovert/Actors/LevelGenerator.h"
 
 void ADefaultGameModeBase::BeginPlay()
 {
@@ -18,8 +19,8 @@ void ADefaultGameModeBase::BeginPlay()
     PatrolSystem = NewObject<UPatrolSystem>();
     PatrolSystem->Initialise(GetWorld());
 
-    LevelGenerator = NewObject<ULevelGenerator>();
-    LevelGenerator->Initialise(GetWorld());
+    LevelGenerator = Cast<ALevelGenerator>(
+            UGameplayStatics::GetActorOfClass(GetWorld(), ALevelGenerator::StaticClass()));
 }
 
 UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
@@ -32,7 +33,7 @@ UPatrolSystem* ADefaultGameModeBase::GetPatrolSystem()
     return PatrolSystem;
 }
 
-ULevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
+ALevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
 {
     return LevelGenerator;
 }
