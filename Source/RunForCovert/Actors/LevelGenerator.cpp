@@ -11,6 +11,10 @@
 ALevelGenerator::ALevelGenerator()
 {
     PrimaryActorTick.bCanEverTick = false;
+
+    // Set field default values
+    MaxFragments = 5;
+    MaxAttemptsPerFragment = 10;
 }
 
 void ALevelGenerator::BeginPlay()
@@ -23,38 +27,84 @@ void ALevelGenerator::BeginPlay()
         OpenAttachmentPoints.Add(AttachmentPoint);
     }
 
-    while (OpenAttachmentPoints.Num() > 0)
+    int32 Attempts = 0;
+    int32 ActiveFragments = 0;
+
+    if (OpenAttachmentPoints.Num() == 0) { return; }
+    AMapAttachmentPoint* CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
+
+    while ((OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint))
     {
         UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
         AMapFragment* MapFragment = LoadRandomLevel();
 
-        TArray<AMapAttachmentPoint*> AttachmentPoints = MapFragment->GetAttachmentPoints();
-        if (AttachmentPoints.Num() == 0) { return; }
-
-        UE_LOG(LogTemp, Warning, TEXT("Found attachment points"))
-        if (OpenAttachmentPoints.Num() > 0)
+        UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
+        AMapAttachmentPoint* AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
+        if (AttachedPoint)
         {
-            AMapAttachmentPoint* NewAttachmentPoint = AttachmentPoints.Pop();
-            AMapAttachmentPoint* ExistingAttachmentPoint = OpenAttachmentPoints.Pop();
+            // Add all new, open attachment points
+            TArray<AMapAttachmentPoint*> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
+            NewAttachmentPoints.Remove(AttachedPoint);
+            OpenAttachmentPoints.Append(NewAttachmentPoints);
 
-            UE_LOG(LogTemp, Warning, TEXT("Rotating map"))
-
-            FRotator NewRotation;
-
-            UE_LOG(LogTemp, Warning, TEXT("Rotation Exist: %s"), *ExistingAttachmentPoint->GetActorRotation().ToString())
-            UE_LOG(LogTemp, Warning, TEXT("Rotation New: %s"), *NewAttachmentPoint->GetActorRotation().ToString())
-
-            NewRotation.Yaw = 180.f + (ExistingAttachmentPoint->GetActorRotation().Yaw + NewAttachmentPoint->GetActorRotation().Yaw);
-
-            UE_LOG(LogTemp, Warning, TEXT("Rotation Final: %s"), *NewRotation.ToString())
-
-            MapFragment->SetActorRotation(NewRotation);
-            MapFragment->SetActorLocation(
-                    ExistingAttachmentPoint->GetActorLocation() +
-                    (MapFragment->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
+            // Increment the active fragments and move to the next attachment point
+            ActiveFragments++;
+            CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
         }
-        OpenAttachmentPoints.Append(AttachmentPoints);
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
+        }
+
+        Attempts++;
+
+        if (ActiveFragments >= MaxFragments || Attempts >= MaxAttemptsPerFragment * MaxFragments) { break; }
+
     }
+}
+
+AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint)
+{
+    TArray<AMapAttachmentPoint*> AttachmentPoints = MapFragment->GetAttachmentPoints();
+    if (AttachmentPoints.Num() == 0) { return nullptr; }
+    UE_LOG(LogTemp, Warning, TEXT("Found %i attachment points"), AttachmentPoints.Num())
+
+    for (AMapAttachmentPoint* NewAttachmentPoint : MapFragment->GetAttachmentPoints())
+    {
+        if (!TryAttachPoint(MapFragment, NewAttachmentPoint, CurrentAttachmentPoint)) { continue; }
+
+        TArray<AActor*> OverlappingActors;
+        MapFragment->GetOverlappingActors(OUT OverlappingActors, AMapFragment::StaticClass());
+
+        if (OverlappingActors.Num() == 0)
+        {
+            return NewAttachmentPoint;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Found overlapping actors"))
+        }
+    }
+    UE_LOG(LogTemp, Error, TEXT("Could not place fragment"))
+    MapFragment->Destroy();
+    return nullptr;
+}
+
+bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPoint* NewAttachmentPoint,
+                                     AMapAttachmentPoint* CurrentAttachmentPoint)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Yaw Exist: %f"), CurrentAttachmentPoint->GetActorRotation().Yaw)
+    UE_LOG(LogTemp, Warning, TEXT("Yaw New: %f"), NewAttachmentPoint->GetActorRotation().Yaw)
+    float NewYaw = 180.f + (CurrentAttachmentPoint->GetActorRotation().Yaw + NewAttachmentPoint->GetActorRotation().Yaw);
+
+    MapFragment->SetActorRotation(FRotator(0.f, NewYaw, 0.f));
+    MapFragment->SetActorLocation(
+            CurrentAttachmentPoint->GetActorLocation() +
+            (MapFragment->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
+
+    UE_LOG(LogTemp, Warning, TEXT("Yaw Final: %f"), NewYaw)
+
+    return MapFragment->AttachmentPointsClear(NewAttachmentPoint);
 }
 
 AMapFragment* ALevelGenerator::LoadRandomLevel()

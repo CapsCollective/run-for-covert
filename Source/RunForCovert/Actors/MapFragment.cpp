@@ -26,6 +26,7 @@ void AMapFragment::BeginPlay()
         AMapAttachmentPoint* AttachmentPoint = Cast<AMapAttachmentPoint>(*It);
 	    if (AttachmentPoint)
         {
+            AttachmentPoint->SetOwner(this);
             AttachmentPoints.Add(AttachmentPoint);
         }
     }
@@ -34,4 +35,18 @@ void AMapFragment::BeginPlay()
 TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
 {
     return AttachmentPoints;
+}
+
+bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
+{
+    for (auto It = AttachmentPoints.CreateConstIterator(); It; It++)
+    {
+        if ((*It) == IgnoredPoint) { continue; }
+
+        if (!(*It)->IsClear())
+        {
+            return false;
+        }
+    }
+    return true;
 }

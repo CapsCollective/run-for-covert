@@ -15,6 +15,10 @@ public:
 
 	AMapAttachmentPoint();
 
+	// Public functions
+
+	bool IsClear();
+
 private:
 
     // Components
