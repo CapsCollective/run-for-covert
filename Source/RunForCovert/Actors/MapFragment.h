@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MapHandle.generated.h"
+#include "MapFragment.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API AMapHandle : public AActor
+class RUNFORCOVERT_API AMapFragment : public AActor
 {
 	GENERATED_BODY()
 	
 public:
 
-	AMapHandle();
+	AMapFragment();
 
 	// Public functions
 

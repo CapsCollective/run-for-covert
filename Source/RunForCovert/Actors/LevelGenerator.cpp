@@ -2,7 +2,7 @@
 
 
 #include "LevelGenerator.h"
-#include "MapHandle.h"
+#include "MapFragment.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "MapAttachmentPoint.h"
@@ -26,9 +26,9 @@ void ALevelGenerator::BeginPlay()
     while (OpenAttachmentPoints.Num() > 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
-        AMapHandle* MapHandle = LoadRandomLevel();
+        AMapFragment* MapFragment = LoadRandomLevel();
 
-        TArray<AMapAttachmentPoint*> AttachmentPoints = MapHandle->GetAttachmentPoints();
+        TArray<AMapAttachmentPoint*> AttachmentPoints = MapFragment->GetAttachmentPoints();
         if (AttachmentPoints.Num() == 0) { return; }
 
         UE_LOG(LogTemp, Warning, TEXT("Found attachment points"))
@@ -48,17 +48,17 @@ void ALevelGenerator::BeginPlay()
 
             UE_LOG(LogTemp, Warning, TEXT("Rotation Final: %s"), *NewRotation.ToString())
 
-            MapHandle->SetActorRotation(NewRotation);
-            MapHandle->SetActorLocation(
+            MapFragment->SetActorRotation(NewRotation);
+            MapFragment->SetActorLocation(
                     ExistingAttachmentPoint->GetActorLocation() +
-                    (MapHandle->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
+                    (MapFragment->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
         }
         OpenAttachmentPoints.Append(AttachmentPoints);
     }
 }
 
-AMapHandle* ALevelGenerator::LoadRandomLevel()
+AMapFragment* ALevelGenerator::LoadRandomLevel()
 {
-    check(MapHandleBlueprints.Num() > 0)
-    return GetWorld()->SpawnActor<AMapHandle>(MapHandleBlueprints[FMath::RandRange(0, MapHandleBlueprints.Num()-1)]);
+    check(MapFragments.Num() > 0)
+    return GetWorld()->SpawnActor<AMapFragment>(MapFragments[FMath::RandRange(0, MapFragments.Num()-1)]);
 }

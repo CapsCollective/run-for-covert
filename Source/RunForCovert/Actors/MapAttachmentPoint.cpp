@@ -2,14 +2,13 @@
 
 
 #include "MapAttachmentPoint.h"
+#include "Components/ArrowComponent.h"
 
 AMapAttachmentPoint::AMapAttachmentPoint()
 {
 	PrimaryActorTick.bCanEverTick = false;
-}
 
-void AMapAttachmentPoint::BeginPlay()
-{
-	Super::BeginPlay();
+    // Setup components
+    Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+    RootComponent = Arrow;
 }
-

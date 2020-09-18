@@ -1,20 +1,18 @@
 // Caps Collective 2020
 
 
-#include "MapHandle.h"
+#include "MapFragment.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "../GameModes/DefaultGameModeBase.h"
-#include "LevelGenerator.h"
 #include "MapAttachmentPoint.h"
 
-AMapHandle::AMapHandle()
+AMapFragment::AMapFragment()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
-void AMapHandle::BeginPlay()
+void AMapFragment::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -33,7 +31,7 @@ void AMapHandle::BeginPlay()
     }
 }
 
-TArray<AMapAttachmentPoint*> AMapHandle::GetAttachmentPoints()
+TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
 {
     return AttachmentPoints;
 }

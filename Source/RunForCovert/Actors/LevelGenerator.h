@@ -19,7 +19,7 @@ public:
     // Public fields
 
     UPROPERTY(EditAnywhere)
-    TArray<TSubclassOf<class AMapHandle>> MapHandleBlueprints;
+    TArray<TSubclassOf<class AMapFragment>> MapFragments;
 
 protected:
 
@@ -35,6 +35,6 @@ private:
 
     // Private Functions
 
-    AMapHandle* LoadRandomLevel();
+    AMapFragment* LoadRandomLevel();
 	
 };

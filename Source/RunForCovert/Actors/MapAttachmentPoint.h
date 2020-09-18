@@ -15,14 +15,11 @@ public:
 
 	AMapAttachmentPoint();
 
-	// Public functions
+private:
 
-	// TODO add SetAttachment method
+    // Components
 
-protected:
-
-    // Protected overrides
-
-	virtual void BeginPlay() override;
+    UPROPERTY(VisibleAnywhere)
+    class UArrowComponent* Arrow;
 
 };
