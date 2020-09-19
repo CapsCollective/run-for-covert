@@ -37,9 +37,19 @@ private:
 
     // Private fields
 
+    int32 Attempts = 0;
+
+    int32 ActiveFragments = 0;
+
+    FTimerHandle UnusedHandle;
+
+    class AMapAttachmentPoint* CurrentAttachmentPoint;
+
     TArray<class AMapAttachmentPoint*> OpenAttachmentPoints;
 
     // Private Functions
+
+    void TrySpawnFragment();
 
     static AMapAttachmentPoint* TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint);
 

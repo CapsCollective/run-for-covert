@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "MapAttachmentPoint.h"
 #include "Runtime/Engine/Classes/Engine/LevelStreaming.h"
+#include "TimerManager.h"
 
 ALevelGenerator::ALevelGenerator()
 {
@@ -27,13 +28,16 @@ void ALevelGenerator::BeginPlay()
         OpenAttachmentPoints.Add(AttachmentPoint);
     }
 
-    int32 Attempts = 0;
-    int32 ActiveFragments = 0;
-
     if (OpenAttachmentPoints.Num() == 0) { return; }
-    AMapAttachmentPoint* CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
+    CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
 
-    while ((OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint))
+
+    GetWorldTimerManager().SetTimer(UnusedHandle, this, &ALevelGenerator::TrySpawnFragment, .5f, true);
+}
+
+void ALevelGenerator::TrySpawnFragment()
+{
+    if ((OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint))
     {
         UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
         AMapFragment* MapFragment = LoadRandomLevel();
@@ -53,13 +57,16 @@ void ALevelGenerator::BeginPlay()
         }
         else
         {
+            CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
             UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
         }
 
         Attempts++;
 
-        if (ActiveFragments >= MaxFragments || Attempts >= MaxAttemptsPerFragment * MaxFragments) { break; }
-
+        if (ActiveFragments >= MaxFragments || Attempts >= MaxAttemptsPerFragment * MaxFragments)
+        {
+            GetWorldTimerManager().ClearTimer(UnusedHandle);
+        }
     }
 }
 
@@ -74,7 +81,7 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
         if (!TryAttachPoint(MapFragment, NewAttachmentPoint, CurrentAttachmentPoint)) { continue; }
 
         TArray<AActor*> OverlappingActors;
-        MapFragment->GetOverlappingActors(OUT OverlappingActors, AMapFragment::StaticClass());
+        MapFragment->GetOverlappingActors(OUT OverlappingActors);
 
         if (OverlappingActors.Num() == 0)
         {
@@ -97,6 +104,8 @@ bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPo
     UE_LOG(LogTemp, Warning, TEXT("Yaw New: %f"), NewAttachmentPoint->GetActorRotation().Yaw)
     float NewYaw = 180.f + (CurrentAttachmentPoint->GetActorRotation().Yaw - NewAttachmentPoint->GetActorRotation().Yaw);
     NewYaw = NewYaw > 180 ? NewYaw-360 : NewYaw;
+
+    UE_LOG(LogTemp, Warning, TEXT("Calculated Rotation: %f"), NewYaw)
 
     MapFragment->SetActorRotation(FRotator(0.f, NewYaw, 0.f));
     MapFragment->SetActorLocation(
