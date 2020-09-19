@@ -23,7 +23,7 @@ bool AMapAttachmentPoint::IsClear()
     FCollisionQueryParams QueryParams;
     QueryParams.AddIgnoredActor(GetOwner());
 
-    DrawDebugDirectionalArrow(GetWorld(), StartLocation, EndLocation, 200.f, FColor::Purple, true);
+//    DrawDebugDirectionalArrow(GetWorld(), StartLocation, EndLocation, 200.f, FColor::Purple, true);
 
     return !GetWorld()->LineTraceSingleByChannel(OUT Hit, StartLocation, EndLocation,
                                                  ECC_WorldDynamic, QueryParams);

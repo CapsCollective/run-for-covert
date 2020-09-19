@@ -107,6 +107,7 @@ bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPo
 
     UE_LOG(LogTemp, Warning, TEXT("Calculated Rotation: %f"), NewYaw)
 
+    MapFragment->SetActorRotation(FRotator::ZeroRotator);
     MapFragment->SetActorRotation(FRotator(0.f, NewYaw, 0.f));
     MapFragment->SetActorLocation(
             CurrentAttachmentPoint->GetActorLocation() +
