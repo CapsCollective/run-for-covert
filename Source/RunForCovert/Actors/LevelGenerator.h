@@ -41,7 +41,7 @@ private:
 
     int32 ActiveFragments = 0;
 
-    FTimerHandle UnusedHandle;
+    FTimerHandle TimerHandle;
 
     class AMapAttachmentPoint* CurrentAttachmentPoint;
 

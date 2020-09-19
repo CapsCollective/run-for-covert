@@ -32,7 +32,7 @@ void ALevelGenerator::BeginPlay()
     CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
 
 
-    GetWorldTimerManager().SetTimer(UnusedHandle, this, &ALevelGenerator::TrySpawnFragment, .5f, true);
+    GetWorldTimerManager().SetTimer(TimerHandle, this, &ALevelGenerator::TrySpawnFragment, .1f, true);
 }
 
 void ALevelGenerator::TrySpawnFragment()
@@ -65,7 +65,7 @@ void ALevelGenerator::TrySpawnFragment()
 
         if (ActiveFragments >= MaxFragments || Attempts >= MaxAttemptsPerFragment * MaxFragments)
         {
-            GetWorldTimerManager().ClearTimer(UnusedHandle);
+            GetWorldTimerManager().ClearTimer(TimerHandle);
         }
     }
 }
