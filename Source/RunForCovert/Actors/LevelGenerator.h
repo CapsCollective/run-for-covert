@@ -19,6 +19,12 @@ public:
     // Public fields
 
     UPROPERTY(EditAnywhere)
+    bool bSlowGeneration;
+
+    UPROPERTY(EditAnywhere)
+    float SlowGenerationRate;
+
+    UPROPERTY(EditAnywhere)
     int32 MaxFragments;
 
     UPROPERTY(EditAnywhere)
@@ -48,6 +54,10 @@ private:
     TArray<class AMapAttachmentPoint*> OpenAttachmentPoints;
 
     // Private Functions
+
+    bool ContinueGenerating();
+
+    void RunFragmentSpawn();
 
     void TrySpawnFragment();
 

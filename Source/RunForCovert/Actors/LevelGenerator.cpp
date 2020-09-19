@@ -16,6 +16,9 @@ ALevelGenerator::ALevelGenerator()
     // Set field default values
     MaxFragments = 5;
     MaxAttemptsPerFragment = 10;
+    bSlowGeneration = false;
+    SlowGenerationRate = .1f;
+    CurrentAttachmentPoint = nullptr;
 }
 
 void ALevelGenerator::BeginPlay()
@@ -31,43 +34,61 @@ void ALevelGenerator::BeginPlay()
     if (OpenAttachmentPoints.Num() == 0) { return; }
     CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
 
+    if (bSlowGeneration)
+    {
+        GetWorldTimerManager().SetTimer(TimerHandle, this, &ALevelGenerator::RunFragmentSpawn,
+                                        SlowGenerationRate, true);
+    }
+    else
+    {
+        while (ContinueGenerating())
+        {
+            TrySpawnFragment();
+        }
+    }
+}
 
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &ALevelGenerator::TrySpawnFragment, .1f, true);
+bool ALevelGenerator::ContinueGenerating()
+{
+    return (OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint) &&
+    (ActiveFragments < MaxFragments && Attempts < MaxAttemptsPerFragment * MaxFragments);
+}
+
+void ALevelGenerator::RunFragmentSpawn()
+{
+    if (!ContinueGenerating())
+    {
+        GetWorldTimerManager().ClearTimer(TimerHandle);
+        return;
+    }
+    TrySpawnFragment();
 }
 
 void ALevelGenerator::TrySpawnFragment()
 {
-    if ((OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint))
+    UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
+    AMapFragment *MapFragment = LoadRandomLevel();
+
+    UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
+    AMapAttachmentPoint *AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
+    if (AttachedPoint)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
-        AMapFragment* MapFragment = LoadRandomLevel();
+        // Add all new, open attachment points
+        TArray<AMapAttachmentPoint *> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
+        NewAttachmentPoints.Remove(AttachedPoint);
+        OpenAttachmentPoints.Append(NewAttachmentPoints);
 
-        UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
-        AMapAttachmentPoint* AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
-        if (AttachedPoint)
-        {
-            // Add all new, open attachment points
-            TArray<AMapAttachmentPoint*> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
-            NewAttachmentPoints.Remove(AttachedPoint);
-            OpenAttachmentPoints.Append(NewAttachmentPoints);
-
-            // Increment the active fragments and move to the next attachment point
-            ActiveFragments++;
-            CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
-        }
-        else
-        {
-            CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
-            UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
-        }
-
-        Attempts++;
-
-        if (ActiveFragments >= MaxFragments || Attempts >= MaxAttemptsPerFragment * MaxFragments)
-        {
-            GetWorldTimerManager().ClearTimer(TimerHandle);
-        }
+        // Increment the active fragments and move to the next attachment point
+        ActiveFragments++;
+        CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
     }
+    else
+    {
+        CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
+        UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
+    }
+
+    Attempts++;
 }
 
 AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint)
