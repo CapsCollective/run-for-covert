@@ -95,7 +95,8 @@ bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPo
 {
     UE_LOG(LogTemp, Warning, TEXT("Yaw Exist: %f"), CurrentAttachmentPoint->GetActorRotation().Yaw)
     UE_LOG(LogTemp, Warning, TEXT("Yaw New: %f"), NewAttachmentPoint->GetActorRotation().Yaw)
-    float NewYaw = 180.f + (CurrentAttachmentPoint->GetActorRotation().Yaw + NewAttachmentPoint->GetActorRotation().Yaw);
+    float NewYaw = 180.f + (CurrentAttachmentPoint->GetActorRotation().Yaw - NewAttachmentPoint->GetActorRotation().Yaw);
+    NewYaw = NewYaw > 180 ? NewYaw-360 : NewYaw;
 
     MapFragment->SetActorRotation(FRotator(0.f, NewYaw, 0.f));
     MapFragment->SetActorLocation(
