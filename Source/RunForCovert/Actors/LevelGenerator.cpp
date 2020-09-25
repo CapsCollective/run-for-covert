@@ -14,6 +14,9 @@ ALevelGenerator::ALevelGenerator()
     PrimaryActorTick.bCanEverTick = false;
 
     // Set field default values
+    bGenerationComplete = false;
+    Attempts = 0;
+    ActiveFragments = 0;
     MaxFragments = 5;
     MaxAttemptsPerFragment = 10;
     bSlowGeneration = false;
@@ -45,6 +48,8 @@ void ALevelGenerator::BeginPlay()
         {
             TrySpawnFragment();
         }
+        bGenerationComplete = true;
+        OnGenerationComplete.Broadcast();
     }
 }
 
@@ -59,6 +64,8 @@ void ALevelGenerator::RunFragmentSpawn()
     if (!ContinueGenerating())
     {
         GetWorldTimerManager().ClearTimer(TimerHandle);
+        bGenerationComplete = true;
+        OnGenerationComplete.Broadcast();
         return;
     }
     TrySpawnFragment();
@@ -143,4 +150,9 @@ AMapFragment* ALevelGenerator::LoadRandomLevel()
 {
     check(MapFragments.Num() > 0)
     return GetWorld()->SpawnActor<AMapFragment>(MapFragments[FMath::RandRange(0, MapFragments.Num()-1)]);
+}
+
+bool ALevelGenerator::IsGenerationComplete()
+{
+    return bGenerationComplete;
 }

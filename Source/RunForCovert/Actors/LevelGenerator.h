@@ -33,6 +33,15 @@ public:
     UPROPERTY(EditAnywhere)
     TArray<TSubclassOf<class AMapFragment>> MapFragments;
 
+    // Public functions
+
+    bool IsGenerationComplete();
+
+    // Dynamic delegates
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelGenerationDelegate);
+    FLevelGenerationDelegate OnGenerationComplete;
+
 protected:
 
     // Protected overrides
@@ -42,6 +51,8 @@ protected:
 private:
 
     // Private fields
+
+    bool bGenerationComplete;
 
     int32 Attempts = 0;
 
