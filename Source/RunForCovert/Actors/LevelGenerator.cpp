@@ -102,11 +102,16 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
 {
     TArray<AMapAttachmentPoint*> AttachmentPoints = MapFragment->GetAttachmentPoints();
     if (AttachmentPoints.Num() == 0) { return nullptr; }
-    UE_LOG(LogTemp, Warning, TEXT("Found %i attachment points"), AttachmentPoints.Num())
 
     for (AMapAttachmentPoint* NewAttachmentPoint : MapFragment->GetAttachmentPoints())
     {
-        if (!TryAttachPoint(MapFragment, NewAttachmentPoint, CurrentAttachmentPoint)) { continue; }
+        if (!TryAttachPoint(MapFragment, NewAttachmentPoint, CurrentAttachmentPoint))
+        {
+            // Reset the fragment position and continue
+            MapFragment->SetActorRotation(FRotator::ZeroRotator);
+            MapFragment->SetActorLocation(FVector::ZeroVector);
+            continue;
+        }
 
         TArray<AActor*> OverlappingActors;
         MapFragment->GetOverlappingActors(OUT OverlappingActors);
@@ -114,10 +119,6 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
         if (OverlappingActors.Num() == 0)
         {
             return NewAttachmentPoint;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("Found overlapping actors"))
         }
     }
     UE_LOG(LogTemp, Error, TEXT("Could not place fragment"))
@@ -128,21 +129,16 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
 bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPoint* NewAttachmentPoint,
                                      AMapAttachmentPoint* CurrentAttachmentPoint)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Yaw Exist: %f"), CurrentAttachmentPoint->GetActorRotation().Yaw)
-    UE_LOG(LogTemp, Warning, TEXT("Yaw New: %f"), NewAttachmentPoint->GetActorRotation().Yaw)
+    // Calculate the rotational difference between the two attachment points
     float NewYaw = 180.f + (CurrentAttachmentPoint->GetActorRotation().Yaw - NewAttachmentPoint->GetActorRotation().Yaw);
-    NewYaw = NewYaw > 180 ? NewYaw-360 : NewYaw;
+    NewYaw = NewYaw > 180 ? NewYaw - 360 : NewYaw;
 
-    UE_LOG(LogTemp, Warning, TEXT("Calculated Rotation: %f"), NewYaw)
-
-    MapFragment->SetActorRotation(FRotator::ZeroRotator);
+    // Place the fragment as rotated by the attachment points
     MapFragment->SetActorRotation(FRotator(0.f, NewYaw, 0.f));
-    MapFragment->SetActorLocation(
-            CurrentAttachmentPoint->GetActorLocation() +
+    MapFragment->SetActorLocation(CurrentAttachmentPoint->GetActorLocation() +
             (MapFragment->GetActorLocation() - NewAttachmentPoint->GetActorLocation()));
 
-    UE_LOG(LogTemp, Warning, TEXT("Yaw Final: %f"), NewYaw)
-
+    // Check if the attachment points have a clear space to place children
     return MapFragment->AttachmentPointsClear(NewAttachmentPoint);
 }
 
