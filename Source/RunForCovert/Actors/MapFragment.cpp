@@ -39,14 +39,25 @@ TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
 
 bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
 {
+    // Return false for any attachment point that is not clear
     for (auto It = AttachmentPoints.CreateConstIterator(); It; It++)
     {
+        // Do not check any point that is to be ignored
         if ((*It) == IgnoredPoint) { continue; }
-
-        if (!(*It)->IsClear())
-        {
-            return false;
-        }
+        if (!(*It)->IsClear()) { return false; }
     }
     return true;
+}
+
+bool AMapFragment::HasNoOverlaps()
+{
+    TArray<AActor*> OverlappingActors;
+    GetOverlappingActors(OUT OverlappingActors);
+    return OverlappingActors.Num() == 0;
+}
+
+void AMapFragment::ResetLocationRotation()
+{
+    SetActorLocation(FVector::ZeroVector);
+    SetActorRotation(FRotator::ZeroRotator);
 }

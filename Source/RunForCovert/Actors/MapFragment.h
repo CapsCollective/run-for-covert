@@ -21,6 +21,10 @@ public:
 
     bool AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint);
 
+    bool HasNoOverlaps();
+
+    void ResetLocationRotation();
+
 protected:
 
     // Protected overrides

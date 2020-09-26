@@ -25,13 +25,13 @@ public:
     float SlowGenerationRate;
 
     UPROPERTY(EditAnywhere)
-    int32 MaxFragments;
+    int32 TargetFragments;
 
     UPROPERTY(EditAnywhere)
-    int32 MaxAttemptsPerFragment;
+    TArray<TSubclassOf<class AMapFragment>> OpeningFragments;
 
     UPROPERTY(EditAnywhere)
-    TArray<TSubclassOf<class AMapFragment>> MapFragments;
+    TArray<TSubclassOf<AMapFragment>> ClosingFragments;
 
     // Public functions
 
@@ -52,11 +52,7 @@ private:
 
     // Private fields
 
-    bool bGenerationComplete;
-
-    int32 Attempts = 0;
-
-    int32 ActiveFragments = 0;
+    int32 ActiveFragments;
 
     FTimerHandle TimerHandle;
 
