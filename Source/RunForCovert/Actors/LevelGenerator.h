@@ -66,8 +66,6 @@ private:
 
     // Private Functions
 
-    void RunFragmentSpawn();
-
     bool TrySpawnFragment();
 
     static AMapAttachmentPoint* TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint);

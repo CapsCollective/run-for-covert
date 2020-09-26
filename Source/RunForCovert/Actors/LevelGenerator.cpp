@@ -39,7 +39,10 @@ void ALevelGenerator::BeginPlay()
 
     if (bSlowGeneration)
     {
-        GetWorldTimerManager().SetTimer(TimerHandle, this, &ALevelGenerator::RunFragmentSpawn,
+        // Yes, I know what you're thinking but it's essentially a cast to a void member function reference.
+        // I will be damned if I ever have to forward a function out of just returning a bool!
+        GetWorldTimerManager().SetTimer(TimerHandle, this,
+                                        (void(ALevelGenerator::*)())&ALevelGenerator::TrySpawnFragment,
                                         SlowGenerationRate, true);
     }
     else
@@ -48,11 +51,6 @@ void ALevelGenerator::BeginPlay()
         bGenerationComplete = true;
         OnGenerationComplete.Broadcast();
     }
-}
-
-void ALevelGenerator::RunFragmentSpawn()
-{
-    TrySpawnFragment();
 }
 
 bool ALevelGenerator::TrySpawnFragment()
