@@ -22,6 +22,9 @@ public:
 
     class ALevelGenerator* GetLevelGenerator();
 
+    UFUNCTION()
+    void InitialiseCover();
+
 protected:
 
     // Protected overrides

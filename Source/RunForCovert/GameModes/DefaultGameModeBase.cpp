@@ -14,13 +14,22 @@ void ADefaultGameModeBase::BeginPlay()
 
     // Set field default values
     CoverSystem = NewObject<UCoverSystem>();
-    CoverSystem->Initialise(GetWorld());
 
     PatrolSystem = NewObject<UPatrolSystem>();
     PatrolSystem->Initialise(GetWorld());
 
     LevelGenerator = Cast<ALevelGenerator>(
             UGameplayStatics::GetActorOfClass(GetWorld(), ALevelGenerator::StaticClass()));
+
+    // Initialise cover on completing level generation or immediately if none exist
+    if (LevelGenerator && !LevelGenerator->IsGenerationComplete())
+    {
+        LevelGenerator->OnGenerationComplete.AddDynamic(this, &ADefaultGameModeBase::InitialiseCover);
+    }
+    else
+    {
+        InitialiseCover();
+    }
 }
 
 UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
@@ -36,4 +45,9 @@ UPatrolSystem* ADefaultGameModeBase::GetPatrolSystem()
 ALevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
 {
     return LevelGenerator;
+}
+
+void ADefaultGameModeBase::InitialiseCover()
+{
+    CoverSystem->Initialise(GetWorld());
 }
