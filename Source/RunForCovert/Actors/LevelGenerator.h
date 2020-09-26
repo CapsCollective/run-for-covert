@@ -35,7 +35,7 @@ public:
 
     // Public functions
 
-    bool IsGenerationComplete();
+    bool IsGenerationComplete() const;
 
     // Dynamic delegates
 
@@ -66,17 +66,15 @@ private:
 
     // Private Functions
 
-    bool ContinueGenerating();
-
     void RunFragmentSpawn();
 
-    void TrySpawnFragment();
+    bool TrySpawnFragment();
 
     static AMapAttachmentPoint* TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint);
 
     static bool TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPoint* NewAttachmentPoint,
                         AMapAttachmentPoint* CurrentAttachmentPoint);
 
-    AMapFragment* LoadRandomLevel();
+    static TArray<int32> GetRandomisedIndices(int32 ArrayLength) ;
 	
 };

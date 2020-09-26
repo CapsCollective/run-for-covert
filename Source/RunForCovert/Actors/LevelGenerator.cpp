@@ -44,58 +44,56 @@ void ALevelGenerator::BeginPlay()
     }
     else
     {
-        while (ContinueGenerating())
-        {
-            TrySpawnFragment();
-        }
+        while (TrySpawnFragment());
         bGenerationComplete = true;
         OnGenerationComplete.Broadcast();
     }
-}
-
-bool ALevelGenerator::ContinueGenerating()
-{
-    return (OpenAttachmentPoints.Num() > 0 || CurrentAttachmentPoint) &&
-    (ActiveFragments < MaxFragments && Attempts < MaxAttemptsPerFragment * MaxFragments);
 }
 
 void ALevelGenerator::RunFragmentSpawn()
 {
-    if (!ContinueGenerating())
-    {
-        GetWorldTimerManager().ClearTimer(TimerHandle);
-        bGenerationComplete = true;
-        OnGenerationComplete.Broadcast();
-        return;
-    }
     TrySpawnFragment();
 }
 
-void ALevelGenerator::TrySpawnFragment()
+bool ALevelGenerator::TrySpawnFragment()
 {
     UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
-    AMapFragment *MapFragment = LoadRandomLevel();
-
-    UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
-    AMapAttachmentPoint *AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
-    if (AttachedPoint)
+    for (int32 Index : GetRandomisedIndices(MapFragments.Num()))
     {
-        // Add all new, open attachment points
-        TArray<AMapAttachmentPoint *> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
-        NewAttachmentPoints.Remove(AttachedPoint);
-        OpenAttachmentPoints.Append(NewAttachmentPoints);
+        AMapFragment* MapFragment = GetWorld()->SpawnActor<AMapFragment>(MapFragments[Index]);
 
-        // Increment the active fragments and move to the next attachment point
-        ActiveFragments++;
-        CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
-    }
-    else
-    {
-        CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
-        UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
+        UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
+        AMapAttachmentPoint* AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
+        if (AttachedPoint)
+        {
+            // Add all new, open attachment points
+            TArray<AMapAttachmentPoint*> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
+            NewAttachmentPoints.Remove(AttachedPoint);
+            OpenAttachmentPoints.Append(NewAttachmentPoints);
+
+            // Increment the active fragments and move to the next attachment point
+            ActiveFragments++;
+            break;
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
+            MapFragment->Destroy();
+        }
     }
 
-    Attempts++;
+    CurrentAttachmentPoint = OpenAttachmentPoints.Num() > 0 ? OpenAttachmentPoints.Pop() : nullptr;
+
+    if (OpenAttachmentPoints.Num() <= 0 && !CurrentAttachmentPoint) {
+        if (bSlowGeneration)
+        {
+            GetWorldTimerManager().ClearTimer(TimerHandle);
+        }
+        bGenerationComplete = true;
+        OnGenerationComplete.Broadcast();
+        return false;
+    }
+    return true;
 }
 
 AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint)
@@ -121,8 +119,6 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
             return NewAttachmentPoint;
         }
     }
-    UE_LOG(LogTemp, Error, TEXT("Could not place fragment"))
-    MapFragment->Destroy();
     return nullptr;
 }
 
@@ -142,13 +138,22 @@ bool ALevelGenerator::TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPo
     return MapFragment->AttachmentPointsClear(NewAttachmentPoint);
 }
 
-AMapFragment* ALevelGenerator::LoadRandomLevel()
+TArray<int32> ALevelGenerator::GetRandomisedIndices(int32 ArrayLength)
 {
-    check(MapFragments.Num() > 0)
-    return GetWorld()->SpawnActor<AMapFragment>(MapFragments[FMath::RandRange(0, MapFragments.Num()-1)]);
+    TArray<int32> Indices;
+    for (int32 I = 0; I < ArrayLength; I++)
+    {
+        Indices.Add(I);
+    }
+
+    Indices.Sort([](int32 A, int32 B) {
+        return FMath::FRand() < 0.5f;
+    });
+
+    return Indices;
 }
 
-bool ALevelGenerator::IsGenerationComplete()
+bool ALevelGenerator::IsGenerationComplete() const
 {
     return bGenerationComplete;
 }
