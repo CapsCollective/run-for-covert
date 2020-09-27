@@ -128,6 +128,7 @@ AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment
     for (AMapAttachmentPoint* NewAttachmentPoint : MapFragment->GetAttachmentPoints())
     {
         // Try attach at the current attachment point and check for overlaps, else reset and continue
+        // TODO make sure overlap-checking works
         if (TryAttachPoint(MapFragment, NewAttachmentPoint, CurrentAttachmentPoint) && MapFragment->HasNoOverlaps())
         {
             return NewAttachmentPoint;
