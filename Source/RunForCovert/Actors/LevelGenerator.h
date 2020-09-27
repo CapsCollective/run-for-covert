@@ -73,6 +73,9 @@ private:
     static bool TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPoint* NewAttachmentPoint,
                         AMapAttachmentPoint* CurrentAttachmentPoint);
 
+    UFUNCTION()
+    void ResizeNavMesh();
+
     static TArray<int32> GetRandomisedIndices(int32 ArrayLength) ;
 	
 };
