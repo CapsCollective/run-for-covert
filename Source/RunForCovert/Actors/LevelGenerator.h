@@ -52,6 +52,8 @@ private:
 
     // Private fields
 
+    bool bCompletedGeneration;
+
     int32 ActiveFragments;
 
     FTimerHandle TimerHandle;
@@ -62,7 +64,9 @@ private:
 
     // Private Functions
 
-    bool TrySpawnFragment();
+    bool RunFragmentSpawn();
+
+    bool TryAddFragment(TArray<TSubclassOf<AMapFragment>>* FragmentList, int32 Index);
 
     static AMapAttachmentPoint* TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint);
 

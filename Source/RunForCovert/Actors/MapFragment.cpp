@@ -32,11 +32,6 @@ void AMapFragment::BeginPlay()
     }
 }
 
-TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
-{
-    return AttachmentPoints;
-}
-
 bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
 {
     // Return false for any attachment point that is not clear
@@ -60,4 +55,9 @@ void AMapFragment::ResetLocationRotation()
 {
     SetActorLocation(FVector::ZeroVector);
     SetActorRotation(FRotator::ZeroRotator);
+}
+
+TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
+{
+    return AttachmentPoints;
 }

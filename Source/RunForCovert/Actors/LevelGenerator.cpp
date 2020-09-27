@@ -17,6 +17,7 @@ ALevelGenerator::ALevelGenerator()
     TargetFragments = 5;
     SlowGenerationRate = .1f;
     bSlowGeneration = false;
+    bCompletedGeneration = false;
     CurrentAttachmentPoint = nullptr;
 }
 
@@ -28,29 +29,28 @@ void ALevelGenerator::BeginPlay()
         OpenAttachmentPoints.Add(AttachmentPoint);
     }
 
-    // Set the current attachment point from open
-    if (OpenAttachmentPoints.Num() == 0) { return; }
-    CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
+    // Do not attempt generation if any necessary lists are empty
+    if (OpenAttachmentPoints.Num() == 0 || OpeningFragments.Num() == 0 || ClosingFragments.Num() == 0) { return; }
 
-    // Run the fragment spawning process
+    // Set the current attachment point from open and run the fragment spawning process
+    CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
     if (bSlowGeneration)
     {
         // Run the process on a timer:
         // "Yes, I know what you're thinking but it's essentially a cast to a void member function reference.
         // I will be damned if I ever have to forward a function out of just returning a bool!"
         GetWorldTimerManager().SetTimer(TimerHandle, this,
-                                        (void(ALevelGenerator::*)())&ALevelGenerator::TrySpawnFragment,
+                                        (void(ALevelGenerator::*)())&ALevelGenerator::RunFragmentSpawn,
                                         SlowGenerationRate, true);
-
     }
     else
     {
         // Run the process on a loop
-        while (TrySpawnFragment());
+        while (RunFragmentSpawn());
     }
 }
 
-bool ALevelGenerator::TrySpawnFragment()
+bool ALevelGenerator::RunFragmentSpawn()
 {
     UE_LOG(LogTemp, Warning, TEXT("Open attachments: %i"), OpenAttachmentPoints.Num())
 
@@ -59,35 +59,24 @@ bool ALevelGenerator::TrySpawnFragment()
             (ActiveFragments + OpenAttachmentPoints.Num() < TargetFragments) ? &OpeningFragments : &ClosingFragments;
 
     // Try placing for each fragment in the list in a randomised order
+    bool bFoundAttachment = false;
     for (int32 Index : GetRandomisedIndices(FragmentList->Num()))
     {
-        // Spawn the map fragment
-        AMapFragment* MapFragment = GetWorld()->SpawnActor<AMapFragment>((*FragmentList)[Index]);
-
-        UE_LOG(LogTemp, Warning, TEXT("Placing fragment"))
-
-        // Attempt to place the fragment for each of its orientations
-        AMapAttachmentPoint* AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
-        if (AttachedPoint)
+        if (TryAddFragment(FragmentList, Index))
         {
-            // Add all new, open attachment points
-            TArray<AMapAttachmentPoint*> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
-            NewAttachmentPoints.Remove(AttachedPoint);
-            OpenAttachmentPoints.Append(NewAttachmentPoints);
-
-            // Increment active fragments end the loop
-            ActiveFragments++;
+            bFoundAttachment = true;
             break;
         }
         else
         {
             UE_LOG(LogTemp, Error, TEXT("Found no valid placements for map fragment"))
-
-            // Destroy the invalid fragment
-            MapFragment->Destroy();
-
-            // TODO fall back on closing fragment
         }
+    }
+
+    // If no valid attachments are found, fallback on adding a closing fragment
+    if (!bFoundAttachment && !TryAddFragment(&ClosingFragments, FMath::RandRange(0, ClosingFragments.Num()-1)))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Found no valid placements for ANY map fragments"))
     }
 
     // Get the next attachment point
@@ -103,9 +92,34 @@ bool ALevelGenerator::TrySpawnFragment()
             GetWorldTimerManager().ClearTimer(TimerHandle);
         }
         OnGenerationComplete.Broadcast();
+        bCompletedGeneration = true;
         return false;
     }
     return true;
+}
+
+bool ALevelGenerator::TryAddFragment(TArray<TSubclassOf<AMapFragment>>* FragmentList, int32 Index)
+{
+    // Spawn the map fragment and attempt to place it for each of its orientations
+    AMapFragment* MapFragment = GetWorld()->SpawnActor<AMapFragment>((*FragmentList)[Index]);
+    AMapAttachmentPoint* AttachedPoint = TryPlaceFragment(MapFragment, CurrentAttachmentPoint);
+    if (AttachedPoint)
+    {
+        // Add all new, open attachment points
+        TArray<AMapAttachmentPoint*> NewAttachmentPoints = MapFragment->GetAttachmentPoints();
+        NewAttachmentPoints.Remove(AttachedPoint);
+        OpenAttachmentPoints.Append(NewAttachmentPoints);
+
+        // Increment active fragments
+        ActiveFragments++;
+        return true;
+    }
+    else
+    {
+        // Destroy the invalid fragment
+        MapFragment->Destroy();
+        return false;
+    }
 }
 
 AMapAttachmentPoint* ALevelGenerator::TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint)
@@ -157,5 +171,5 @@ TArray<int32> ALevelGenerator::GetRandomisedIndices(int32 ArrayLength)
 
 bool ALevelGenerator::IsGenerationComplete() const
 {
-    return OpenAttachmentPoints.Num() <= 0;
+    return bCompletedGeneration;
 }
