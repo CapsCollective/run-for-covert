@@ -18,7 +18,7 @@ void AMapFragment::BeginPlay()
 
 	// Receive a list of all child actors
     TArray<AActor*> AttachedActors;
-    GetAttachedActors(AttachedActors);
+    GetAttachedActors(OUT AttachedActors);
 
 	// Record all children that are attachment points
 	for (auto It = AttachedActors.CreateConstIterator(); It; It++)
@@ -46,9 +46,16 @@ bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
 
 bool AMapFragment::HasNoOverlaps()
 {
+    // Get all overlapping actors
     TArray<AActor*> OverlappingActors;
     GetOverlappingActors(OUT OverlappingActors);
-    return OverlappingActors.Num() == 0;
+
+    // Check that none are map fragments
+    for (auto It = OverlappingActors.CreateConstIterator(); It; It++)
+    {
+        if (Cast<AMapFragment>(*It)) { return false; }
+    }
+    return true;
 }
 
 void AMapFragment::ResetLocationRotation()
