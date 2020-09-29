@@ -60,7 +60,7 @@ protected:
 
     // Protected overrides
 
-    virtual void BeginPlay() override;
+    virtual void OnPossess(APawn* InPawn) override;
 
 private:
 

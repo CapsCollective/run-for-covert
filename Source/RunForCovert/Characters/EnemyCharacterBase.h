@@ -32,6 +32,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     class UAIPerceptionComponent* PerceptionComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    class UAISenseConfig_Sight* SightConfig;
+
     // Public fields
 
     UPROPERTY(EditAnywhere)
