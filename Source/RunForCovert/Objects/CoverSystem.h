@@ -30,6 +30,9 @@ private:
     float CoverRadius;
 
     UPROPERTY()
+    FVector GenerationHeightOffset;
+
+    UPROPERTY()
     TArray<class UGraphNode*> GraphNodes;
 
     UPROPERTY()

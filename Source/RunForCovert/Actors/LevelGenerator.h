@@ -56,10 +56,13 @@ private:
 
     int32 ActiveFragments;
 
+    UPROPERTY()
     FTimerHandle TimerHandle;
 
+    UPROPERTY()
     class AMapAttachmentPoint* CurrentAttachmentPoint;
 
+    UPROPERTY()
     TArray<class AMapAttachmentPoint*> OpenAttachmentPoints;
 
     // Private Functions
