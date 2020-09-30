@@ -36,8 +36,6 @@ AEnemyAIController::AEnemyAIController()
     StateMachine = nullptr;
     CoverSystem = nullptr;
     SeenPlayerFor = 0.f;
-    bHasFinishedFiring = false;
-    bTakenValidCover = false;
     SenseState = EnemySenseState::DEFAULT;
 }
 

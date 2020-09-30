@@ -14,7 +14,13 @@ class RUNFORCOVERT_API UMoveCoverState : public UState
 
 public:
 
+    UMoveCoverState();
+
     // Public overrides
+
+    virtual void OnEnter() override;
+
+    virtual void OnExit() override;
 
     virtual void OnUpdate() override;
 
@@ -23,6 +29,8 @@ public:
 private:
 
     // Private fields
+
+    bool bTakenFinalCover;
 
     UPROPERTY()
     class UCoverPointComponent* CoverPoint;

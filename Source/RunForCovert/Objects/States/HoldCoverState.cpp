@@ -11,6 +11,7 @@ UHoldCoverState::UHoldCoverState()
     // Set field default values
     TimeToCover = 1.5f;
     TimeStarted = 0.f;
+    bHeldCover = false;
 }
 
 void UHoldCoverState::OnEnter()
@@ -23,25 +24,25 @@ void UHoldCoverState::OnEnter()
 void UHoldCoverState::OnExit()
 {
     // Reset crouching
-    Owner->Agent->SetCrouching(false);
+    bHeldCover = false;
 }
 
 void UHoldCoverState::OnUpdate()
 {
-    // Nullify cover validity once the timer ends
+    // Set the flag once the timer ends
     if (TimeStarted + TimeToCover <= Owner->GetWorld()->GetTimeSeconds())
     {
-        Owner->bTakenValidCover = false;
+        bHeldCover = true;
     }
 }
 
 UClass* UHoldCoverState::ToTransition() const
 {
-    if (!Owner->bTakenValidCover && Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange)
+    if (bHeldCover && Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange)
     {
         return UFireState::StaticClass();
     }
-    else if (!Owner->bTakenValidCover)
+    else if (bHeldCover)
     {
         return UMoveCoverState::StaticClass();
     }
