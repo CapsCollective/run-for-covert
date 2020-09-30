@@ -29,7 +29,7 @@ void UPatrolSystem::Initialise()
         if (ClosestPoint)
         {
             // Add the connection to the point's adjacent nodes
-            (*It)->AdjacentNodes.Add(ClosestPoint);
+            (*It)->TrySetNext(ClosestPoint);
 
             // Spawn an enemy at the point if it is flagged as such
             if ((*It)->bSpawnsEnemy)
@@ -65,12 +65,9 @@ APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent, APatrolPoint*
 void UPatrolSystem::DisplayDebugGraph(float DisplayTime)
 {
     // Display debug lines
-    for (APatrolPoint* Node : PatrolPoints)
+    for (APatrolPoint* PatrolPoint : PatrolPoints)
     {
-        for (APatrolPoint* ConnectedNode : Node->AdjacentNodes)
-        {
-            DrawDebugLine(GetWorld(), Node->GetActorLocation(),
-                          ConnectedNode->GetActorLocation(), FColor::Orange, false, DisplayTime);
-        }
+        DrawDebugLine(GetWorld(), PatrolPoint->GetActorLocation(),
+                      PatrolPoint->NextPatrol->GetActorLocation(), FColor::Orange, false, DisplayTime);
     }
 }

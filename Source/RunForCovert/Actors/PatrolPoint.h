@@ -18,10 +18,11 @@ public:
     UPROPERTY(EditAnywhere)
     bool bSpawnsEnemy;
 
-	UPROPERTY(VisibleAnywhere)
-	APatrolPoint* Node;
-
 	UPROPERTY(EditAnywhere)
-	TArray<APatrolPoint*> AdjacentNodes;
+	APatrolPoint* NextPatrol;
+
+	// Public functions
+
+	bool TrySetNext(APatrolPoint* Patrol);
 	
 };

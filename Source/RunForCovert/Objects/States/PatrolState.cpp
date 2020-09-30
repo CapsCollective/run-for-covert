@@ -29,7 +29,7 @@ void UPatrolState::OnUpdate()
     else if(FVector::Dist(Owner->Agent->GetActorLocation(), PatrolPoint->GetActorLocation()) < 100.0f)
     {
         // Select a random adjacent node as next target
-        PatrolPoint = PatrolPoint->AdjacentNodes[FMath::RandRange(0, PatrolPoint->AdjacentNodes.Num()-1)];
+        PatrolPoint = PatrolPoint->NextPatrol;
     }
     else if(Owner->SenseState != EnemySenseState::PLAYER_SEEN)
     {
