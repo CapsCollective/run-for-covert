@@ -25,13 +25,22 @@ public:
     float SlowGenerationRate;
 
     UPROPERTY(EditAnywhere)
-    int32 MaxFragments;
+    int32 TargetFragments;
 
     UPROPERTY(EditAnywhere)
-    int32 MaxAttemptsPerFragment;
+    TArray<TSubclassOf<class AMapFragment>> OpeningFragments;
 
     UPROPERTY(EditAnywhere)
-    TArray<TSubclassOf<class AMapFragment>> MapFragments;
+    TArray<TSubclassOf<AMapFragment>> ClosingFragments;
+
+    // Public functions
+
+    bool IsGenerationComplete() const;
+
+    // Dynamic delegates
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelGenerationDelegate);
+    FLevelGenerationDelegate OnGenerationComplete;
 
 protected:
 
@@ -43,29 +52,33 @@ private:
 
     // Private fields
 
-    int32 Attempts = 0;
+    bool bCompletedGeneration;
 
-    int32 ActiveFragments = 0;
+    int32 ActiveFragments;
 
+    UPROPERTY()
     FTimerHandle TimerHandle;
 
+    UPROPERTY()
     class AMapAttachmentPoint* CurrentAttachmentPoint;
 
+    UPROPERTY()
     TArray<class AMapAttachmentPoint*> OpenAttachmentPoints;
 
     // Private Functions
 
-    bool ContinueGenerating();
+    bool RunFragmentSpawn();
 
-    void RunFragmentSpawn();
-
-    void TrySpawnFragment();
+    bool TryAddFragment(TArray<TSubclassOf<AMapFragment>>* FragmentList, int32 Index);
 
     static AMapAttachmentPoint* TryPlaceFragment(AMapFragment* MapFragment, AMapAttachmentPoint* CurrentAttachmentPoint);
 
     static bool TryAttachPoint(AMapFragment* MapFragment, AMapAttachmentPoint* NewAttachmentPoint,
                         AMapAttachmentPoint* CurrentAttachmentPoint);
 
-    AMapFragment* LoadRandomLevel();
+    UFUNCTION()
+    void ResizeNavMesh();
+
+    static TArray<int32> GetRandomisedIndices(int32 ArrayLength) ;
 	
 };
