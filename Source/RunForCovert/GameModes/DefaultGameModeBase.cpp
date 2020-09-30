@@ -6,9 +6,7 @@
 #include "RunForCovert/Objects/CoverSystem.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 #include "RunForCovert/Actors/LevelGenerator.h"
-#include "EngineUtils.h"
-#include "../Actors/PatrolPoint.h"
-#include "../Characters/EnemyCharacterBase.h"
+#include "Engine/World.h"
 
 ADefaultGameModeBase::ADefaultGameModeBase()
 {
@@ -26,8 +24,8 @@ void ADefaultGameModeBase::BeginPlay()
     Super::BeginPlay();
 
     // Set field default values
-    CoverSystem = NewObject<UCoverSystem>();
-    PatrolSystem = NewObject<UPatrolSystem>();
+    CoverSystem = NewObject<UCoverSystem>(this);
+    PatrolSystem = NewObject<UPatrolSystem>(this);
     LevelGenerator = Cast<ALevelGenerator>(
             UGameplayStatics::GetActorOfClass(GetWorld(), ALevelGenerator::StaticClass()));
 
@@ -60,19 +58,6 @@ ALevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
 void ADefaultGameModeBase::InitialiseSystems()
 {
     // Initialise all UObject systems
-    CoverSystem->Initialise(GetWorld());
-    PatrolSystem->Initialise(GetWorld());
-
-    // Spawn enemies to various patrol points
-    TArray<APatrolPoint*> SpawnedPoints;
-    for (TActorIterator<APatrolPoint> It(GetWorld()); It; ++It)
-    {
-        if (!SpawnedPoints.Contains(*It))
-        {
-            GetWorld()->SpawnActor<AEnemyCharacterBase>(
-                    DefaultEnemyPawnClass, (*It)->GetActorLocation(), (*It)->GetActorRotation());
-            SpawnedPoints.Add(*It);
-            SpawnedPoints.Append((*It)->AdjacentNodes);
-        }
-    }
+    CoverSystem->Initialise();
+    PatrolSystem->Initialise();
 }

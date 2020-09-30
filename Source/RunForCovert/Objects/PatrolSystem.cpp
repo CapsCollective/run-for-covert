@@ -4,26 +4,39 @@
 #include "EngineUtils.h"
 #include "RunForCovert/Actors/PatrolPoint.h"
 #include "DrawDebugHelpers.h"
+#include "../Characters/EnemyCharacterBase.h"
+#include "../GameModes/DefaultGameModeBase.h"
 
 
-void UPatrolSystem::Initialise(UWorld* InWorld)
+void UPatrolSystem::Initialise()
 {
-    // Set the world reference
-    World = InWorld;
-
     // Populate a list of all patrol point actors in the world
-    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
+    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(GetWorld()))
     {
         // Add patrol point to list
         PatrolPoints.Add(PatrolPoint);
     }
 
+    // Get reference to the game mode
+    ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(GetWorld()->GetAuthGameMode());
+    if (!GameMode) { return; }
+
+
+    // Generate the patrol connections and spawn enemies
     for (auto It = PatrolPoints.CreateConstIterator(); It; It++)
     {
         APatrolPoint* ClosestPoint = FindClosestPatrolPoint(*It, *It);
         if (ClosestPoint)
         {
+            // Add the connection to the point's adjacent nodes
             (*It)->AdjacentNodes.Add(ClosestPoint);
+
+            // Spawn an enemy at the point if it is flagged as such
+            if ((*It)->bSpawnsEnemy)
+            {
+                GetWorld()->SpawnActor<AEnemyCharacterBase>(
+                        GameMode->DefaultEnemyPawnClass, (*It)->GetActorLocation(), (*It)->GetActorRotation());
+            }
         }
     }
 
@@ -37,7 +50,7 @@ APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent, APatrolPoint*
     // Iterate through all patrol points in world
     float ClosestDistance = TNumericLimits<float>::Max();
     APatrolPoint* ClosestPatrolPoint = nullptr;
-    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
+    for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(GetWorld()))
     {
         float Distance = PatrolPoint->GetDistanceTo(Agent);
         if (Distance <= ClosestDistance && !(IgnoredPatrolPoint && PatrolPoint == IgnoredPatrolPoint))
@@ -56,7 +69,7 @@ void UPatrolSystem::DisplayDebugGraph(float DisplayTime)
     {
         for (APatrolPoint* ConnectedNode : Node->AdjacentNodes)
         {
-            DrawDebugLine(World, Node->GetActorLocation(),
+            DrawDebugLine(GetWorld(), Node->GetActorLocation(),
                           ConnectedNode->GetActorLocation(), FColor::Orange, false, DisplayTime);
         }
     }

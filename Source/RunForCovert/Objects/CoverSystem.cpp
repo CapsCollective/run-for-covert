@@ -13,17 +13,13 @@ UCoverSystem::UCoverSystem()
     // Set field default values
     CoverRadius = 1500.f;
     GenerationHeightOffset = FVector(0.f, 0.f, 1.f);
-    World = nullptr;
 }
 
-void UCoverSystem::Initialise(UWorld* InWorld)
+void UCoverSystem::Initialise()
 {
-    // Set the world reference
-    World = InWorld;
-
     // Populate a list of nodes representing all cover actors in the
     // world wrapped in objects specifying graph attributes
-    for (ACover* Cover : TActorRange<ACover>(World))
+    for (ACover* Cover : TActorRange<ACover>(GetWorld()))
     {
         // Add cover node list
         UGraphNode* NewNode = NewObject<UGraphNode>();
@@ -158,7 +154,7 @@ void UCoverSystem::GenerateGraph(float Radius)
             QueryParams.AddIgnoredActor(Node->Actor);
 
             // Perform a line trace between the cover actors
-            bool bHitAnything = World->LineTraceSingleByChannel(
+            bool bHitAnything = GetWorld()->LineTraceSingleByChannel(
                     OUT Hit,
                     CurrentNode->Actor->GetActorLocation() + GenerationHeightOffset,
                     Node->Actor->GetActorLocation() + GenerationHeightOffset,
@@ -181,7 +177,7 @@ void UCoverSystem::DisplayDebugGraph(float DisplayTime)
     {
         for (UGraphNode* ConnectedNode : Node->AdjacentNodes)
         {
-            DrawDebugLine(World, Node->Actor->GetActorLocation(),
+            DrawDebugLine(GetWorld(), Node->Actor->GetActorLocation(),
                           ConnectedNode->Actor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
@@ -192,7 +188,7 @@ void UCoverSystem::DisplayDebugPath(TArray<ACover*>* Path, float DisplayTime)
     // Display debug path
     for (auto It = Path->CreateConstIterator(); It+1; It++)
     {
-        DrawDebugLine(World, (*It)->GetActorLocation(),
+        DrawDebugLine(GetWorld(), (*It)->GetActorLocation(),
                       (*(It+1))->GetActorLocation(), FColor::Red, false, DisplayTime);
     }
 }

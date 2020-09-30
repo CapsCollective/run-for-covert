@@ -17,7 +17,7 @@ public:
 
     // Public functions
 
-    void Initialise(UWorld* InWorld);
+    void Initialise();
 
     class UCoverPointComponent* FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
@@ -34,9 +34,6 @@ private:
 
     UPROPERTY()
     TArray<class UGraphNode*> GraphNodes;
-
-    UPROPERTY()
-    UWorld* World;
 
     // Private methods
 

@@ -15,7 +15,7 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	// Public functions
 
-	void Initialise(UWorld* InWorld);
+	void Initialise();
 
 	class APatrolPoint* FindClosestPatrolPoint(AActor* Agent, APatrolPoint* IgnoredPatrolPoint = nullptr);
 
@@ -25,9 +25,6 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	UPROPERTY()
 	TArray<class APatrolPoint*> PatrolPoints;
-
-	UPROPERTY()
-	UWorld* World;
 
 	// Private methods
 

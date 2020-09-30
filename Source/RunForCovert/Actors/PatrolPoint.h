@@ -15,6 +15,9 @@ public:
 
     // Public fields
 
+    UPROPERTY(EditAnywhere)
+    bool bSpawnsEnemy;
+
 	UPROPERTY(VisibleAnywhere)
 	APatrolPoint* Node;
 
