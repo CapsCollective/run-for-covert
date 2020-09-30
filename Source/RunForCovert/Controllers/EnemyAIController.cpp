@@ -18,6 +18,17 @@ AEnemyAIController::AEnemyAIController()
 {
     PrimaryActorTick.bCanEverTick = true;
 
+    // Setup components
+    PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
+
+    // Setup the controller's perception and sight config details
+    UAISenseConfig_Sight* SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+    SightConfig->SightRadius = 1000.0f;
+    SightConfig->PeripheralVisionAngleDegrees = 60.0f;
+    SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+    PerceptionComponent->ConfigureSense(*SightConfig);
+
     // Set field default values
     Player = nullptr;
     Agent = nullptr;
@@ -40,7 +51,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
     Agent = Cast<AEnemyCharacterBase>(InPawn);
 
     // Register perception delegate method
-    Agent->PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
+    PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
 
     // Get a reference to the game mode (used as a service locator)
     ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
