@@ -11,12 +11,20 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
     // Set the world reference
     World = InWorld;
 
-    // Populate a list of nodes representing all patrol point actors in the
-    // world wrapped in objects specifying graph attributes
+    // Populate a list of all patrol point actors in the world
     for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
     {
         // Add patrol point to list
         PatrolPoints.Add(PatrolPoint);
+    }
+
+    for (auto It = PatrolPoints.CreateConstIterator(); It; It++)
+    {
+        APatrolPoint* ClosestPoint = FindClosestPatrolPoint(*It, *It);
+        if (ClosestPoint)
+        {
+            (*It)->AdjacentNodes.Add(ClosestPoint);
+        }
     }
 
     // Display the graph connections
@@ -24,7 +32,7 @@ void UPatrolSystem::Initialise(UWorld* InWorld)
 }
 
 // Finds the closest patrol point
-APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
+APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent, APatrolPoint* IgnoredPatrolPoint)
 {
     // Iterate through all patrol points in world
     float ClosestDistance = TNumericLimits<float>::Max();
@@ -32,13 +40,12 @@ APatrolPoint* UPatrolSystem::FindClosestPatrolPoint(AActor* Agent)
     for (APatrolPoint* PatrolPoint : TActorRange<APatrolPoint>(World))
     {
         float Distance = PatrolPoint->GetDistanceTo(Agent);
-        if (Distance <= ClosestDistance)
+        if (Distance <= ClosestDistance && !(IgnoredPatrolPoint && PatrolPoint == IgnoredPatrolPoint))
         {
             ClosestDistance = Distance;
             ClosestPatrolPoint = PatrolPoint;
         }
     }
-    
     return ClosestPatrolPoint;
 }
 

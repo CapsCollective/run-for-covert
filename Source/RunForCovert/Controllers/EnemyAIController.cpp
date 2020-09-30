@@ -92,8 +92,8 @@ void AEnemyAIController::Tick(float DeltaTime)
 void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
     // Check bSeenPlayer to true if the detected Stimulus is the player or not
-    APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
-    if(pcb && Stimulus.WasSuccessfullySensed())
+    APlayerCharacterBase* PlayerCharacter = Cast<APlayerCharacterBase>(ActorSensed);
+    if(PlayerCharacter && Stimulus.WasSuccessfullySensed())
     {
         SenseState = EnemySenseState::PLAYER_SEEN;
     }

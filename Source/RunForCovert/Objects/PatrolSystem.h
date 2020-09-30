@@ -17,7 +17,7 @@ class RUNFORCOVERT_API UPatrolSystem : public UObject
 
 	void Initialise(UWorld* InWorld);
 
-	class APatrolPoint* FindClosestPatrolPoint(AActor* Agent);
+	class APatrolPoint* FindClosestPatrolPoint(AActor* Agent, APatrolPoint* IgnoredPatrolPoint = nullptr);
 
 	private:
 

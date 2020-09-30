@@ -182,7 +182,7 @@ void UCoverSystem::DisplayDebugGraph(float DisplayTime)
         for (UGraphNode* ConnectedNode : Node->AdjacentNodes)
         {
             DrawDebugLine(World, Node->Actor->GetActorLocation(),
-                          ConnectedNode->Actor->GetActorLocation(), FColor::Green, true, DisplayTime);
+                          ConnectedNode->Actor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
 }
