@@ -18,7 +18,7 @@ void AMapFragment::BeginPlay()
 
 	// Receive a list of all child actors
     TArray<AActor*> AttachedActors;
-    GetAttachedActors(AttachedActors);
+    GetAttachedActors(OUT AttachedActors);
 
 	// Record all children that are attachment points
 	for (auto It = AttachedActors.CreateConstIterator(); It; It++)
@@ -32,21 +32,39 @@ void AMapFragment::BeginPlay()
     }
 }
 
+bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
+{
+    // Return false for any attachment point that is not clear
+    for (auto It = AttachmentPoints.CreateConstIterator(); It; It++)
+    {
+        // Do not check any point that is to be ignored
+        if ((*It) == IgnoredPoint) { continue; }
+        if (!(*It)->IsClear()) { return false; }
+    }
+    return true;
+}
+
+bool AMapFragment::HasNoOverlaps()
+{
+    // Get all overlapping actors
+    TArray<AActor*> OverlappingActors;
+    GetOverlappingActors(OUT OverlappingActors);
+
+    // Check that none are map fragments
+    for (auto It = OverlappingActors.CreateConstIterator(); It; It++)
+    {
+        if (Cast<AMapFragment>(*It)) { return false; }
+    }
+    return true;
+}
+
+void AMapFragment::ResetLocationRotation()
+{
+    SetActorLocation(FVector::ZeroVector);
+    SetActorRotation(FRotator::ZeroRotator);
+}
+
 TArray<AMapAttachmentPoint*> AMapFragment::GetAttachmentPoints()
 {
     return AttachmentPoints;
-}
-
-bool AMapFragment::AttachmentPointsClear(AMapAttachmentPoint* IgnoredPoint)
-{
-    for (auto It = AttachmentPoints.CreateConstIterator(); It; It++)
-    {
-        if ((*It) == IgnoredPoint) { continue; }
-
-        if (!(*It)->IsClear())
-        {
-            return false;
-        }
-    }
-    return true;
 }

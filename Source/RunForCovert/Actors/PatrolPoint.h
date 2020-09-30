@@ -15,10 +15,14 @@ public:
 
     // Public fields
 
-	UPROPERTY(VisibleAnywhere)
-	APatrolPoint* Node;
+    UPROPERTY(EditAnywhere)
+    bool bSpawnsEnemy;
 
 	UPROPERTY(EditAnywhere)
-	TArray<APatrolPoint*> AdjacentNodes;
+	APatrolPoint* NextPatrol;
+
+	// Public functions
+
+	bool TrySetNext(APatrolPoint* Patrol);
 	
 };

@@ -27,11 +27,6 @@ public:
 
     void SetCrouching(bool Crouching);
 
-    // Components
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    class UAIPerceptionComponent* PerceptionComponent;
-
     // Public fields
 
     UPROPERTY(EditAnywhere)

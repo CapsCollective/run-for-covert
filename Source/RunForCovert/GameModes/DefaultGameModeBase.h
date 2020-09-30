@@ -14,6 +14,13 @@ class RUNFORCOVERT_API ADefaultGameModeBase : public AGameModeBase
 
 public:
 
+    ADefaultGameModeBase();
+
+    // Public fields
+
+    UPROPERTY(EditAnywhere, Category = "Classes")
+    TSubclassOf<APawn> DefaultEnemyPawnClass;
+
     // Public functions
 
     class UCoverSystem* GetCoverSystem();
@@ -21,6 +28,9 @@ public:
     class UPatrolSystem* GetPatrolSystem();
 
     class ALevelGenerator* GetLevelGenerator();
+
+    UFUNCTION()
+    void InitialiseSystems();
 
 protected:
 

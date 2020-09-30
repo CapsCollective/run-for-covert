@@ -17,7 +17,7 @@ public:
 
     // Public functions
 
-    void Initialise(UWorld* InWorld);
+    void Initialise();
 
     class UCoverPointComponent* FindClosestValidCoverPoint(AActor* Agent, AActor* Enemy);
 
@@ -30,10 +30,10 @@ private:
     float CoverRadius;
 
     UPROPERTY()
-    TArray<class UGraphNode*> GraphNodes;
+    FVector GenerationHeightOffset;
 
     UPROPERTY()
-    UWorld* World;
+    TArray<class UGraphNode*> GraphNodes;
 
     // Private methods
 

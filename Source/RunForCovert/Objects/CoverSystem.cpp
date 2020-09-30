@@ -6,22 +6,20 @@
 #include "GraphNode.h"
 #include "RunForCovert/Actors/Cover.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 UCoverSystem::UCoverSystem()
 {
     // Set field default values
-    World = nullptr;
-    CoverRadius = 1000.f;
+    CoverRadius = 1500.f;
+    GenerationHeightOffset = FVector(0.f, 0.f, 1.f);
 }
 
-void UCoverSystem::Initialise(UWorld* InWorld)
+void UCoverSystem::Initialise()
 {
-    // Set the world reference
-    World = InWorld;
-
     // Populate a list of nodes representing all cover actors in the
     // world wrapped in objects specifying graph attributes
-    for (ACover* Cover : TActorRange<ACover>(World))
+    for (ACover* Cover : TActorRange<ACover>(GetWorld()))
     {
         // Add cover node list
         UGraphNode* NewNode = NewObject<UGraphNode>();
@@ -147,7 +145,24 @@ void UCoverSystem::GenerateGraph(float Radius)
         for (UGraphNode* Node : GraphNodes)
         {
             // Check that they are within the radius and not itself
-            if (Node->Actor->GetDistanceTo(CurrentNode->Actor) <= Radius && Node->Actor != CurrentNode->Actor)
+            if (Node->Actor->GetDistanceTo(CurrentNode->Actor) > Radius || Node->Actor == CurrentNode->Actor) { continue; }
+
+            // Create default trace parameters and ignore the currently checked cover
+            FHitResult Hit;
+            FCollisionQueryParams QueryParams;
+            QueryParams.AddIgnoredActor(CurrentNode->Actor);
+            QueryParams.AddIgnoredActor(Node->Actor);
+
+            // Perform a line trace between the cover actors
+            bool bHitAnything = GetWorld()->LineTraceSingleByChannel(
+                    OUT Hit,
+                    CurrentNode->Actor->GetActorLocation() + GenerationHeightOffset,
+                    Node->Actor->GetActorLocation() + GenerationHeightOffset,
+                    ECC_WorldDynamic,
+                    QueryParams);
+
+            // Link the cover nodes if the trace is clear
+            if (!bHitAnything)
             {
                 CurrentNode->AdjacentNodes.Add(Node);
             }
@@ -162,7 +177,7 @@ void UCoverSystem::DisplayDebugGraph(float DisplayTime)
     {
         for (UGraphNode* ConnectedNode : Node->AdjacentNodes)
         {
-            DrawDebugLine(World, Node->Actor->GetActorLocation(),
+            DrawDebugLine(GetWorld(), Node->Actor->GetActorLocation(),
                           ConnectedNode->Actor->GetActorLocation(), FColor::Green, false, DisplayTime);
         }
     }
@@ -173,7 +188,7 @@ void UCoverSystem::DisplayDebugPath(TArray<ACover*>* Path, float DisplayTime)
     // Display debug path
     for (auto It = Path->CreateConstIterator(); It+1; It++)
     {
-        DrawDebugLine(World, (*It)->GetActorLocation(),
+        DrawDebugLine(GetWorld(), (*It)->GetActorLocation(),
                       (*(It+1))->GetActorLocation(), FColor::Red, false, DisplayTime);
     }
 }

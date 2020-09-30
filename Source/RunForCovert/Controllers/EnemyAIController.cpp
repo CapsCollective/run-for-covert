@@ -3,6 +3,7 @@
 
 #include "EnemyAIController.h"
 #include "EngineUtils.h"
+#include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
 #include "RunForCovert/Characters/EnemyCharacterBase.h"
 #include "RunForCovert/Characters/PlayerCharacterBase.h"
@@ -17,6 +18,17 @@ AEnemyAIController::AEnemyAIController()
 {
     PrimaryActorTick.bCanEverTick = true;
 
+    // Setup components
+    PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
+
+    // Setup the controller's perception and sight config details
+    UAISenseConfig_Sight* SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+    SightConfig->SightRadius = 1000.0f;
+    SightConfig->PeripheralVisionAngleDegrees = 60.0f;
+    SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+    PerceptionComponent->ConfigureSense(*SightConfig);
+
     // Set field default values
     Player = nullptr;
     Agent = nullptr;
@@ -29,25 +41,17 @@ AEnemyAIController::AEnemyAIController()
     SenseState = EnemySenseState::DEFAULT;
 }
 
-void AEnemyAIController::BeginPlay()
+void AEnemyAIController::OnPossess(APawn* InPawn)
 {
-    Super::BeginPlay();
+    Super::OnPossess(InPawn);
 
     // TODO this will need to be fixed when dealing with multiple players
     // Get references to player and the controlled agent
     Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-    Agent = Cast<AEnemyCharacterBase>(GetPawn());
-
-    // Set up the sight config
-    UAISenseConfig_Sight* SightConfig = NewObject<UAISenseConfig_Sight>();
-    SightConfig->SightRadius = 1000.0f;
-    SightConfig->PeripheralVisionAngleDegrees = 60.0f;
-    SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-    SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-    Agent->PerceptionComponent->ConfigureSense(*SightConfig);
+    Agent = Cast<AEnemyCharacterBase>(InPawn);
 
     // Register perception delegate method
-    Agent->PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
+    PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
 
     // Get a reference to the game mode (used as a service locator)
     ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
@@ -99,8 +103,8 @@ void AEnemyAIController::Tick(float DeltaTime)
 void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
 {
     // Check bSeenPlayer to true if the detected Stimulus is the player or not
-    APlayerCharacterBase* pcb = Cast<APlayerCharacterBase>(ActorSensed);
-    if(pcb && Stimulus.WasSuccessfullySensed())
+    APlayerCharacterBase* PlayerCharacter = Cast<APlayerCharacterBase>(ActorSensed);
+    if(PlayerCharacter && Stimulus.WasSuccessfullySensed())
     {
         SenseState = EnemySenseState::PLAYER_SEEN;
     }
