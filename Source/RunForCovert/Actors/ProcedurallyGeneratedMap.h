@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LevelGenerator.h"
+#include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "ProcedurallyGeneratedMap.generated.h"
-
-using namespace noise;
 
 UCLASS()
 class RUNFORCOVERT_API AProcedurallyGeneratedMap : public AActor

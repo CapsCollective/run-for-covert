@@ -62,11 +62,11 @@ void AProcedurallyGeneratedMap::GenerateMap()
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *It->GetActorLocation().ToString());
 		//It->Destroy();
 	}
-	
-	module::Billow Billow;
+
+	noise::module::Billow Billow;
 	Billow.SetSeed(FMath::RandRange(-10000, 10000));
 	Billow.SetFrequency(16);
-	module::RidgedMulti RFM;
+	noise::module::RidgedMulti RFM;
 	RFM.SetSeed(FMath::RandRange(-10000, 10000));
 	
 
