@@ -23,7 +23,7 @@ public:
 
     // Public functions
 
-    void OnDeath();
+    virtual void OnDeath();
 
     UFUNCTION(BlueprintPure)
     UHealthComponent* GetHealth() const;
@@ -59,6 +59,8 @@ protected:
     virtual void ReloadInitiated(float Length);
 
     void CancelReload();
+
+    bool IsReloading();
 
     // Protected getters
 

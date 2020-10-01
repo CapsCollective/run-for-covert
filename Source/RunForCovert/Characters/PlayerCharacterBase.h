@@ -22,6 +22,8 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    virtual void OnDeath() override;
+
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Player Control")

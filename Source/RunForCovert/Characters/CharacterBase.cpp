@@ -103,3 +103,8 @@ void ACharacterBase::CancelReload()
 {
     GetWorldTimerManager().ClearTimer(ReloadTimer);
 }
+
+bool ACharacterBase::IsReloading()
+{
+    return GetWorldTimerManager().IsTimerActive(ReloadTimer);
+}
