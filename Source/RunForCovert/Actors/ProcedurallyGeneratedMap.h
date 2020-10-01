@@ -7,6 +7,8 @@
 #include "ProceduralMeshComponent.h"
 #include <libnoise.h>
 #include "KismetProceduralMeshLibrary.h"
+#include "LevelGenerator.h"
+
 #include "ProcedurallyGeneratedMap.generated.h"
 
 using namespace noise;
@@ -75,5 +77,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	bool bRegenerateMap;
+
+	UPROPERTY(EditAnywhere)
+	ALevelGenerator* LevelGenerator;
+
+	TArray<FVector> LevelPositionsAtZero;
 
 };

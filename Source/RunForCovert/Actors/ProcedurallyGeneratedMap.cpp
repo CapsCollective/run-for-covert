@@ -3,6 +3,11 @@
 
 #include "ProcedurallyGeneratedMap.h"
 
+
+#include "EngineUtils.h"
+#include "LevelGenerator.h"
+#include "MapFragment.h"
+
 // Sets default values
 AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
 {
@@ -21,22 +26,21 @@ AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
 void AProcedurallyGeneratedMap::BeginPlay()
 {
 	Super::BeginPlay();
-	ClearMap();
-	GenerateMap();
-	
+
+	if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
+	{
+		LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProcedurallyGeneratedMap::GenerateMap);
+	}
+	else
+	{
+		GenerateMap();
+	}
 }
 
 // Called every frame
 void AProcedurallyGeneratedMap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bRegenerateMap)
-	{
-		ClearMap();
-		GenerateMap();
-		bRegenerateMap = false;
-	}
 }
 
 bool AProcedurallyGeneratedMap::ShouldTickIfViewportsOnly() const
@@ -46,7 +50,15 @@ bool AProcedurallyGeneratedMap::ShouldTickIfViewportsOnly() const
 
 void AProcedurallyGeneratedMap::GenerateMap()
 {
-	UE_LOG(LogTemp,Warning,TEXT("GENERATING MAP"))
+	ClearMap();
+	UE_LOG(LogTemp,Warning,TEXT("GENERATING MAP %i"), LevelGenerator->GetMaxLevelRadius());
+
+	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
+	{
+		LevelPositionsAtZero.Add(It->GetActorLocation());
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *It->GetActorLocation().ToString());
+		//It->Destroy();
+	}
 	
 	module::Billow Billow;
 	Billow.SetSeed(FMath::RandRange(-10000, 10000));
@@ -61,15 +73,20 @@ void AProcedurallyGeneratedMap::GenerateMap()
 		{
 			float X = Col * GridSize;
 			float Y = Row * GridSize;
-			float Z = Billow.GetValue(Col * BillowRoughness, Row * BillowRoughness, 0) * BillowScale;
+			float Z = FMath::Abs(Billow.GetValue(Col * BillowRoughness, Row * BillowRoughness, 0) * BillowScale);
+			Z += FMath::Abs(RFM.GetValue(Col * RFMRoughness, Row * RFMRoughness, 0) * RFMScale);
 
-			if(Col * GridSize < 1000 || Row * GridSize < 1000 || Col * GridSize > 5000 || Row * GridSize > 5000)
+			for (FVector v : LevelPositionsAtZero)
 			{
-				Z += RFM.GetValue(Col * RFMRoughness, Row * RFMRoughness, 0) * RFMScale;
+				if(FVector::Dist(FVector(X, Y, 0) + GetActorLocation(), FVector(v.X, v.Y, 0)) < 750)
+				{
+					if(Z > v.Z)
+						Z = v.Z;
+				}
 			}
+			
 			Vertices.Add(FVector(X, Y, Z));
 			UVCoords.Add(FVector2D(Col, Row));
-
 		}
 	}
 
