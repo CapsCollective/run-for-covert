@@ -2,6 +2,9 @@
 
 
 #include "ProcedurallyGeneratedMap.h"
+#include "ProceduralMeshComponent.h"
+#include "../../../ThirdParty/LibNoise/Includes/libnoise.h"
+#include "KismetProceduralMeshLibrary.h"
 
 // Sets default values
 AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()

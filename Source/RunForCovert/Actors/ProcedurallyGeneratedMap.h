@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProceduralMeshComponent.h"
-#include <libnoise.h>
-#include "KismetProceduralMeshLibrary.h"
 #include "ProcedurallyGeneratedMap.generated.h"
 
 using namespace noise;
