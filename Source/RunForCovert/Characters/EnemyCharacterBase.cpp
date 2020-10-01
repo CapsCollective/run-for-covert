@@ -27,5 +27,15 @@ void AEnemyCharacterBase::SetCrouching(bool Crouching)
 
 bool AEnemyCharacterBase::FireWeapon()
 {
-    return Fire();
+    if (!GetGun()) { return false; }
+
+    if (GetGun()->GetCurrentAmmo() > 0)
+    {
+        return Fire();
+    }
+    else if (!IsReloading())
+    {
+        BeginReload();
+    }
+    return false;
 }
