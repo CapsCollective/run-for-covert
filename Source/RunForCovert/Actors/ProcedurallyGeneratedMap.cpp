@@ -10,8 +10,10 @@ AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh Component"));
-	PerlinScale = 1000.0f;
-	PerlinRoughness = 0.1f;
+	BillowScale = 1000.0f;
+	BillowRoughness = 0.1f;
+	RFMScale = 1000.0f;
+	RFMRoughness = 0.1f;
 	bRegenerateMap = false;
 }
 
@@ -19,6 +21,7 @@ AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
 void AProcedurallyGeneratedMap::BeginPlay()
 {
 	Super::BeginPlay();
+	ClearMap();
 	GenerateMap();
 	
 }
@@ -43,9 +46,14 @@ bool AProcedurallyGeneratedMap::ShouldTickIfViewportsOnly() const
 
 void AProcedurallyGeneratedMap::GenerateMap()
 {
+	UE_LOG(LogTemp,Warning,TEXT("GENERATING MAP"))
+	
 	module::Billow Billow;
 	Billow.SetSeed(FMath::RandRange(-10000, 10000));
-	Billow.SetFrequency(1);
+	Billow.SetFrequency(16);
+	module::RidgedMulti RFM;
+	RFM.SetSeed(FMath::RandRange(-10000, 10000));
+	
 
 	for (int Row = 0; Row < Height; Row++)
 	{
@@ -53,7 +61,12 @@ void AProcedurallyGeneratedMap::GenerateMap()
 		{
 			float X = Col * GridSize;
 			float Y = Row * GridSize;
-			float Z = Billow.GetValue(Col * PerlinRoughness, Row * PerlinRoughness, 0) * PerlinScale;//FMath::PerlinNoise2D(FVector2D(float(Col) * PerlinRoughness, float(Row) * PerlinRoughness)) * PerlinScale;
+			float Z = Billow.GetValue(Col * BillowRoughness, Row * BillowRoughness, 0) * BillowScale;
+
+			if(Col * GridSize < 1000 || Row * GridSize < 1000 || Col * GridSize > 5000 || Row * GridSize > 5000)
+			{
+				Z += RFM.GetValue(Col * RFMRoughness, Row * RFMRoughness, 0) * RFMScale;
+			}
 			Vertices.Add(FVector(X, Y, Z));
 			UVCoords.Add(FVector2D(Col, Row));
 

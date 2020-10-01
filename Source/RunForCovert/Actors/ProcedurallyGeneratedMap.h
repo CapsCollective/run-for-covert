@@ -57,10 +57,16 @@ public:
 	TArray<FProcMeshTangent> Tangents;
 
 	UPROPERTY(EditAnywhere)
-	float PerlinScale;
+	float BillowScale;
 
 	UPROPERTY(EditAnywhere)
-	float PerlinRoughness;
+	float BillowRoughness;
+
+	UPROPERTY(EditAnywhere)
+	float RFMScale;
+
+	UPROPERTY(EditAnywhere)
+	float RFMRoughness;
 
 	UFUNCTION(BlueprintCallable)
 	void GenerateMap();
