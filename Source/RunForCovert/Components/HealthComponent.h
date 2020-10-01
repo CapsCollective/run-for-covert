@@ -26,6 +26,9 @@ public:
 
     void OnTakeDamage(float Damage);
 
+    UFUNCTION(BlueprintPure)
+    float GetHealthPercentage() const;
+
 private:
 
     // Private fields

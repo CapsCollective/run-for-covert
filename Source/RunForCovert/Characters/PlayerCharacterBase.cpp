@@ -42,6 +42,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::FireWeapon);
 
+    PlayerInputComponent->BindAction(TEXT("Reload"), EInputEvent::IE_Pressed, this, &ACharacterBase::BeginReload);
+
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::SprintStart);
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &APlayerCharacterBase::SprintEnd);
 
@@ -77,6 +79,7 @@ void APlayerCharacterBase::FireWeapon()
 bool APlayerCharacterBase::Fire()
 {
     if (!GetGun()) { return false; }
+    CancelReload();
     if (GetGun()->Fire(GetController(), Camera->GetForwardVector()))
     {
         OnFired();

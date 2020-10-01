@@ -5,6 +5,27 @@
 #include "RunForCovert/Actors/Cover.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 #include "HoldCoverState.h"
+#include "ChargeState.h"
+
+UMoveCoverState::UMoveCoverState()
+{
+    // Set field default values
+    bTakenFinalCover = false;
+    CoverPoint = nullptr;
+    PreviousCoverPoint = nullptr;
+}
+
+void UMoveCoverState::OnEnter()
+{
+    // Exit agent crouching
+    if (!Owner) { return; }
+    Owner->Agent->SetCrouching(false);
+}
+
+void UMoveCoverState::OnExit()
+{
+    bTakenFinalCover = false;
+}
 
 void UMoveCoverState::OnUpdate()
 {
@@ -13,13 +34,14 @@ void UMoveCoverState::OnUpdate()
         // Check if the agent has arrived at the current cover point
         if (FVector::Dist(Owner->Agent->GetActorLocation(), CoverPoint->GetComponentLocation()) < 100.f)
         {
-            // Flag that a valid cover position has been taken if it provides cover
-            if (CoverPoint->DoesProvideCover(Owner->Player->GetActorLocation()))
-            {
-                Owner->bTakenValidCover = true;
-            }
             PreviousCoverPoint = CoverPoint;
             CoverPoint = nullptr;
+
+            // Exit the state if the end of the path has been reached
+            if (CoverPath.Num() == 0)
+            {
+                bTakenFinalCover = true;
+            }
         }
     }
     else if (CoverPath.Num() > 0)
@@ -50,5 +72,15 @@ void UMoveCoverState::OnUpdate()
 
 UClass* UMoveCoverState::ToTransition() const
 {
-    return Owner->bTakenValidCover ? UHoldCoverState::StaticClass() : nullptr;
+    bool bWithinFiringRange = Owner->Agent->GetDistanceTo(Owner->Player) < Owner->Agent->FiringRange;
+
+    if (bTakenFinalCover && bWithinFiringRange)
+    {
+        return UHoldCoverState::StaticClass();
+    }
+    else if (bTakenFinalCover && !bWithinFiringRange)
+    {
+        return UChargeState::StaticClass();
+    }
+    return nullptr;
 }

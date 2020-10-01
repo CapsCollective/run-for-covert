@@ -29,3 +29,8 @@ void UHealthComponent::OnDeath()
     // Inform the character of their death
     Character->OnDeath();
 }
+
+float UHealthComponent::GetHealthPercentage() const
+{
+    return CurrentHealth / MaxHealth;
+}

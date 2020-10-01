@@ -49,12 +49,6 @@ public:
 
     UPROPERTY()
     EnemySenseState SenseState;
-
-    // TODO convert these fields into blackboard values
-
-    bool bTakenValidCover;
-
-    bool bHasFinishedFiring;
     
 protected:
 

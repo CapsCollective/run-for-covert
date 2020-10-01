@@ -23,6 +23,8 @@ public:
 
     TArray<class ACover*> FindCoverPath(AActor* Agent, AActor* Enemy);
 
+    class UGraphNode* GetClosestCover(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
+
 private:
 
     // Private fields
@@ -33,11 +35,9 @@ private:
     FVector GenerationHeightOffset;
 
     UPROPERTY()
-    TArray<class UGraphNode*> GraphNodes;
+    TArray<UGraphNode*> GraphNodes;
 
     // Private methods
-
-    UGraphNode* GetClosestCover(AActor* Actor, bool MustBeUnoccupied = false, AActor* OtherAgent = nullptr);
 
     void GenerateGraph(float Radius);
 

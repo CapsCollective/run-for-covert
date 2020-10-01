@@ -4,6 +4,7 @@
 #include "CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
 
 
 ACharacterBase::ACharacterBase()
@@ -65,13 +66,40 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
     return DamageAmount;
 }
 
-AGunBase* ACharacterBase::GetGun()
+AGunBase* ACharacterBase::GetGun() const
 {
     return Gun;
+}
+
+UHealthComponent* ACharacterBase::GetHealth() const
+{
+    return Health;
 }
 
 bool ACharacterBase::Fire()
 {
     if (!GetGun()) { return false; }
+    CancelReload();
     return GetGun()->Fire(GetController(), GetActorForwardVector());
+}
+
+void ACharacterBase::BeginReload_Implementation()
+{
+    ReloadInitiated(1.f);
+}
+
+void ACharacterBase::ReloadInitiated(float Length)
+{
+    GetWorldTimerManager().SetTimer(ReloadTimer, this, &ACharacterBase::ReloadEnd, Length, false);
+}
+
+void ACharacterBase::ReloadEnd()
+{
+    if (!GetGun()) { return; }
+    GetGun()->Reload();
+}
+
+void ACharacterBase::CancelReload()
+{
+    GetWorldTimerManager().ClearTimer(ReloadTimer);
 }

@@ -6,6 +6,7 @@
 #include "FireState.h"
 #include "MoveCoverState.h"
 #include "PatrolState.h"
+#include "ChargeState.h"
 
 void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
 {
@@ -14,6 +15,7 @@ void UCombatStateMachine::Initialise(AEnemyAIController* ObjectOwner)
             NewObject<UMoveCoverState>(),
             NewObject<UHoldCoverState>(),
             NewObject<UFireState>(),
+            NewObject<UChargeState>(),
     };
 
     // Initialise to first state

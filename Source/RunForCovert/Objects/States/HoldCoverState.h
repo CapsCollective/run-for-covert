@@ -30,6 +30,8 @@ private:
 
     // Private fields
 
+    bool bHeldCover;
+
     float TimeToCover;
 
     float TimeStarted;

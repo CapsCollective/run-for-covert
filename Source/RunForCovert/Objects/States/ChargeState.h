@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "../State.h"
-#include "FireState.generated.h"
+#include "ChargeState.generated.h"
 
 
 UCLASS()
-class RUNFORCOVERT_API UFireState : public UState
+class RUNFORCOVERT_API UChargeState : public UState
 {
 	GENERATED_BODY()
 
 public:
 
-    UFireState();
+    UChargeState();
 
     // Public overrides
 
@@ -28,16 +28,8 @@ public:
 
 private:
 
-	// Private fields
+    // Private fields
 
-    int32 TimesToFire;
+    bool bCharged;
 
-    int32 TimesFired;
-
-	float FireDelay;
-
-	float TimeStarted;
-
-    bool bHasFinishedFiring;
-	
 };

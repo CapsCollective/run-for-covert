@@ -18,6 +18,7 @@ ALevelGenerator::ALevelGenerator()
     ActiveFragments = 0;
     TargetFragments = 5;
     SlowGenerationRate = .1f;
+    MaxLevelRadius = 0.f;
     bSlowGeneration = false;
     bCompletedGeneration = false;
     CurrentAttachmentPoint = nullptr;
@@ -33,9 +34,6 @@ void ALevelGenerator::BeginPlay()
 
     // Do not attempt generation if any necessary lists are empty
     if (OpenAttachmentPoints.Num() == 0 || OpeningFragments.Num() == 0 || ClosingFragments.Num() == 0) { return; }
-
-    // Bind the completion of level generation to resize the navmesh
-    OnGenerationComplete.AddDynamic(this, &ALevelGenerator::ResizeNavMesh);
 
     // Set the current attachment point from open and run the fragment spawning process
     CurrentAttachmentPoint = OpenAttachmentPoints.Pop();
@@ -96,8 +94,8 @@ bool ALevelGenerator::RunFragmentSpawn()
         {
             GetWorldTimerManager().ClearTimer(TimerHandle);
         }
-        OnGenerationComplete.Broadcast();
-        bCompletedGeneration = true;
+        ResizeNavMesh();
+        CompleteGeneration();
         return false;
     }
     return true;
@@ -165,20 +163,25 @@ void ALevelGenerator::ResizeNavMesh()
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMapFragment::StaticClass(), OUT MapFragments);
 
     // Find the furthest map fragment from world centre
-    float FurthestDistance = 0.f;
     for (auto It = MapFragments.CreateConstIterator(); It; It++)
     {
         float Distance = (*It)->GetActorLocation().Size();
-        FurthestDistance = Distance > FurthestDistance ? Distance : FurthestDistance;
+        MaxLevelRadius = Distance > MaxLevelRadius ? Distance : MaxLevelRadius;
     }
 
     // Scale the navigation volume to cover the furthest away map fragment
     // (assumes the navigation volume starts at a 1000.f size in all dimensions)
     AActor* NavVolume = UGameplayStatics::GetActorOfClass(GetWorld(), ANavMeshBoundsVolume::StaticClass());
-    NavVolume->SetActorScale3D(FVector((FurthestDistance * 2) / 1000.f));
+    NavVolume->SetActorScale3D(FVector((MaxLevelRadius * 2) / 1000.f));
 
     // Notify the navigation system of the nav mesh volume's updated bounds
     UNavigationSystemV1::GetCurrent(GetWorld())->OnNavigationBoundsUpdated(Cast<ANavMeshBoundsVolume>(NavVolume));
+}
+
+void ALevelGenerator::CompleteGeneration()
+{
+    OnGenerationComplete.Broadcast();
+    bCompletedGeneration = true;
 }
 
 TArray<int32> ALevelGenerator::GetRandomisedIndices(int32 ArrayLength)
@@ -200,4 +203,9 @@ TArray<int32> ALevelGenerator::GetRandomisedIndices(int32 ArrayLength)
 bool ALevelGenerator::IsGenerationComplete() const
 {
     return bCompletedGeneration;
+}
+
+float ALevelGenerator::GetMaxLevelRadius() const
+{
+    return MaxLevelRadius;
 }

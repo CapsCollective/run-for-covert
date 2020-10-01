@@ -21,6 +21,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+    int32 MagazineSize;
+
     UPROPERTY(EditAnywhere, Category = "Combat")
     float MaxFireRate;
 
@@ -37,6 +40,17 @@ public:
 
     bool Fire(AController* Controller, FVector LaunchDirection);
 
+    void Reload();
+
+    UFUNCTION(BlueprintPure)
+    int32 GetCurrentAmmo() const;
+
+protected:
+
+    // Protected overrides
+
+    virtual void BeginPlay() override;
+
 private:
 
     // Components
@@ -50,5 +64,7 @@ private:
     // Private fields
 
     float LastFireTime;
+
+    int32 CurrentAmmo;
 
 };
