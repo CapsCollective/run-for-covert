@@ -25,6 +25,9 @@ public:
 
     void OnDeath();
 
+    UFUNCTION(BlueprintNativeEvent)
+    void BeginReload();
+
     // Components
 
     UPROPERTY(VisibleAnywhere)
@@ -49,15 +52,25 @@ protected:
 
     virtual bool Fire();
 
+    UFUNCTION(BlueprintCallable)
+    virtual void ReloadInitiated(float Length);
+
     // Protected getters
 
     AGunBase* GetGun();
 
 private:
 
+    // Private functions
+
+    void ReloadEnd();
+
     // Private fields
 
     UPROPERTY()
     AGunBase* Gun;
+
+    UPROPERTY()
+    FTimerHandle ReloadTimer;
 
 };

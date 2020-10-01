@@ -22,6 +22,9 @@ public:
     float GunDamage;
 
     UPROPERTY(EditAnywhere, Category = "Combat")
+    int32 MagazineSize;
+
+    UPROPERTY(EditAnywhere, Category = "Combat")
     float MaxFireRate;
 
     UPROPERTY(EditAnywhere, Category = "Combat")
@@ -37,6 +40,14 @@ public:
 
     bool Fire(AController* Controller, FVector LaunchDirection);
 
+    void Reload();
+
+protected:
+
+    // Protected overrides
+
+    virtual void BeginPlay() override;
+
 private:
 
     // Components
@@ -50,5 +61,7 @@ private:
     // Private fields
 
     float LastFireTime;
+
+    int32 CurrentAmmo;
 
 };

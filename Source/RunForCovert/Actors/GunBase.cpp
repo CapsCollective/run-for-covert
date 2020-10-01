@@ -25,6 +25,14 @@ AGunBase::AGunBase()
     LastFireTime = 0.f;
     BulletSpeed = 10000.f;
     BulletSpread = 0.f;
+    MagazineSize = 16;
+    CurrentAmmo = 0;
+}
+
+void AGunBase::BeginPlay()
+{
+    // Set the magazine to full
+    CurrentAmmo = MagazineSize;
 }
 
 bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
@@ -34,6 +42,12 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     // Check if the gun is within max fire rate and update
     if (LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) { return false; }
     LastFireTime = GetWorld()->GetTimeSeconds();
+
+    // Check if there is enough available ammunition
+    if (CurrentAmmo <= 0) { return false; }
+    --CurrentAmmo;
+
+    UE_LOG(LogTemp, Warning, TEXT("Current ammo: %i"), CurrentAmmo)
 
     // Play firing sound
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
@@ -68,4 +82,9 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     }
 
     return true;
+}
+
+void AGunBase::Reload()
+{
+    CurrentAmmo = MagazineSize;
 }

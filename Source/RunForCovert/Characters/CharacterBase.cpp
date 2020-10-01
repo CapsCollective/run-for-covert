@@ -4,6 +4,7 @@
 #include "CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
 
 
 ACharacterBase::ACharacterBase()
@@ -74,4 +75,20 @@ bool ACharacterBase::Fire()
 {
     if (!GetGun()) { return false; }
     return GetGun()->Fire(GetController(), GetActorForwardVector());
+}
+
+void ACharacterBase::BeginReload_Implementation()
+{
+    ReloadInitiated(1.f);
+}
+
+void ACharacterBase::ReloadInitiated(float Length)
+{
+    GetWorldTimerManager().SetTimer(ReloadTimer, this, &ACharacterBase::ReloadEnd, Length, false);
+}
+
+void ACharacterBase::ReloadEnd()
+{
+    if (!GetGun()) { return; }
+    GetGun()->Reload();
 }

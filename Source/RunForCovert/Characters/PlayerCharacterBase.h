@@ -72,4 +72,5 @@ protected:
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();
+
 };
