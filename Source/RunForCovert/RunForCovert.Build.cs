@@ -25,13 +25,28 @@ public class RunForCovert : ModuleRules
 	{
 		bool isLibrarySupported = false;
 
-		if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32) {
+		if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32 || Target.Platform == UnrealTargetPlatform.Mac) {
 			isLibrarySupported = true;
-			string PlatformString = (Target.Platform == UnrealTargetPlatform.Win64) ? "x64" : "x86";
+
+			string PlatformString;
+			switch (Target.Platform)
+            {
+              case UnrealTargetPlatform.Win64:
+                  PlatformString = "x64";
+                  break;
+              case UnrealTargetPlatform.Win32:
+                  PlatformString = "x86";
+                  break;
+              case UnrealTargetPlatform.Mac:
+                  PlatformString = "macOS";
+                  break;
+            }
+
+            string LibExtension = (Target.Platform == UnrealTargetPlatform.Mac) ? ".dylib" : ".lib";
 			string ThirdPartyPath = Path.GetFullPath(Path.Combine(ModuleDirectory, "../../ThirdParty/"));
 			string LibrariesPath = Path.Combine(ThirdPartyPath, libPath, "Libraries");
 
-			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, libPath + "." + PlatformString + ".lib"));
+			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, libPath + "." + PlatformString + LibExtension));
 			PublicIncludePaths.Add(Path.Combine(ThirdPartyPath, libPath, "Includes"));
 		}
 		Definitions.Add(string.Format("WITH_" + libName + "_BINDING={0}", isLibrarySupported ? 1 : 0));
