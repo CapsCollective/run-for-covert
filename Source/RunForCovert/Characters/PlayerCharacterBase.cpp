@@ -79,6 +79,7 @@ void APlayerCharacterBase::FireWeapon()
 bool APlayerCharacterBase::Fire()
 {
     if (!GetGun()) { return false; }
+    CancelReload();
     if (GetGun()->Fire(GetController(), Camera->GetForwardVector()))
     {
         OnFired();

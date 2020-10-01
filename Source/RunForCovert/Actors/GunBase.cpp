@@ -47,8 +47,6 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     if (CurrentAmmo <= 0) { return false; }
     --CurrentAmmo;
 
-    UE_LOG(LogTemp, Warning, TEXT("Current ammo: %i"), CurrentAmmo)
-
     // Play firing sound
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
 
@@ -87,4 +85,9 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
 void AGunBase::Reload()
 {
     CurrentAmmo = MagazineSize;
+}
+
+int32 AGunBase::GetCurrentAmmo() const
+{
+    return CurrentAmmo;
 }

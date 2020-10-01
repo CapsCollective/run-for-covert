@@ -21,7 +21,7 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
 
-    UPROPERTY(EditAnywhere, Category = "Combat")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
     int32 MagazineSize;
 
     UPROPERTY(EditAnywhere, Category = "Combat")
@@ -41,6 +41,9 @@ public:
     bool Fire(AController* Controller, FVector LaunchDirection);
 
     void Reload();
+
+    UFUNCTION(BlueprintPure)
+    int32 GetCurrentAmmo() const;
 
 protected:
 

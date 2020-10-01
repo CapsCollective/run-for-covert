@@ -25,6 +25,9 @@ public:
 
     void OnDeath();
 
+    UFUNCTION(BlueprintPure)
+    UHealthComponent* GetHealth() const;
+
     UFUNCTION(BlueprintNativeEvent)
     void BeginReload();
 
@@ -48,16 +51,19 @@ protected:
                              class AController* EventInstigator, AActor* DamageCauser) override;
 
     
-    // Protected virtual methods
+    // Protected methods
 
     virtual bool Fire();
 
     UFUNCTION(BlueprintCallable)
     virtual void ReloadInitiated(float Length);
 
+    void CancelReload();
+
     // Protected getters
 
-    AGunBase* GetGun();
+    UFUNCTION(BlueprintPure)
+    AGunBase* GetGun() const;
 
 private:
 
