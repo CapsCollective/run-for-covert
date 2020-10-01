@@ -25,21 +25,18 @@ public class RunForCovert : ModuleRules
 	{
 		bool isLibrarySupported = false;
 
-		if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32 || Target.Platform == UnrealTargetPlatform.Mac) {
+		if (Target.Platform == UnrealTargetPlatform.Win64 || Target.Platform == UnrealTargetPlatform.Win32) {
 			isLibrarySupported = true;
 
-			string PlatformString;
-			switch (Target.Platform)
-            {
-              case UnrealTargetPlatform.Win64:
-                  PlatformString = "x64";
-                  break;
-              case UnrealTargetPlatform.Win32:
-                  PlatformString = "x86";
-                  break;
-              case UnrealTargetPlatform.Mac:
-                  PlatformString = "macOS";
-                  break;
+			string PlatformString = "";
+			if (Target.Platform == UnrealTargetPlatform.Win64) {
+			    PlatformString = "x64";
+			}
+			else if (Target.Platform == UnrealTargetPlatform.Win32) {
+			    PlatformString = "x86";
+			}
+			else if (Target.Platform == UnrealTargetPlatform.Mac) {
+                PlatformString = "macOS";
             }
 
             string LibExtension = (Target.Platform == UnrealTargetPlatform.Mac) ? ".dylib" : ".lib";
