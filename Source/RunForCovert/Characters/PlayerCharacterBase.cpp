@@ -7,7 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/Controller.h"
+#include "GameFramework/PlayerController.h"
+#include "../HUDs/HUDBase.h"
 
 APlayerCharacterBase::APlayerCharacterBase()
 {
@@ -49,6 +50,12 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::CrouchStart);
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
+}
+
+void APlayerCharacterBase::OnDeath()
+{
+    GetController<APlayerController>()->GetHUD<AHUDBase>()->DisplayHUD(false);
+    Super::OnDeath();
 }
 
 void APlayerCharacterBase::MoveForward(float Amount)

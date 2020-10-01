@@ -23,7 +23,7 @@ public:
 
     // Public functions
 
-    void OnDeath();
+    virtual void OnDeath();
 
     UFUNCTION(BlueprintPure)
     UHealthComponent* GetHealth() const;
