@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "LevelGenerator.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelGenerationDelegate);
 
 UCLASS()
 class RUNFORCOVERT_API ALevelGenerator : public AActor
@@ -37,9 +38,10 @@ public:
 
     bool IsGenerationComplete() const;
 
+    float GetMaxLevelRadius() const;
+
     // Dynamic delegates
 
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLevelGenerationDelegate);
     FLevelGenerationDelegate OnGenerationComplete;
 
 protected:
@@ -55,6 +57,8 @@ private:
     bool bCompletedGeneration;
 
     int32 ActiveFragments;
+
+    float MaxLevelRadius;
 
     UPROPERTY()
     FTimerHandle TimerHandle;
@@ -78,6 +82,8 @@ private:
 
     UFUNCTION()
     void ResizeNavMesh();
+
+    void CompleteGeneration();
 
     static TArray<int32> GetRandomisedIndices(int32 ArrayLength) ;
 	
