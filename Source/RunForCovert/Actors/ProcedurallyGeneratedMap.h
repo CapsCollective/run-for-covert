@@ -38,19 +38,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	float GridSize;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<FVector> Vertices;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<int32> Triangles;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<FVector2D> UVCoords;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<FVector> Normals;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY()
 	TArray<FProcMeshTangent> Tangents;
 
 	UPROPERTY(EditAnywhere)

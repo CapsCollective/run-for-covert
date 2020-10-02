@@ -1,4 +1,4 @@
-// min.h
+// modulebase.cpp
 //
 // Copyright (C) 2003, 2004 Jason Bevins
 //
@@ -20,57 +20,27 @@
 // off every 'zig'.)
 //
 
-#ifndef NOISE_MODULE_MIN_H
-#define NOISE_MODULE_MIN_H
-
 #include "modulebase.h"
 
-namespace noise
+using namespace noise::module;
+
+Module::Module (int sourceModuleCount)
 {
+  m_pSourceModule = NULL;
 
-  namespace module
-  {
-
-    /// @addtogroup libnoise
-    /// @{
-
-    /// @addtogroup modules
-    /// @{
-
-    /// @addtogroup combinermodules
-    /// @{
-
-    /// Noise module that outputs the smaller of the two output values from
-    /// two source modules.
-    ///
-    /// @image html modulemin.png
-    ///
-    /// This noise module requires two source modules.
-	  class DLL  Min : public Module
-    {
-
-      public:
-
-        /// Constructor.
-        Min ();
-
-        virtual int GetSourceModuleCount () const
-        {
-          return 2;
-        }
-
-        virtual double GetValue (double x, double y, double z) const;
-
-    };
-
-    /// @}
-
-    /// @}
-
-    /// @}
-
+  // Create an array of pointers to all source modules required by this
+  // noise module.  Set these pointers to NULL.
+  if (sourceModuleCount > 0) {
+    m_pSourceModule = new const Module*[sourceModuleCount];
+    for (int i = 0; i < sourceModuleCount; i++) {
+      m_pSourceModule[i] = NULL;
+    }
+  } else {
+    m_pSourceModule = NULL;
   }
-
 }
 
-#endif
+Module::~Module ()
+{
+  delete[] m_pSourceModule;
+}

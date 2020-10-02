@@ -3,7 +3,9 @@
 
 #include "ProcedurallyGeneratedMap.h"
 #include "ProceduralMeshComponent.h"
-#include "../../../ThirdParty/LibNoise/Includes/libnoise.h"
+#include "../Noise/Modules/billow.h"
+#include "../Noise/Modules/ridgedmulti.h"
+//#include "../../../ThirdParty/LibNoise/Includes/noise.h"
 #include "KismetProceduralMeshLibrary.h"
 
 
@@ -55,21 +57,21 @@ void AProcedurallyGeneratedMap::GenerateMap()
 {
 	ClearMap();
 	UE_LOG(LogTemp,Warning,TEXT("GENERATING MAP %i"), LevelGenerator->GetMaxLevelRadius());
-
+	
 	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
 	{
 		LevelPositionsAtZero.Add(It->GetActorLocation());
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *It->GetActorLocation().ToString());
 		//It->Destroy();
 	}
-
+	
 	noise::module::Billow Billow;
 	Billow.SetSeed(FMath::RandRange(-10000, 10000));
 	Billow.SetFrequency(16);
 	noise::module::RidgedMulti RFM;
 	RFM.SetSeed(FMath::RandRange(-10000, 10000));
 	
-
+	
 	for (int Row = 0; Row < Height; Row++)
 	{
 		for (int Col = 0; Col < Width; Col++)
@@ -78,12 +80,11 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			float Y = Row * GridSize;
 			float Z = FMath::Abs(Billow.GetValue(Col * BillowRoughness, Row * BillowRoughness, 0) * BillowScale);
 			Z += FMath::Abs(RFM.GetValue(Col * RFMRoughness, Row * RFMRoughness, 0) * RFMScale);
-
+	
 			for (FVector v : LevelPositionsAtZero)
 			{
-				if(FVector::Dist(FVector(X, Y, 0) + GetActorLocation(), FVector(v.X, v.Y, 0)) < 750)
+				if(FVector::Dist(FVector(X, Y, 0) + GetActorLocation(), FVector(v.X, v.Y, 0)) < 600)
 				{
-					if(Z > v.Z)
 						Z = v.Z;
 				}
 			}
@@ -92,7 +93,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			UVCoords.Add(FVector2D(Col, Row));
 		}
 	}
-
+	
 	for (int Row = 0; Row < Height - 1; Row++)
 	{
 		for (int Col = 0; Col < Width - 1; Col++)
@@ -105,9 +106,9 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			Triangles.Add((Row + 1) * Width + Col + 1);
 		}
 	}
-
+	
 	UKismetProceduralMeshLibrary::CalculateTangentsForMesh(Vertices, Triangles, UVCoords, Normals, Tangents);
-
+	
 	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVCoords, TArray<FColor>(), Tangents, true);
 
 }

@@ -74,7 +74,7 @@ namespace noise
   ///
   /// For an explanation of the difference between <i>gradient</i> noise and
   /// <i>value</i> noise, see the comments for the GradientNoise3D() function.
-  DLL double GradientCoherentNoise3D(double x, double y, double z, int seed = 0,
+  double GradientCoherentNoise3D (double x, double y, double z, int seed = 0,
     NoiseQuality noiseQuality = QUALITY_STD);
 
   /// Generates a gradient-noise value from the coordinates of a
@@ -118,7 +118,7 @@ namespace noise
   /// A noise function differs from a random-number generator because it
   /// always returns the same output value if the same input value is passed
   /// to it.
-  DLL double GradientNoise3D (double fx, double fy, double fz, int ix, int iy,
+  double GradientNoise3D (double fx, double fy, double fz, int ix, int iy,
     int iz, int seed = 0);
 
   /// Generates an integer-noise value from the coordinates of a
@@ -136,7 +136,7 @@ namespace noise
   /// A noise function differs from a random-number generator because it
   /// always returns the same output value if the same input value is passed
   /// to it.
-  DLL int IntValueNoise3D(int x, int y, int z, int seed = 0);
+  int IntValueNoise3D (int x, int y, int z, int seed = 0);
 
   /// Modifies a floating-point value so that it can be stored in a
   /// noise::int32 variable.
@@ -181,7 +181,7 @@ namespace noise
   ///
   /// For an explanation of the difference between <i>gradient</i> noise and
   /// <i>value</i> noise, see the comments for the GradientNoise3D() function.
-  DLL double ValueCoherentNoise3D(double x, double y, double z, int seed = 0,
+  double ValueCoherentNoise3D (double x, double y, double z, int seed = 0,
     NoiseQuality noiseQuality = QUALITY_STD);
 
   /// Generates a value-noise value from the coordinates of a
@@ -199,7 +199,7 @@ namespace noise
   /// A noise function differs from a random-number generator because it
   /// always returns the same output value if the same input value is passed
   /// to it.
-  DLL double ValueNoise3D(int x, int y, int z, int seed = 0);
+  double ValueNoise3D (int x, int y, int z, int seed = 0);
 
   /// @}
 

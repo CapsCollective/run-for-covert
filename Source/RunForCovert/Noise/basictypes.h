@@ -1,4 +1,4 @@
-// abs.h
+// basictypes.h
 //
 // Copyright (C) 2003, 2004 Jason Bevins
 //
@@ -20,56 +20,40 @@
 // off every 'zig'.)
 //
 
-#ifndef NOISE_MODULE_ABS_H
-#define NOISE_MODULE_ABS_H
+#ifndef NOISE_BASICTYPES_H
+#define NOISE_BASICTYPES_H
 
-#include "modulebase.h"
+// You may need to modify these constants for your compiler or platform.
 
 namespace noise
 {
 
-  namespace module {
+  /// @defgroup libnoise libnoise
+  /// @addtogroup libnoise
+  /// @{
 
-    /// @addtogroup libnoise
-    /// @{
+  /// Unsigned integer type.
+  typedef unsigned int uint;
 
-    /// @addtogroup modules
-    /// @{
+  /// 32-bit unsigned integer type.
+  typedef unsigned int uint32;
 
-    /// @defgroup modifiermodules Modifier Modules
-    /// @addtogroup modifiermodules
-    /// @{
+  /// 16-bit unsigned integer type.
+  typedef unsigned short uint16;
 
-    /// Noise module that outputs the absolute value of the output value from
-    /// a source module.
-    ///
-    /// @image html moduleabs.png
-    ///
-    /// This noise module requires one source module.
-	  class DLL Abs : public Module
-    {
+  /// 8-bit unsigned integer type.
+  typedef unsigned char uint8;
 
-      public:
+  /// 32-bit signed integer type.
+  typedef int int32;
 
-        /// Constructor.
-        Abs ();
+  /// 16-bit signed integer type.
+  typedef short int16;
 
-        virtual int GetSourceModuleCount () const
-        {
-          return 1;
-        }
+  /// 8-bit signed integer type.
+  typedef char int8;
 
-        virtual double GetValue (double x, double y, double z) const;
-
-    };
-
-    /// @}
-
-    /// @}
-
-    /// @}
-
-  }
+  /// @}
 
 }
 
