@@ -30,6 +30,9 @@ public:
 	UProceduralMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere)
+	int32 Seed;
+	
+	UPROPERTY(EditAnywhere)
 	int32 Width;
 
 	UPROPERTY(EditAnywhere)
@@ -76,6 +79,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	ALevelGenerator* LevelGenerator;
 
-	TArray<FVector> LevelPositionsAtZero;
+	TArray<FVector> AllLevelPositions;
 
+	UPROPERTY(EditAnywhere)
+	float VertexDistanceCheck;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float SmoothFactor;
+
+	UPROPERTY(EditAnywhere)
+	float SmoothingHeightCheck;
+
+	FVector GetVertexWorldPosition(FVector Vertex);
+	
 };

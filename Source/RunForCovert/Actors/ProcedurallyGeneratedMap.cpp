@@ -25,6 +25,8 @@ AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
 	RFMScale = 1000.0f;
 	RFMRoughness = 0.1f;
 	bRegenerateMap = false;
+	VertexDistanceCheck = 750.0f;
+	SmoothingHeightCheck = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -56,22 +58,29 @@ bool AProcedurallyGeneratedMap::ShouldTickIfViewportsOnly() const
 void AProcedurallyGeneratedMap::GenerateMap()
 {
 	ClearMap();
-	UE_LOG(LogTemp,Warning,TEXT("GENERATING MAP %i"), LevelGenerator->GetMaxLevelRadius());
 	
 	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
 	{
-		LevelPositionsAtZero.Add(It->GetActorLocation());
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *It->GetActorLocation().ToString());
-		//It->Destroy();
+		AllLevelPositions.Add(It->GetActorLocation());
 	}
 	
 	noise::module::Billow Billow;
-	Billow.SetSeed(FMath::RandRange(-10000, 10000));
 	Billow.SetFrequency(16);
 	noise::module::RidgedMulti RFM;
-	RFM.SetSeed(FMath::RandRange(-10000, 10000));
-	
-	
+	if(Seed == 0)
+	{
+		Billow.SetSeed(FMath::RandRange(-10000, 10000));
+		RFM.SetSeed(FMath::RandRange(-10000, 10000));
+	}
+	else
+	{
+		Billow.SetSeed(Seed);
+		RFM.SetSeed(Seed);
+	}
+
+	TArray<FVector> MovedVerticesForLevel;
+
+	// Initial generation of the mesh
 	for (int Row = 0; Row < Height; Row++)
 	{
 		for (int Col = 0; Col < Width; Col++)
@@ -80,17 +89,93 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			float Y = Row * GridSize;
 			float Z = FMath::Abs(Billow.GetValue(Col * BillowRoughness, Row * BillowRoughness, 0) * BillowScale);
 			Z += FMath::Abs(RFM.GetValue(Col * RFMRoughness, Row * RFMRoughness, 0) * RFMScale);
-	
-			for (FVector v : LevelPositionsAtZero)
-			{
-				if(FVector::Dist(FVector(X, Y, 0) + GetActorLocation(), FVector(v.X, v.Y, 0)) < 600)
-				{
-						Z = v.Z;
-				}
-			}
 			
 			Vertices.Add(FVector(X, Y, Z));
 			UVCoords.Add(FVector2D(Col, Row));
+		}
+	}
+
+	for (FVector v : AllLevelPositions)
+	{
+		bool CanMoveVertex = true;
+		for (auto It = Vertices.CreateIterator() ; It ; It++)
+		{
+			for (FVector v2 : AllLevelPositions)
+			{
+				if(FMath::IsNearlyEqual(v.X, v2.X, 10) &&
+                 FMath::IsNearlyEqual(v2.X, v2.Y, 10) &&
+                 v.Z > v2.Z)
+				{
+					CanMoveVertex = false;
+				}
+			}
+	
+			if(!CanMoveVertex) { continue; }
+					
+			if(FVector::Dist(GetVertexWorldPosition(FVector(It->X, It->Y, 0)), FVector(v.X, v.Y, 0)) < VertexDistanceCheck)
+			{
+				if(!MovedVerticesForLevel.Contains(*It))
+				{
+					//UE_LOG(LogTemp, Warning, TEXT("%s"), *GetVertexWorldPosition(Vertex).ToString())
+					It->Z = v.Z;
+					MovedVerticesForLevel.Add(*It);
+				}
+			}
+		}
+	}
+	
+	for (int Row = 0; Row < Height; Row++)
+	{
+		for (int Col = 0; Col < Width; Col++)
+		{
+			if(MovedVerticesForLevel.Contains(Vertices[Row * Width + Col]))
+			{
+				continue;
+			}
+			
+			if((Row - 1) * Width + Col > 0)
+			{
+				if(FVector::Dist(FVector(0,0,Vertices[Row * Width + Col].Z), FVector(0,0,Vertices[(Row - 1) * Width + Col].Z)) >= SmoothingHeightCheck)
+				{
+					Vertices[Row * Width + Col].Z = FMath::Lerp(Vertices[Row * Width + Col].Z, Vertices[(Row - 1) * Width + Col].Z, SmoothFactor);
+				}
+			}
+   
+			if((Row) * Width + (Col - 1) > 0)
+			{
+				if(FVector::Dist(FVector(0,0,Vertices[Row * Width + Col].Z), FVector(0,0,Vertices[(Row) * Width + (Col - 1)].Z)) >= SmoothingHeightCheck)
+				{
+					Vertices[Row * Width + Col].Z = FMath::Lerp(Vertices[Row * Width + Col].Z, Vertices[(Row) * Width + (Col - 1)].Z, SmoothFactor);
+				}
+			}
+			
+		}
+	}
+	
+	for (int Row = Height - 1; Row > 0; Row--)
+	{
+		for (int Col = Width - 1; Col > 0; Col--)
+		{
+			if(MovedVerticesForLevel.Contains(Vertices[Row * Width + Col]))
+			{
+				continue;
+			}
+		
+			if((Row + 1) * Width + Col < Vertices.Num())
+			{
+				if(FVector::Dist(FVector(0,0,Vertices[Row * Width + Col].Z), FVector(0,0,Vertices[(Row + 1) * Width + Col].Z)) >= SmoothingHeightCheck)
+				{
+					Vertices[Row * Width + Col].Z = FMath::Lerp(Vertices[Row * Width + Col].Z, Vertices[(Row + 1) * Width + Col].Z, SmoothFactor);
+				}
+			}
+			
+			if((Row) * Width + (Col + 1) < Vertices.Num())
+	         {
+		        if(FVector::Dist(FVector(0,0,Vertices[Row * Width + Col].Z), FVector(0,0,Vertices[(Row) * Width + (Col + 1)].Z)) >= SmoothingHeightCheck)
+		        {
+			        Vertices[Row * Width + Col].Z = FMath::Lerp(Vertices[Row * Width + Col].Z, Vertices[(Row) * Width + (Col + 1)].Z, SmoothFactor);
+		        }
+	         }
 		}
 	}
 	
@@ -111,6 +196,11 @@ void AProcedurallyGeneratedMap::GenerateMap()
 	
 	MeshComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVCoords, TArray<FColor>(), Tangents, true);
 
+}
+
+FVector AProcedurallyGeneratedMap::GetVertexWorldPosition(FVector Vertex)
+{
+	return (FVector(Vertex.X, Vertex.Y, Vertex.Z)) + GetActorLocation();
 }
 
 void AProcedurallyGeneratedMap::ClearMap()
