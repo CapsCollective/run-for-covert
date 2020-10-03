@@ -63,6 +63,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 	{
 		AllLevelPositions.Add(It->GetActorLocation());
 	}
+	Algo::SortBy(AllLevelPositions, &FVector::Z);
 	
 	noise::module::Billow Billow;
 	Billow.SetFrequency(16);
@@ -77,8 +78,6 @@ void AProcedurallyGeneratedMap::GenerateMap()
 		Billow.SetSeed(Seed);
 		RFM.SetSeed(Seed);
 	}
-
-	TArray<FVector> MovedVerticesForLevel;
 
 	// Initial generation of the mesh
 	for (int Row = 0; Row < Height; Row++)
@@ -98,7 +97,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 	for (FVector v : AllLevelPositions)
 	{
 		bool CanMoveVertex = true;
-		for (auto It = Vertices.CreateIterator() ; It ; It++)
+		for (auto It = Vertices.CreateIterator() ; It ; ++It)
 		{
 			for (FVector v2 : AllLevelPositions)
 			{
@@ -116,7 +115,6 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			{
 				if(!MovedVerticesForLevel.Contains(*It))
 				{
-					//UE_LOG(LogTemp, Warning, TEXT("%s"), *GetVertexWorldPosition(Vertex).ToString())
 					It->Z = v.Z;
 					MovedVerticesForLevel.Add(*It);
 				}
