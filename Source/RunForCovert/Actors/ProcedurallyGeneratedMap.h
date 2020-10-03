@@ -79,6 +79,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	ALevelGenerator* LevelGenerator;
 
+	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> AllLevelPositions;
 
 	UPROPERTY(EditAnywhere)
@@ -91,5 +92,8 @@ public:
 	float SmoothingHeightCheck;
 
 	FVector GetVertexWorldPosition(FVector Vertex);
+
+	UPROPERTY()
+	TArray<FVector> MovedVerticesForLevel;
 	
 };
