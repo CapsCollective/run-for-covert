@@ -21,11 +21,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+private:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ShouldTickIfViewportsOnly() const override;
 
+	// Private members
+	
 	UPROPERTY(VisibleAnywhere)
 	UProceduralMeshComponent* MeshComponent;
 
@@ -43,6 +45,9 @@ public:
 
 	UPROPERTY()
 	TArray<FVector> Vertices;
+
+	UPROPERTY()
+	TArray<FVector> SmoothedVertices;
 
 	UPROPERTY()
 	TArray<int32> Triangles;
@@ -86,10 +91,10 @@ public:
 	float VertexDistanceCheck;
 
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
-	float SmoothFactor;
+	float SmoothDistanceFromLevel;
 
 	UPROPERTY(EditAnywhere)
-	float SmoothingHeightCheck;
+	int SmoothingDistance;
 
 	FVector GetVertexWorldPosition(FVector Vertex);
 
