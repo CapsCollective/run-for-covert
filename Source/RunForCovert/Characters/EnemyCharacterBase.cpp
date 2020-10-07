@@ -14,11 +14,6 @@ AEnemyCharacterBase::AEnemyCharacterBase()
     FiringRange = 500.f;
 }
 
-void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
 void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
     // Set the crouching field

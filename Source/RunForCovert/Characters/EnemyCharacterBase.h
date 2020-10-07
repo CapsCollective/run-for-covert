@@ -16,10 +16,6 @@ class RUNFORCOVERT_API AEnemyCharacterBase : public ACharacterBase
 public:
 
 	AEnemyCharacterBase();
-
-    // Public overrides
-
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
     // Public methods
 

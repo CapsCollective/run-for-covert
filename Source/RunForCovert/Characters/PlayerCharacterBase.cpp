@@ -41,15 +41,16 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Jump);
 
-    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::FireWeapon);
+    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, (void(APlayerCharacterBase::*)())&APlayerCharacterBase::Fire);
 
     PlayerInputComponent->BindAction(TEXT("Reload"), EInputEvent::IE_Pressed, this, &ACharacterBase::BeginReload);
 
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::SprintStart);
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &APlayerCharacterBase::SprintEnd);
 
-    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::CrouchStart);
-    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
+    // Casts crouch functions to empty parameter functions of ACharacter
+    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, (void(ACharacter::*)())&ACharacter::Crouch);
+    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, (void(ACharacter::*)())&ACharacter::UnCrouch);
 }
 
 void APlayerCharacterBase::OnDeath()
@@ -78,11 +79,6 @@ void APlayerCharacterBase::LookRight(float Amount)
     AddControllerYawInput(Amount * LookSpeed);
 }
 
-void APlayerCharacterBase::FireWeapon()
-{
-    Fire();
-}
-
 bool APlayerCharacterBase::Fire()
 {
     if (!GetGun()) { return false; }
@@ -103,14 +99,4 @@ void APlayerCharacterBase::SprintStart()
 void APlayerCharacterBase::SprintEnd()
 {
     GetCharacterMovement()->MaxWalkSpeed /= SprintMultiplier;
-}
-
-void APlayerCharacterBase::CrouchStart()
-{
-    Crouch();
-}
-
-void APlayerCharacterBase::CrouchEnd()
-{
-    UnCrouch();
 }

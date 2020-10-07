@@ -60,12 +60,6 @@ public:
 
     void SprintEnd();
 
-    void CrouchStart();
-
-    void CrouchEnd();
-
-    void FireWeapon();
-
 protected:
 
 	// Protected overrides

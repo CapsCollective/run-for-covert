@@ -41,12 +41,6 @@ void ACharacterBase::BeginPlay()
     GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
-void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
 void ACharacterBase::OnDeath()
 {
     bIsDead = true;

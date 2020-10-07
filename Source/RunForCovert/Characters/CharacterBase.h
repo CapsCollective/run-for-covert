@@ -17,10 +17,6 @@ public:
 
 	ACharacterBase();
 
-    // Public overrides
-
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
     // Public functions
 
     virtual void OnDeath();
