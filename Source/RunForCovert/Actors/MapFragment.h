@@ -13,8 +13,6 @@ class RUNFORCOVERT_API AMapFragment : public AActor
 	
 public:
 
-	AMapFragment();
-
 	// Public functions
 
     TArray<class AMapAttachmentPoint*> GetAttachmentPoints();

@@ -2,8 +2,8 @@
 
 
 #include "ProceduralTerrain.h"
-#include "../Noise/Modules/billow.h"
-#include "../Noise/Modules/ridgedmulti.h"
+#include "../NoiseLib/Modules/billow.h"
+#include "../NoiseLib/Modules/ridgedmulti.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "EngineUtils.h"
 #include "LevelGenerator.h"

@@ -10,6 +10,7 @@
 #include "NavMesh/NavMeshBoundsVolume.h"
 #include "NavigationSystem.h"
 
+
 ALevelGenerator::ALevelGenerator()
 {
     PrimaryActorTick.bCanEverTick = false;

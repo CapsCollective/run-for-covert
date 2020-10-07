@@ -7,10 +7,6 @@
 #include "../GameModes/DefaultGameModeBase.h"
 #include "MapAttachmentPoint.h"
 
-AMapFragment::AMapFragment()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
 
 void AMapFragment::BeginPlay()
 {
