@@ -1,39 +1,42 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Caps Collective 2020
 
 
-#include "ProcedurallyGeneratedMap.h"
-#include "ProceduralMeshComponent.h"
+#include "ProceduralTerrain.h"
 #include "../Noise/Modules/billow.h"
 #include "../Noise/Modules/ridgedmulti.h"
-//#include "../../../ThirdParty/LibNoise/Includes/noise.h"
 #include "KismetProceduralMeshLibrary.h"
-
-
 #include "EngineUtils.h"
 #include "LevelGenerator.h"
 #include "MapAttachmentPoint.h"
 #include "MapFragment.h"
 #include "RunForCovert/Components/TerrainPointComponent.h"
+#include "Materials/Material.h"
 
-// Sets default values
-AProcedurallyGeneratedMap::AProcedurallyGeneratedMap()
+
+AProceduralTerrain::AProceduralTerrain()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+    // Setup components
+    MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh Component"));
+
 	// Setup of default values
-	MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh Component"));
-	BillowScale = 1000.0f;
-	BillowRoughness = 0.1f;
+	Seed = 0;
+    Width = 100;
+    Height = 100;
+    GridSize = 200;
+    SmoothDistanceFromLevel = 0.785f;
+	BillowScale = 100.0f;
+	BillowRoughness = 0.01f;
 	RFMScale = 1000.0f;
-	RFMRoughness = 0.1f;
-	bRegenerateMap = false;
-	VertexDistanceCheck = 750.0f;
-	SmoothingDistance = 0;
+	RFMRoughness = 0.01f;
+	VertexDistanceCheck = 1500.0f;
+	SmoothingDistance = 4;
+    LevelGenerator = nullptr;
+    Material = nullptr;
 }
 
-// Called when the game starts or when spawned
-void AProcedurallyGeneratedMap::BeginPlay()
+void AProceduralTerrain::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -41,7 +44,7 @@ void AProcedurallyGeneratedMap::BeginPlay()
 	// Once it has been generated, the terrain will start to be generated
 	if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
 	{
-		LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProcedurallyGeneratedMap::GenerateMap);
+		LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProceduralTerrain::GenerateMap);
 	}
 	else
 	{
@@ -51,22 +54,8 @@ void AProcedurallyGeneratedMap::BeginPlay()
 	}
 }
 
-// Called every frame
-void AProcedurallyGeneratedMap::Tick(float DeltaTime)
+void AProceduralTerrain::GenerateMap()
 {
-	Super::Tick(DeltaTime);
-}
-
-bool AProcedurallyGeneratedMap::ShouldTickIfViewportsOnly() const
-{
-	return true;
-}
-
-void AProcedurallyGeneratedMap::GenerateMap()
-{
-	// Clears the map values
-	ClearMap();
-
 	// Gets the position of every MapFragment for use later in the generation process
 	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
 	{
@@ -110,9 +99,9 @@ void AProcedurallyGeneratedMap::GenerateMap()
 
 	// Initial generation of the mesh
 	// Loop through all the desired positions of the mesh
-	for (int Row = 0; Row < Height; Row++)
+	for (int32 Row = 0; Row < Height; Row++)
 	{
-		for (int Col = 0; Col < Width; Col++)
+		for (int32 Col = 0; Col < Width; Col++)
 		{
 			float X = Col * GridSize;
 			float Y = Row * GridSize;
@@ -139,17 +128,20 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			for (FVector v2 : AllLevelPositions)
 			{
 				if(FMath::IsNearlyEqual(v.X, v2.X, 10) &&
-                 FMath::IsNearlyEqual(v2.X, v2.Y, 10) &&
-                 v.Z > v2.Z)
+				   FMath::IsNearlyEqual(v2.X, v2.Y, 10) &&
+				   v.Z > v2.Z)
 				{
 					CanMoveVertex = false;
 				}
 			}
-	
+
+			// Ignore any unmovable vertices
 			if(!CanMoveVertex) { continue; }
 
 			// If they can be moved, we set the vertices in a radius around the FVector to the height of the MapFragment
-			if(FVector::Dist(GetVertexWorldPosition(FVector(It->X, It->Y, 0)), FVector(v.X, v.Y, 0)) <= VertexDistanceCheck)
+			if(FVector::Dist(
+			        GetVertexWorldPosition(FVector(It->X, It->Y, 0)),
+                    FVector(v.X, v.Y, 0)) <= VertexDistanceCheck)
 			{
 				if(!MovedVerticesForLevel.Contains(*It))
 				{
@@ -165,9 +157,9 @@ void AProcedurallyGeneratedMap::GenerateMap()
 	// Without being destructive of our original array causing issues
 	SmoothedVertices = Vertices;
 	
-	for (int Row = 0; Row < Height; Row++)
+	for (int32 Row = 0; Row < Height; Row++)
 	{
-		for (int Col = 0; Col < Width; Col++)
+		for (int32 Col = 0; Col < Width; Col++)
 		{		
 
 			// We do a check to see if the vertex was one set by the MapFragment
@@ -176,7 +168,8 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			bool bSkip = false;
 			for(FVector v : AllLevelPositions)
 			{
-				if(FVector::Dist(GetVertexWorldPosition( Vertices[Row * Width + Col]), v) < VertexDistanceCheck * SmoothDistanceFromLevel)
+				if(FVector::Dist(GetVertexWorldPosition(
+				        Vertices[Row * Width + Col]), v) < VertexDistanceCheck * SmoothDistanceFromLevel)
 				{
 					bSkip = true;
 				}
@@ -194,7 +187,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 
 			// So we get the current vertex and then loop in a direction getting each vertex Z position
 			// This loop will keep going in the positive Y direction and add to our average float each Z position
-			for(int i = 0; i < SmoothingDistance; i++)
+			for(int32 i = 0; i < SmoothingDistance; i++)
 			{
 				if((Row - i) * Width + Col > 0)
 				{
@@ -203,7 +196,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			}
 
 			// This loop will keep going in the positive X direction and add to our average float each Z position
-			for(int i = 0; i < SmoothingDistance; i++)
+			for(int32 i = 0; i < SmoothingDistance; i++)
 			{
 				if((Row) * Width + (Col - i) > 0)
 				{
@@ -212,7 +205,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			}
 
 			// This loop will keep going in the negative Y direction and add to our average float each Z position
-			for(int i = 0; i < SmoothingDistance; i++)
+			for(int32 i = 0; i < SmoothingDistance; i++)
 			{
 				if((Row + i) * Width + Col < Vertices.Num())
 				{
@@ -221,7 +214,7 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			}
 
 			// This loop will keep going in the negative X direction and add to our average float each Z position
-			for(int i = 0; i < SmoothingDistance; i++)
+			for(int32 i = 0; i < SmoothingDistance; i++)
 			{
 				if((Row) * Width + (Col + i) < Vertices.Num())
 				{
@@ -230,16 +223,16 @@ void AProcedurallyGeneratedMap::GenerateMap()
 			}
 
 			// Set the height of the current vertex to the average of all the vertices we parsed.
-			SmoothedVertices[Row * Width + Col].Z = Average / (5 * SmoothingDistance);
+			SmoothedVertices[Row * Width + Col].Z = Average / (5.f * SmoothingDistance);
 			
 		}
 	}
 
 	// Create the triangles for the mesh
 	// This was covered in the lab.
-	for (int Row = 0; Row < Height - 1; Row++)
+	for (int32 Row = 0; Row < Height - 1; Row++)
 	{
-		for (int Col = 0; Col < Width - 1; Col++)
+		for (int32 Col = 0; Col < Width - 1; Col++)
 		{
 			Triangles.Add(Row * Width + Col);
 			Triangles.Add((Row + 1) * Width + Col);
@@ -255,21 +248,23 @@ void AProcedurallyGeneratedMap::GenerateMap()
 
 	// Create the mesh
 	// Also covered in the lab
-	MeshComponent->CreateMeshSection(0, SmoothedVertices, Triangles, Normals, UVCoords, TArray<FColor>(), Tangents, true);
+	MeshComponent->CreateMeshSection(
+	        0,
+	        SmoothedVertices,
+	        Triangles,
+	        Normals,
+	        UVCoords,
+	        TArray<FColor>(),
+            Tangents,
+            true);
 
+	// Set the material to the mesh
+    MeshComponent->SetMaterial(0, Material);
 }
 
-// Calculate the world position of a vertex position.
-FVector AProcedurallyGeneratedMap::GetVertexWorldPosition(FVector Vertex)
+FVector AProceduralTerrain::GetVertexWorldPosition(FVector Vertex)
 {
+    // Calculate the world position of a vertex position.
 	return (FVector(Vertex.X, Vertex.Y, Vertex.Z)) + GetActorLocation();
-}
-
-void AProcedurallyGeneratedMap::ClearMap()
-{
-	Vertices.Empty();
-	Triangles.Empty();
-	UVCoords.Empty();
-	MeshComponent->ClearAllMeshSections();
 }
 

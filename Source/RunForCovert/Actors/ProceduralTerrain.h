@@ -1,35 +1,38 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Caps Collective 2020
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LevelGenerator.h"
-#include "ProceduralMeshComponent.h"
 #include "GameFramework/Actor.h"
-#include "ProcedurallyGeneratedMap.generated.h"
+#include "ProceduralMeshComponent.h"
+#include "ProceduralTerrain.generated.h"
+
 
 UCLASS()
-class RUNFORCOVERT_API AProcedurallyGeneratedMap : public AActor
+class RUNFORCOVERT_API AProceduralTerrain : public AActor
 {
+
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
-	AProcedurallyGeneratedMap();
+
+	AProceduralTerrain();
 
 protected:
-	// Called when the game starts or when spawned
+
+    // Protected overrides
+
 	virtual void BeginPlay() override;
 
-private:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	virtual bool ShouldTickIfViewportsOnly() const override;
+private:
 
 	// Private members
+
+    UPROPERTY(EditAnywhere)
+    UMaterialInterface* Material;
 	
 	UPROPERTY(VisibleAnywhere)
-	UProceduralMeshComponent* MeshComponent;
+	class UProceduralMeshComponent* MeshComponent;
 
 	UPROPERTY(EditAnywhere)
 	int32 Seed;
@@ -73,16 +76,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	float RFMRoughness;
 
-	UFUNCTION(BlueprintCallable)
-	void GenerateMap();
-
-	void ClearMap();
-
 	UPROPERTY(EditAnywhere)
-	bool bRegenerateMap;
-
-	UPROPERTY(EditAnywhere)
-	ALevelGenerator* LevelGenerator;
+	class ALevelGenerator* LevelGenerator;
 
 	UPROPERTY(VisibleAnywhere)
 	TArray<FVector> AllLevelPositions;
@@ -94,11 +89,18 @@ private:
 	float SmoothDistanceFromLevel;
 
 	UPROPERTY(EditAnywhere)
-	int SmoothingDistance;
+	int32 SmoothingDistance;
 
 	FVector GetVertexWorldPosition(FVector Vertex);
 
 	UPROPERTY()
 	TArray<FVector> MovedVerticesForLevel;
+
+	// Private functions
+
+    UFUNCTION(BlueprintCallable)
+    void GenerateMap();
+
+    void ClearMap();
 	
 };

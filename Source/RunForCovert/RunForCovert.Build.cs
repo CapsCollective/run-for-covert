@@ -21,7 +21,5 @@ public class RunForCovert : ModuleRules
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
-
-		//LoadLib(Target, "LibNoise", "LIB_NOISE"); // LibNoise is the name of the folder where you copied the files previously 
 	}
 }
