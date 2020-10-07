@@ -4,6 +4,7 @@
 #include "ChargeState.h"
 #include "MoveCoverState.h"
 
+
 UChargeState::UChargeState()
 {
     // Set field default values
@@ -14,7 +15,6 @@ void UChargeState::OnEnter()
 {
     // Exit agent crouching and start moving towards the player
     Owner->Agent->SetCrouching(false);
-    Owner->MoveToActor(Owner->Player);
 }
 
 void UChargeState::OnExit()
@@ -24,13 +24,20 @@ void UChargeState::OnExit()
 
 void UChargeState::OnUpdate()
 {
-    // Have the agent fire their weapon while charging
-    Owner->Agent->FireWeapon();
+    // Move towards the player
+    Owner->MoveToActor(Owner->Player);
 
-    // End the charge once close enough to the player
-    if (FVector::Dist(Owner->Agent->GetActorLocation(), Owner->Player->GetActorLocation()) < 300.f)
+    // Calculate distance to player
+    float DistanceToPlayer = FVector::Dist(Owner->Agent->GetActorLocation(), Owner->Player->GetActorLocation());
+    if (DistanceToPlayer < 300.f)
     {
+        // End the charge once close enough to the player
         bCharged = true;
+    }
+    else if (DistanceToPlayer < Owner->Agent->FiringRange && Owner->LineOfSightTo(Owner->Player))
+    {
+        // Have the agent fire their weapon while charging if they can see the player and are near enough
+        Owner->Agent->FireWeapon();
     }
 }
 

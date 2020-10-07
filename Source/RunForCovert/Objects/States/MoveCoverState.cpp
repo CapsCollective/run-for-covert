@@ -7,6 +7,7 @@
 #include "HoldCoverState.h"
 #include "ChargeState.h"
 
+
 UMoveCoverState::UMoveCoverState()
 {
     // Set field default values
@@ -25,6 +26,10 @@ void UMoveCoverState::OnEnter()
 void UMoveCoverState::OnExit()
 {
     bTakenFinalCover = false;
+
+    // Release all currently held occupations
+    if (PreviousCoverPoint) { PreviousCoverPoint->ReleaseOccupation(Owner->Agent); }
+    if (CoverPoint) { CoverPoint->ReleaseOccupation(Owner->Agent); }
 }
 
 void UMoveCoverState::OnUpdate()
