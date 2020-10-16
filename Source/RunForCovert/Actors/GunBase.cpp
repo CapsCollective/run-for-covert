@@ -30,6 +30,7 @@ AGunBase::AGunBase()
     LastFireTime = 0.f;
     BulletSpeed = 10000.f;
     BulletSpread = 0.f;
+    Recoil = 1.f;
     MagazineSize = 16;
     CurrentAmmo = 0;
 }
@@ -78,7 +79,8 @@ void AGunBase::Fire(FVector LaunchDirection)
 
     // Decrement ammunition and play firing sound
     --CurrentAmmo;
-    UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
+    UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound,
+                                           MuzzlePosition->GetComponentLocation());
 
     // Get projectile trace
     FPredictProjectilePathResult Result;
@@ -109,13 +111,22 @@ void AGunBase::Fire(FVector LaunchDirection)
         );
     }
 
-    // Call the fire event on the character
+    // Apply recoil to the character and call the fire event
+    FRotator ShotRecoil = FRotator(
+            -FMath::RandRange(0.1f, 0.2f),
+            FMath::RandRange(0.1f, 0.2f), 0.f) * Recoil;
+    Character->ApplyRecoil(ShotRecoil);
     Character->OnFired();
 }
 
 bool AGunBase::HasAmmo() const
 {
     return CurrentAmmo > 0;
+}
+
+bool AGunBase::FullyLoaded() const
+{
+    return CurrentAmmo < MagazineSize;
 }
 
 void AGunBase::Reload()

@@ -26,6 +26,8 @@ public:
 
     virtual FVector GetAimVector() override;
 
+    virtual void ApplyRecoil(FRotator& Recoil) override;
+
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Player Control")

@@ -23,6 +23,8 @@ public:
 
     virtual FVector GetAimVector();
 
+    virtual void ApplyRecoil(FRotator& Recoil);
+
     UFUNCTION(BlueprintPure)
     UHealthComponent* GetHealth() const;
 

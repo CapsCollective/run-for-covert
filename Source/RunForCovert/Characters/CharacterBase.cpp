@@ -65,6 +65,11 @@ FVector ACharacterBase::GetAimVector()
     return GetActorForwardVector();
 }
 
+void ACharacterBase::ApplyRecoil(FRotator& Recoil)
+{
+    // Void virtual method implementation
+}
+
 AGunBase* ACharacterBase::GetGun() const
 {
     return Gun;

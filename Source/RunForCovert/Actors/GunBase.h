@@ -40,6 +40,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float BulletSpread;
 
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    float Recoil;
+
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundBase* FireSound;
 
@@ -52,6 +55,10 @@ public:
 
     void Reload();
 
+    UFUNCTION(BlueprintPure)
+    bool FullyLoaded() const;
+
+    UFUNCTION(BlueprintPure)
     bool HasAmmo() const;
 
     UFUNCTION(BlueprintPure)

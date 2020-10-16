@@ -65,6 +65,13 @@ FVector APlayerCharacterBase::GetAimVector()
     return Camera->GetForwardVector();
 }
 
+void APlayerCharacterBase::ApplyRecoil(FRotator& Recoil)
+{
+    // Apply the recoil to the character's local rotation
+    AddControllerPitchInput(Recoil.Pitch);
+    AddControllerYawInput(Recoil.Yaw);
+}
+
 void APlayerCharacterBase::MoveForward(float Amount)
 {
     AddMovementInput(GetActorForwardVector(), Amount * MoveSpeed);
