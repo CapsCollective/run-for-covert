@@ -12,6 +12,7 @@ AEnemyCharacterBase::AEnemyCharacterBase()
     // Set field default values
     TimeToSeePlayer = 1.5f;
     FiringRange = 500.f;
+    TurningSpeed = 2.0f;
 }
 
 void AEnemyCharacterBase::SetCrouching(bool Crouching)

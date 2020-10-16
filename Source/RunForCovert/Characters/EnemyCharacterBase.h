@@ -31,4 +31,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TimeToSeePlayer;
 
+    UPROPERTY(EditAnywhere)
+    float TurningSpeed;
+
 };

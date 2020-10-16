@@ -74,6 +74,11 @@ void AEnemyAIController::Tick(float DeltaTime)
 
     if (!(Player && Agent && CoverSystem)) { return; }
 
+    // Smoothly rotate the character based on the controller's rotation
+    Agent->SetActorRotation(
+            FMath::Lerp(Agent->GetActorRotation(), K2_GetActorRotation(),
+                        DeltaTime * Agent->TurningSpeed));
+
     // If the player has been noticed by the player for TimeToSeePlayer seconds
     // They will flip the boolean changing the state from Patrol to Combat
     if(SenseState == EnemySenseState::PLAYER_SEEN)
