@@ -1,6 +1,7 @@
 // Caps Collective 2020
 
 
+#include "../Characters/CharacterBase.h"
 #include "GunBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -9,7 +10,7 @@
 
 AGunBase::AGunBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Setup components
     GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh"));
@@ -19,7 +20,11 @@ AGunBase::AGunBase()
     MuzzlePosition->SetupAttachment(GunMesh);
 
     // Set field default values
+    Character = nullptr;
     FireSound = nullptr;
+    ClipEmptySound = nullptr;
+    bAutomatic = false;
+    bTriggerDown = false;
     GunDamage = 10.f;
     MaxFireRate = .5f;
     LastFireTime = 0.f;
@@ -31,26 +36,45 @@ AGunBase::AGunBase()
 
 void AGunBase::BeginPlay()
 {
+    Super::BeginPlay();
+
     // Set the magazine to full
     CurrentAmmo = MagazineSize;
+    Character = Cast<ACharacterBase>(GetParentActor());
 }
 
-bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
+void AGunBase::Tick(float DeltaTime)
 {
-    if (!Controller) { return false; }
+    Super::Tick(DeltaTime);
+
+    if (bTriggerDown && Character)
+    {
+        Fire(Character->GetAimVector());
+        if (!bAutomatic) { bTriggerDown = false; }
+    }
+}
+
+void AGunBase::SetTriggerDown(bool bPulled)
+{
+    // Play the clip empty sound if there is no ammo
+    if (bPulled && CurrentAmmo <= 0)
+    {
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ClipEmptySound,
+                                               MuzzlePosition->GetComponentLocation());
+    }
+    bTriggerDown = bPulled;
+}
+
+void AGunBase::Fire(FVector LaunchDirection)
+{
+    if (!Character->GetController()) { return; }
 
     // Check if the gun is within max fire rate and update
-    if (LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) { return false; }
+    if (LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) { return; }
     LastFireTime = GetWorld()->GetTimeSeconds();
 
     // Check if there is enough available ammunition
-    if (CurrentAmmo <= 0)
-    {
-        // Play the clip empty sound
-        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ClipEmptySound,
-                                               MuzzlePosition->GetComponentLocation());
-        return false;
-    }
+    if (CurrentAmmo <= 0) { return; }
 
     // Decrement ammunition and play firing sound
     --CurrentAmmo;
@@ -70,10 +94,10 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     {
         // Damage actor
         AActor* HitActor = Result.HitResult.GetActor();
-        if (!HitActor) { return true; }
+        if (!HitActor) { return; }
         FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
                                                           Result.HitResult.ImpactNormal, nullptr);
-        HitActor->TakeDamage(GunDamage,DamageEvent, Controller,GetOwner());
+        HitActor->TakeDamage(GunDamage,DamageEvent, Character->GetController(),GetOwner());
     }
 
     // Draw debug line
@@ -85,7 +109,13 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
         );
     }
 
-    return true;
+    // Call the fire event on the character
+    Character->OnFired();
+}
+
+bool AGunBase::HasAmmo() const
+{
+    return CurrentAmmo > 0;
 }
 
 void AGunBase::Reload()

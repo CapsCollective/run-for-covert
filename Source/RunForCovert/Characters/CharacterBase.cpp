@@ -60,6 +60,11 @@ float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &
     return DamageAmount;
 }
 
+FVector ACharacterBase::GetAimVector()
+{
+    return GetActorForwardVector();
+}
+
 AGunBase* ACharacterBase::GetGun() const
 {
     return Gun;
@@ -70,11 +75,11 @@ UHealthComponent* ACharacterBase::GetHealth() const
     return Health;
 }
 
-bool ACharacterBase::Fire()
+void ACharacterBase::Fire()
 {
-    if (!GetGun()) { return false; }
+    if (!GetGun()) { return; }
     CancelReload();
-    return GetGun()->Fire(GetController(), GetActorForwardVector());
+    GetGun()->SetTriggerDown(true);
 }
 
 void ACharacterBase::BeginReload_Implementation()

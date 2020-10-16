@@ -41,7 +41,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::Jump);
 
-    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, (void(APlayerCharacterBase::*)())&APlayerCharacterBase::Fire);
+    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::FireStart);
+    PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &APlayerCharacterBase::FireEnd);
 
     PlayerInputComponent->BindAction(TEXT("Reload"), EInputEvent::IE_Pressed, this, &ACharacterBase::BeginReload);
 
@@ -57,6 +58,11 @@ void APlayerCharacterBase::OnDeath()
 {
     GetController<APlayerController>()->GetHUD<AHUDBase>()->DisplayHUD(false);
     Super::OnDeath();
+}
+
+FVector APlayerCharacterBase::GetAimVector()
+{
+    return Camera->GetForwardVector();
 }
 
 void APlayerCharacterBase::MoveForward(float Amount)
@@ -79,16 +85,17 @@ void APlayerCharacterBase::LookRight(float Amount)
     AddControllerYawInput(Amount * LookSpeed);
 }
 
-bool APlayerCharacterBase::Fire()
+void APlayerCharacterBase::FireStart()
 {
-    if (!GetGun()) { return false; }
+    if (!GetGun()) { return; }
     CancelReload();
-    if (GetGun()->Fire(GetController(), Camera->GetForwardVector()))
-    {
-        OnFired();
-        return true;
-    }
-    return false;
+    GetGun()->SetTriggerDown(true);
+}
+
+void APlayerCharacterBase::FireEnd()
+{
+    if (!GetGun()) { return; }
+    GetGun()->SetTriggerDown(false);
 }
 
 void APlayerCharacterBase::SprintStart()

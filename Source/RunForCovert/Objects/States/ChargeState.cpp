@@ -37,7 +37,7 @@ void UChargeState::OnUpdate()
     else if (DistanceToPlayer < Owner->Agent->FiringRange && Owner->LineOfSightTo(Owner->Player))
     {
         // Have the agent fire their weapon while charging if they can see the player and are near enough
-        Owner->Agent->FireWeapon();
+        Owner->Agent->Fire();
     }
 }
 

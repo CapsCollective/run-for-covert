@@ -21,11 +21,16 @@ public:
 
     virtual void OnDeath();
 
+    virtual FVector GetAimVector();
+
     UFUNCTION(BlueprintPure)
     UHealthComponent* GetHealth() const;
 
     UFUNCTION(BlueprintNativeEvent)
     void BeginReload();
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnFired();
 
     // Components
 
@@ -46,10 +51,9 @@ protected:
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,
                              class AController* EventInstigator, AActor* DamageCauser) override;
 
-    
     // Protected methods
 
-    virtual bool Fire();
+    virtual void Fire();
 
     UFUNCTION(BlueprintCallable)
     virtual void ReloadInitiated(float Length);

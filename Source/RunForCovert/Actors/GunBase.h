@@ -16,7 +16,14 @@ public:
 
 	AGunBase();
 
+    // Public overrides
+
+    virtual void Tick(float DeltaTime) override;
+
     // Properties
+
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    bool bAutomatic;
 
     UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
@@ -41,9 +48,11 @@ public:
 
     // Public functions
 
-    bool Fire(AController* Controller, FVector LaunchDirection);
+    void SetTriggerDown(bool bPulled);
 
     void Reload();
+
+    bool HasAmmo() const;
 
     UFUNCTION(BlueprintPure)
     int32 GetCurrentAmmo() const;
@@ -66,8 +75,16 @@ private:
 
     // Private fields
 
+    class ACharacterBase* Character;
+
     float LastFireTime;
 
     int32 CurrentAmmo;
+
+    bool bTriggerDown;
+
+    // Private functions
+
+    void Fire(FVector LaunchDirection);
 
 };

@@ -32,7 +32,8 @@ void UFireState::OnUpdate()
     // Fire at the player once the timer ends
     if (TimeStarted + FireDelay <= Owner->GetWorld()->GetTimeSeconds())
     {
-        if (Owner->Agent->FireWeapon() && ++TimesFired >= TimesToFire)
+        Owner->Agent->Fire();
+        if (++TimesFired >= TimesToFire)
         {
             bHasFinishedFiring = true;
         }

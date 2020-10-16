@@ -24,6 +24,8 @@ public:
 
     virtual void OnDeath() override;
 
+    virtual FVector GetAimVector() override;
+
     // Properties
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
@@ -60,13 +62,8 @@ public:
 
     void SprintEnd();
 
-protected:
+    void FireStart();
 
-	// Protected overrides
-
-    virtual bool Fire() override;
-
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnFired();
+    void FireEnd();
 
 };

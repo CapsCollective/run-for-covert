@@ -19,7 +19,7 @@ public:
 	
     // Public methods
 
-    bool FireWeapon();
+    virtual void Fire() override;
 
     void SetCrouching(bool Crouching);
 

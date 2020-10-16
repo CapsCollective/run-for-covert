@@ -21,17 +21,16 @@ void AEnemyCharacterBase::SetCrouching(bool Crouching)
     Crouching ? Crouch() : UnCrouch();
 }
 
-bool AEnemyCharacterBase::FireWeapon()
+void AEnemyCharacterBase::Fire()
 {
-    if (!GetGun()) { return false; }
+    if (!GetGun()) { return; }
 
-    if (GetGun()->GetCurrentAmmo() > 0)
+    if (GetGun()->HasAmmo())
     {
-        return Fire();
+        Super::Fire();
     }
     else if (!IsReloading())
     {
         BeginReload();
     }
-    return false;
 }
