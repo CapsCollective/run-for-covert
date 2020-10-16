@@ -36,6 +36,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundBase* FireSound;
 
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    USoundBase* ClipEmptySound;
+
     // Public functions
 
     bool Fire(AController* Controller, FVector LaunchDirection);

@@ -44,10 +44,16 @@ bool AGunBase::Fire(AController* Controller, FVector LaunchDirection)
     LastFireTime = GetWorld()->GetTimeSeconds();
 
     // Check if there is enough available ammunition
-    if (CurrentAmmo <= 0) { return false; }
-    --CurrentAmmo;
+    if (CurrentAmmo <= 0)
+    {
+        // Play the clip empty sound
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ClipEmptySound,
+                                               MuzzlePosition->GetComponentLocation());
+        return false;
+    }
 
-    // Play firing sound
+    // Decrement ammunition and play firing sound
+    --CurrentAmmo;
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound, MuzzlePosition->GetComponentLocation());
 
     // Get projectile trace
