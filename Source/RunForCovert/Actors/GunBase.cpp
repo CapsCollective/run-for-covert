@@ -77,38 +77,40 @@ void AGunBase::Fire(FVector LaunchDirection)
     // Check if there is enough available ammunition
     if (CurrentAmmo <= 0) { return; }
 
-    // Decrement ammunition and play firing sound
+    // Decrement ammunition and play firing sound and particle effect
     --CurrentAmmo;
+    UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GunMesh, TEXT("Muzzle"));
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound,
                                            MuzzlePosition->GetComponentLocation());
+
+    // Calculate launch velocity
+    FVector LaunchVelocity = FMath::VRand() * BulletSpread + LaunchDirection * BulletSpeed;
 
     // Get projectile trace
     FPredictProjectilePathResult Result;
     FPredictProjectilePathParams Params = FPredictProjectilePathParams(
             1.f,
             MuzzlePosition->GetComponentLocation(),
-            FMath::VRand() * BulletSpread + LaunchDirection * BulletSpeed,
+            LaunchVelocity,
             2.f,
             ECC_WorldDynamic,
             GetParentActor()
     );
     if (UGameplayStatics::PredictProjectilePath(GetWorld(), Params, OUT Result))
     {
+        // Spawn an impact effect at the impact point
+        ACharacter* HitCharacter =  Cast<ACharacter>(Result.HitResult.GetActor());
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(),
+                               HitCharacter ? RicochetSound : nullptr, Result.HitResult.ImpactPoint);
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),
+                                 HitCharacter ? HitCharacterEffect : HitSurfaceEffect,
+                                 Result.HitResult.ImpactPoint, LaunchVelocity.Rotation().GetInverse());
+
         // Damage actor
-        AActor* HitActor = Result.HitResult.GetActor();
-        if (!HitActor) { return; }
+        if (!Result.HitResult.GetActor()) { return; }
         FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
                                                           Result.HitResult.ImpactNormal, nullptr);
-        HitActor->TakeDamage(GunDamage,DamageEvent, Character->GetController(),GetOwner());
-    }
-
-    // Draw debug line
-    for (auto It = Result.PathData.CreateConstIterator(); It; It++)
-    {
-        DrawDebugPoint(
-                GetWorld(), (*It).Location,5.f,
-                It + 1 ? FColor::Green : FColor::Red,false,4.f
-        );
+        Result.HitResult.GetActor()->TakeDamage(GunDamage, DamageEvent, Character->GetController(),GetOwner());
     }
 
     // Apply recoil to the character and call the fire event

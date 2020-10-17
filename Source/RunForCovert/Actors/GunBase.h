@@ -49,6 +49,18 @@ public:
     UPROPERTY(EditAnywhere, Category = "Effects")
     USoundBase* ClipEmptySound;
 
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    USoundBase* RicochetSound;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* MuzzleFlashEffect;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* HitSurfaceEffect;
+
+    UPROPERTY(EditAnywhere, Category = "Effects")
+    UParticleSystem* HitCharacterEffect;
+
     // Public functions
 
     void SetTriggerDown(bool bPulled);
