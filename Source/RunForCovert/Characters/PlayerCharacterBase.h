@@ -68,4 +68,10 @@ public:
 
     void FireEnd();
 
+private:
+
+    // Private functions
+
+    void OpenMenu();
+
 };

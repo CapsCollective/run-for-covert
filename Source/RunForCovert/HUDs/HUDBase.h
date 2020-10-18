@@ -22,7 +22,12 @@ public:
     UPROPERTY(EditAnywhere)
     TSubclassOf<class UUserWidget> HUDWidgetClass;
 
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<UUserWidget> PauseWidgetClass;
+
 	void DisplayHUD(bool bShow);
+
+    void TogglePause();
 
 protected:
 
@@ -35,5 +40,7 @@ private:
     // Private fields
 
     UUserWidget* HUDWidget;
+
+    UUserWidget* PauseWidget;
 	
 };

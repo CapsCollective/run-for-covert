@@ -33,6 +33,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+    PlayerInputComponent->BindAction(TEXT("Exit"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::OpenMenu);
+
     PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &APlayerCharacterBase::MoveForward);
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &APlayerCharacterBase::MoveRight);
 
@@ -58,6 +60,11 @@ void APlayerCharacterBase::OnDeath()
 {
     GetController<APlayerController>()->GetHUD<AHUDBase>()->DisplayHUD(false);
     Super::OnDeath();
+}
+
+void APlayerCharacterBase::OpenMenu()
+{
+    GetController<APlayerController>()->GetHUD<AHUDBase>()->TogglePause();
 }
 
 FVector APlayerCharacterBase::GetAimVector()
