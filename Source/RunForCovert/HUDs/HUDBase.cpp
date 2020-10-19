@@ -35,4 +35,16 @@ void AHUDBase::TogglePause()
 {
     bool bHidden = PauseWidget->GetVisibility() == ESlateVisibility::Hidden;
     PauseWidget->SetVisibility(bHidden ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+    GetWorld()->GetFirstPlayerController()->bShowMouseCursor = bHidden;
+    if (bHidden)
+    {
+        FInputModeGameAndUI InputMode;
+        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+        InputMode.SetWidgetToFocus(PauseWidget->TakeWidget());
+        GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
+    }
+    else
+    {
+        GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+    }
 }
