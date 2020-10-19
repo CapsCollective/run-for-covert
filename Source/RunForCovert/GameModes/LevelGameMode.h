@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "DefaultGameModeBase.generated.h"
+#include "LevelGameMode.generated.h"
 
 UCLASS()
-class RUNFORCOVERT_API ADefaultGameModeBase : public AGameModeBase
+class RUNFORCOVERT_API ALevelGameMode : public AGameModeBase
 {
 
 	GENERATED_BODY()
 
 public:
 
-    ADefaultGameModeBase();
+    ALevelGameMode();
 
     // Public fields
 

@@ -11,7 +11,7 @@
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "../Objects/States/EnemyStateMachine.h"
-#include "../GameModes/DefaultGameModeBase.h"
+#include "../GameModes/LevelGameMode.h"
 
 
 AEnemyAIController::AEnemyAIController()
@@ -52,7 +52,7 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
     PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
 
     // Get a reference to the game mode (used as a service locator)
-    ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+    ALevelGameMode* GameMode = Cast<ALevelGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
     if (!GameMode)
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to find game mode"))

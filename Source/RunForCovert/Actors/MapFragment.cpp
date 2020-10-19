@@ -4,7 +4,7 @@
 #include "MapFragment.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "../GameModes/DefaultGameModeBase.h"
+#include "../GameModes/LevelGameMode.h"
 #include "MapAttachmentPoint.h"
 
 

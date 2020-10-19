@@ -1,14 +1,14 @@
 // Caps Collective 2020
 
 
-#include "DefaultGameModeBase.h"
+#include "LevelGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "RunForCovert/Objects/CoverSystem.h"
 #include "RunForCovert/Objects/PatrolSystem.h"
 #include "RunForCovert/Actors/LevelGenerator.h"
 #include "Engine/World.h"
 
-ADefaultGameModeBase::ADefaultGameModeBase()
+ALevelGameMode::ALevelGameMode()
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -19,7 +19,7 @@ ADefaultGameModeBase::ADefaultGameModeBase()
     LevelGenerator = nullptr;
 }
 
-void ADefaultGameModeBase::BeginPlay()
+void ALevelGameMode::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -32,7 +32,7 @@ void ADefaultGameModeBase::BeginPlay()
     // Initialise cover and patrol points on completing level generation or immediately if none exist
     if (LevelGenerator && !LevelGenerator->IsGenerationComplete())
     {
-        LevelGenerator->OnGenerationComplete.AddDynamic(this, &ADefaultGameModeBase::InitialiseSystems);
+        LevelGenerator->OnGenerationComplete.AddDynamic(this, &ALevelGameMode::InitialiseSystems);
     }
     else
     {
@@ -40,22 +40,22 @@ void ADefaultGameModeBase::BeginPlay()
     }
 }
 
-UCoverSystem* ADefaultGameModeBase::GetCoverSystem()
+UCoverSystem* ALevelGameMode::GetCoverSystem()
 {
     return CoverSystem;
 }
 
-UPatrolSystem* ADefaultGameModeBase::GetPatrolSystem()
+UPatrolSystem* ALevelGameMode::GetPatrolSystem()
 {
     return PatrolSystem;
 }
 
-ALevelGenerator* ADefaultGameModeBase::GetLevelGenerator()
+ALevelGenerator* ALevelGameMode::GetLevelGenerator()
 {
     return LevelGenerator;
 }
 
-void ADefaultGameModeBase::InitialiseSystems()
+void ALevelGameMode::InitialiseSystems()
 {
     // Initialise all UObject systems
     CoverSystem->Initialise();

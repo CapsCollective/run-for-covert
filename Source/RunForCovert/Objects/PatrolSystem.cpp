@@ -5,7 +5,7 @@
 #include "RunForCovert/Actors/PatrolPoint.h"
 #include "DrawDebugHelpers.h"
 #include "../Characters/EnemyCharacterBase.h"
-#include "../GameModes/DefaultGameModeBase.h"
+#include "../GameModes/LevelGameMode.h"
 
 
 void UPatrolSystem::Initialise()
@@ -18,7 +18,7 @@ void UPatrolSystem::Initialise()
     }
 
     // Get reference to the game mode
-    ADefaultGameModeBase* GameMode = Cast<ADefaultGameModeBase>(GetWorld()->GetAuthGameMode());
+    ALevelGameMode* GameMode = Cast<ALevelGameMode>(GetWorld()->GetAuthGameMode());
     if (!GameMode) { return; }
 
 
