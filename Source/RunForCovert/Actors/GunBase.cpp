@@ -1,8 +1,8 @@
 // Caps Collective 2020
 
 
-#include "../Characters/CharacterBase.h"
 #include "GunBase.h"
+#include "../Characters/CharacterBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
