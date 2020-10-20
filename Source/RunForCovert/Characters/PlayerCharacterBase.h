@@ -76,8 +76,10 @@ protected:
 
 private:
 
-    // Private functions
+    // Private fields
 
-    void OpenMenu();
+    float WalkSpeed;
+
+    float SprintSpeed;
 
 };

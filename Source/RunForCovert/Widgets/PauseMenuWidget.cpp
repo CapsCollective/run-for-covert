@@ -4,6 +4,8 @@
 #include "PauseMenuWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "../HUDs/HUDBase.h"
+
 
 bool UPauseMenuWidget::Initialize()
 {

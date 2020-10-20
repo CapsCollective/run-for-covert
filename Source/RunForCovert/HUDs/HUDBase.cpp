@@ -41,7 +41,6 @@ void AHUDBase::TogglePause()
     if (bHidden)
     {
         // Also allow interaction with UI
-        // TODO stop the player from being able to move while the menu is open
         FInputModeGameAndUI InputMode;
         InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
         InputMode.SetWidgetToFocus(PauseWidget->TakeWidget());
