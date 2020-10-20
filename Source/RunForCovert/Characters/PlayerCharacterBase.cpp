@@ -105,7 +105,12 @@ void APlayerCharacterBase::LookRight(float Amount)
 void APlayerCharacterBase::FireStart()
 {
     if (!GetGun()) { return; }
-    CancelReload();
+
+    // Only cancel the reload if the gun is not empty
+    if (GetGun()->HasAmmo())
+    {
+        CancelReload();
+    }
     GetGun()->SetTriggerDown(true);
 }
 
