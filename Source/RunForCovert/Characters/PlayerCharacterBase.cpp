@@ -27,6 +27,17 @@ APlayerCharacterBase::APlayerCharacterBase()
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
+    SprintSpeed = 0.f;
+    WalkSpeed = 0.f;
+}
+
+void APlayerCharacterBase::BeginPlay()
+{
+    Super::BeginPlay();
+
+    // Calculate movement speeds
+    WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+    SprintSpeed = WalkSpeed * SprintMultiplier;
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -114,10 +125,10 @@ void APlayerCharacterBase::FireEnd()
 
 void APlayerCharacterBase::SprintStart()
 {
-    GetCharacterMovement()->MaxWalkSpeed *= SprintMultiplier;
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
 
 void APlayerCharacterBase::SprintEnd()
 {
-    GetCharacterMovement()->MaxWalkSpeed /= SprintMultiplier;
+    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }

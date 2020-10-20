@@ -68,6 +68,12 @@ public:
 
     void FireEnd();
 
+protected:
+
+    // Protected fields
+
+    virtual void BeginPlay() override;
+
 private:
 
     // Private functions
