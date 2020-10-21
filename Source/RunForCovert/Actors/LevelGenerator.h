@@ -85,6 +85,8 @@ private:
 
     void CompleteGeneration();
 
+    void ReplicateLevelToClients();
+
     static TArray<int32> GetRandomisedIndices(int32 ArrayLength) ;
 	
 };

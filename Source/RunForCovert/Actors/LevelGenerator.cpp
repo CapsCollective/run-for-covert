@@ -27,6 +27,9 @@ ALevelGenerator::ALevelGenerator()
 
 void ALevelGenerator::BeginPlay()
 {
+    // Stop clients from generating levels
+    if (!HasAuthority()) { return; }
+
     // Add all currently open attachment points
     for (AMapAttachmentPoint* AttachmentPoint : TActorRange<AMapAttachmentPoint>(GetWorld()))
     {
@@ -97,6 +100,7 @@ bool ALevelGenerator::RunFragmentSpawn()
         }
         ResizeNavMesh();
         CompleteGeneration();
+        ReplicateLevelToClients();
         return false;
     }
     return true;
@@ -183,6 +187,14 @@ void ALevelGenerator::CompleteGeneration()
 {
     OnGenerationComplete.Broadcast();
     bCompletedGeneration = true;
+}
+
+void ALevelGenerator::ReplicateLevelToClients()
+{
+    for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
+    {
+        It->SetReplicates(true);
+    }
 }
 
 TArray<int32> ALevelGenerator::GetRandomisedIndices(int32 ArrayLength)
