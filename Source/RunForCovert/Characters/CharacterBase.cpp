@@ -111,4 +111,8 @@ void ACharacterBase::CancelReload()
 bool ACharacterBase::IsReloading()
 {
     return GetWorldTimerManager().IsTimerActive(ReloadTimer);
+
+bool  ACharacterBase::IsDead() const
+{
+    return bIsDead;
 }

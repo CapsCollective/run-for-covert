@@ -34,15 +34,13 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();
 
+    UFUNCTION(BlueprintPure)
+    bool IsDead() const;
+
     // Components
 
     UPROPERTY(VisibleAnywhere)
     UHealthComponent* Health;
-
-    // Public fields
-
-    UPROPERTY(BlueprintReadWrite)
-    bool bIsDead;
 
 protected:
 
@@ -82,5 +80,7 @@ private:
 
     UPROPERTY()
     FTimerHandle ReloadTimer;
+
+    bool bIsDead;
 
 };
