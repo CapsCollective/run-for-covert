@@ -60,7 +60,8 @@ protected:
 
     void CancelReload();
 
-    bool IsReloading();
+    UFUNCTION(BlueprintPure)
+    bool IsReloading() const;
 
     // Protected getters
 

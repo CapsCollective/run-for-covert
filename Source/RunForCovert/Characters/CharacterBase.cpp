@@ -89,6 +89,7 @@ void ACharacterBase::Fire()
 
 void ACharacterBase::BeginReload_Implementation()
 {
+    if (IsReloading()) { return; }
     ReloadInitiated(1.f);
 }
 
@@ -108,9 +109,10 @@ void ACharacterBase::CancelReload()
     GetWorldTimerManager().ClearTimer(ReloadTimer);
 }
 
-bool ACharacterBase::IsReloading()
+bool ACharacterBase::IsReloading() const
 {
     return GetWorldTimerManager().IsTimerActive(ReloadTimer);
+}
 
 bool  ACharacterBase::IsDead() const
 {
