@@ -20,13 +20,17 @@ void APlayerLevelController::HideHUD()
 
 void APlayerLevelController::OpenMenu()
 {
-    if (GetPawn()->InputEnabled())
+    if (GetPawn())
     {
-        GetPawn()->DisableInput(this);
-    }
-    else
-    {
-        GetPawn()->EnableInput(this);
+        // Toggle the player pawn input for the menu
+        if (GetPawn()->InputEnabled())
+        {
+            GetPawn()->DisableInput(this);
+        }
+        else
+        {
+            GetPawn()->EnableInput(this);
+        }
     }
     GetHUD<AHUDBase>()->TogglePause();
 }
