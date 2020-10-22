@@ -17,25 +17,9 @@ ACharacterBase::ACharacterBase()
     bIsDead = false;
 }
 
-
 void ACharacterBase::BeginPlay()
 {
-	Super::BeginPlay();
-    TArray<AActor*> ChildActors;
-
-    // Set up gun child actor
-    GetAllChildActors(OUT ChildActors);
-    if (ChildActors.Num() != 1)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Incorrect number of child actors for character."))
-        return;
-    }
-    Gun = Cast<AGunBase>(ChildActors[0]);
-    if (!Gun)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Child actor does not inherit from AGunBase."))
-        return;
-    }
+    Super::BeginPlay();
 
     // Enable character crouching
     GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
@@ -70,6 +54,12 @@ void ACharacterBase::ApplyRecoil(FRotator& Recoil)
     // Void virtual method implementation
 }
 
+void ACharacterBase::SetGun(AGunBase* GunActor)
+{
+    Gun = GunActor;
+    OnGunSet();
+}
+
 AGunBase* ACharacterBase::GetGun() const
 {
     return Gun;
@@ -82,10 +72,8 @@ UHealthComponent* ACharacterBase::GetHealth() const
 
 void ACharacterBase::Fire()
 {
-    if (!GetGun()) { return; }
+    if (!Gun) { return; }
     CancelReload();
-    GetGun()->SetTriggerDown(true);
-}
     Gun->SetTriggerDown(true);
 }
 

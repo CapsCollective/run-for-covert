@@ -7,10 +7,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/DamageType.h"
+#include "Net/UnrealNetwork.h"
 
 AGunBase::AGunBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Set actor for replication
+    bReplicates = true;
 
 	// Setup components
     GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh"));
@@ -20,9 +24,13 @@ AGunBase::AGunBase()
     MuzzlePosition->SetupAttachment(GunMesh);
 
     // Set field default values
-    Character = nullptr;
     FireSound = nullptr;
     ClipEmptySound = nullptr;
+    RicochetSound = nullptr;
+    MuzzleFlashEffect = nullptr;
+    HitCharacterEffect = nullptr;
+    HitSurfaceEffect = nullptr;
+    OwningCharacter = nullptr;
     bAutomatic = false;
     bTriggerDown = false;
     GunDamage = 10.f;
@@ -35,22 +43,43 @@ AGunBase::AGunBase()
     CurrentAmmo = 0;
 }
 
+void AGunBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AGunBase, CurrentAmmo);
+}
+
 void AGunBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Register as the character's gun
+    OwningCharacter = Cast<ACharacterBase>(GetParentActor());
+    if (OwningCharacter)
+    {
+        OwningCharacter->SetGun(this);
+        SetOwner(OwningCharacter);
+    }
+
     // Set the magazine to full
     CurrentAmmo = MagazineSize;
-    Character = Cast<ACharacterBase>(GetParentActor());
 }
 
 void AGunBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (bTriggerDown && Character)
+    if (bTriggerDown && OwningCharacter)
     {
-        Fire(Character->GetAimVector());
+        // Calculate launch velocity
+        FVector LaunchVelocity = FMath::VRand() * BulletSpread + OwningCharacter->GetAimVector() * BulletSpeed;
+
+        // Run fire on the local machine and then forward to relevant partner type
+        Fire(LaunchVelocity);
+        HasAuthority() ? MulticastFire(LaunchVelocity) : ServerFire(LaunchVelocity);
+
+        // Reset the trigger for non-automatic weapons
         if (!bAutomatic) { bTriggerDown = false; }
     }
 }
@@ -66,25 +95,36 @@ void AGunBase::SetTriggerDown(bool bPulled)
     bTriggerDown = bPulled;
 }
 
-void AGunBase::Fire(FVector LaunchDirection)
+void AGunBase::ServerFire_Implementation(FVector LaunchVelocity)
 {
-    if (!Character->GetController()) { return; }
+    // Run fire on server only
+    Fire(LaunchVelocity);
+}
 
-    // Check if the gun is within max fire rate and update
-    if (LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) { return; }
-    LastFireTime = GetWorld()->GetTimeSeconds();
+void AGunBase::MulticastFire_Implementation(FVector LaunchVelocity)
+{
+    // Run fire on clients only
+    if (!HasAuthority()) { Fire(LaunchVelocity); }
+}
 
-    // Check if there is enough available ammunition
-    if (CurrentAmmo <= 0) { return; }
+void AGunBase::Fire(FVector LaunchVelocity)
+{
+    if (!OwningCharacter) { return; }
 
-    // Decrement ammunition and play firing sound and particle effect
-    --CurrentAmmo;
+    // Check if the gun can fire based on ammo and fire time
+    if ((LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) || (CurrentAmmo <= 0)) { return; }
+
+    // Decrement ammunition and set the last fire time
+    if (HasAuthority())
+    {
+        --CurrentAmmo;
+        LastFireTime = GetWorld()->GetTimeSeconds();
+    }
+
+    // Play firing sound and particle effect
     UGameplayStatics::SpawnEmitterAttached(MuzzleFlashEffect, GunMesh, TEXT("Muzzle"));
     UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FireSound,
                                            MuzzlePosition->GetComponentLocation());
-
-    // Calculate launch velocity
-    FVector LaunchVelocity = FMath::VRand() * BulletSpread + LaunchDirection * BulletSpeed;
 
     // Get projectile trace
     FPredictProjectilePathResult Result;
@@ -107,18 +147,28 @@ void AGunBase::Fire(FVector LaunchDirection)
                                  Result.HitResult.ImpactPoint, LaunchVelocity.Rotation().GetInverse());
 
         // Damage actor
-        if (!Result.HitResult.GetActor()) { return; }
-        FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
-                                                          Result.HitResult.ImpactNormal, nullptr);
-        Result.HitResult.GetActor()->TakeDamage(GunDamage, DamageEvent, Character->GetController(),GetOwner());
+        if (HasAuthority() && OwningCharacter->GetController())
+        {
+            if (!Result.HitResult.GetActor())
+            { return; }
+            FPointDamageEvent DamageEvent = FPointDamageEvent(GunDamage, Result.HitResult,
+                                                              Result.HitResult.ImpactNormal, nullptr);
+            Result.HitResult.GetActor()->TakeDamage(GunDamage, DamageEvent,
+                                                    OwningCharacter->GetController(), GetParentActor());
+        }
     }
 
-    // Apply recoil to the character and call the fire event
-    FRotator ShotRecoil = FRotator(
-            -FMath::RandRange(0.1f, 0.2f),
-            FMath::RandRange(0.1f, 0.2f), 0.f) * Recoil;
-    Character->ApplyRecoil(ShotRecoil);
-    Character->OnFired();
+    // Apply recoil to the character
+    if (HasAuthority())
+    {
+        FRotator ShotRecoil = FRotator(
+                -FMath::RandRange(0.1f, 0.2f),
+                FMath::RandRange(0.1f, 0.2f), 0.f) * Recoil;
+        OwningCharacter->ApplyRecoil(ShotRecoil);
+    }
+
+    // Call the fire event
+    OwningCharacter->OnFired();
 }
 
 bool AGunBase::HasAmmo() const
@@ -128,7 +178,7 @@ bool AGunBase::HasAmmo() const
 
 bool AGunBase::FullyLoaded() const
 {
-    return CurrentAmmo < MagazineSize;
+    return CurrentAmmo >= MagazineSize;
 }
 
 void AGunBase::Reload()
@@ -139,4 +189,9 @@ void AGunBase::Reload()
 int32 AGunBase::GetCurrentAmmo() const
 {
     return CurrentAmmo;
+}
+
+int32 AGunBase::GetMagazineSize() const
+{
+    return MagazineSize;
 }

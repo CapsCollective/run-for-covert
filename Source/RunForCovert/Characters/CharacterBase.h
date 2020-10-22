@@ -25,6 +25,8 @@ public:
 
     virtual void ApplyRecoil(FRotator& Recoil);
 
+    void SetGun(AGunBase* GunActor);
+
     UFUNCTION(BlueprintPure)
     UHealthComponent* GetHealth() const;
 
@@ -53,8 +55,10 @@ protected:
 
     // Protected methods
 
-    virtual void Fire();
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnGunSet();
 
+    virtual void Fire();
 
     void CancelReload();
 
@@ -73,10 +77,10 @@ private:
     // Private fields
 
     UPROPERTY()
-    AGunBase* Gun;
+    FTimerHandle ReloadTimer;
 
     UPROPERTY()
-    FTimerHandle ReloadTimer;
+    AGunBase* Gun;
 
     bool bIsDead;
 

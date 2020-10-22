@@ -28,7 +28,7 @@ public:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float GunDamage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+    UPROPERTY(EditAnywhere, Category = "Combat")
     int32 MagazineSize;
 
     UPROPERTY(EditAnywhere, Category = "Combat")
@@ -76,11 +76,16 @@ public:
     UFUNCTION(BlueprintPure)
     int32 GetCurrentAmmo() const;
 
+    UFUNCTION(BlueprintPure)
+    int32 GetMagazineSize() const;
+
 protected:
 
     // Protected overrides
 
     virtual void BeginPlay() override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 
@@ -94,16 +99,24 @@ private:
 
     // Private fields
 
-    class ACharacterBase* Character;
+    UPROPERTY()
+    class ACharacterBase* OwningCharacter;
 
     float LastFireTime;
 
+    UPROPERTY(Replicated)
     int32 CurrentAmmo;
 
     bool bTriggerDown;
 
     // Private functions
 
-    void Fire(FVector LaunchDirection);
+    void Fire(FVector LaunchVelocity);
+
+    UFUNCTION(Server, Reliable)
+    void ServerFire(FVector LaunchVelocity);
+
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastFire(FVector LaunchVelocity);
 
 };
