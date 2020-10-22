@@ -86,22 +86,19 @@ void ACharacterBase::Fire()
     CancelReload();
     GetGun()->SetTriggerDown(true);
 }
-
-void ACharacterBase::BeginReload_Implementation()
-{
-    if (IsReloading()) { return; }
-    ReloadInitiated(1.f);
+    Gun->SetTriggerDown(true);
 }
 
-void ACharacterBase::ReloadInitiated(float Length)
+void ACharacterBase::BeginReload_Implementation(float Length)
 {
+    if (IsReloading() || !Gun || Gun->FullyLoaded()) { return; }
     GetWorldTimerManager().SetTimer(ReloadTimer, this, &ACharacterBase::ReloadEnd, Length, false);
 }
 
 void ACharacterBase::ReloadEnd()
 {
-    if (!GetGun()) { return; }
-    GetGun()->Reload();
+    if (!Gun) { return; }
+    Gun->Reload();
 }
 
 void ACharacterBase::CancelReload()

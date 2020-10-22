@@ -29,7 +29,7 @@ public:
     UHealthComponent* GetHealth() const;
 
     UFUNCTION(BlueprintNativeEvent)
-    void BeginReload();
+    void BeginReload(float Length = 1.f);
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();
@@ -55,15 +55,11 @@ protected:
 
     virtual void Fire();
 
-    UFUNCTION(BlueprintCallable)
-    virtual void ReloadInitiated(float Length);
 
     void CancelReload();
 
     UFUNCTION(BlueprintPure)
     bool IsReloading() const;
-
-    // Protected getters
 
     UFUNCTION(BlueprintPure)
     AGunBase* GetGun() const;
