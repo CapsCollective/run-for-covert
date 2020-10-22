@@ -19,6 +19,8 @@ ACharacterBase::ACharacterBase()
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
     Gun = nullptr;
     bIsDead = false;
+    SprintSpeed = 0.f;
+    WalkSpeed = 0.f;
 }
 
 void ACharacterBase::BeginPlay()
@@ -27,6 +29,10 @@ void ACharacterBase::BeginPlay()
 
     // Enable character crouching
     GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+    // Calculate movement speeds
+    WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+    ApplySprintMultiplier(1.f);
 
     // Set the gun field
     SetGun(FindGun());
@@ -126,6 +132,45 @@ void ACharacterBase::SetGun(AGunBase* GunActor)
 {
     if (Gun) { return; }
     Gun = GunActor;
+}
+
+void ACharacterBase::ApplySprintMultiplier(float SprintMultiplier)
+{
+    SprintSpeed = WalkSpeed * SprintMultiplier;
+}
+
+void ACharacterBase::SprintStart()
+{
+    // Start the same process on the server
+    if (!HasAuthority())
+    {
+        ServerSprintStart();
+    }
+
+    // Apply the sprint speed
+    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void ACharacterBase::ServerSprintStart_Implementation()
+{
+    SprintStart();
+}
+
+void ACharacterBase::SprintEnd()
+{
+    // Start the same process on the server
+    if (!HasAuthority())
+    {
+        ServerSprintEnd();
+    }
+
+    // Reapply the walk speed
+    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void ACharacterBase::ServerSprintEnd_Implementation()
+{
+    SprintEnd();
 }
 
 bool ACharacterBase::IsReloading() const

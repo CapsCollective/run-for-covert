@@ -60,10 +60,6 @@ public:
 
     void LookRight(float Amount);
 
-    void SprintStart();
-
-    void SprintEnd();
-
     void FireStart();
 
     void FireEnd();
@@ -73,13 +69,5 @@ protected:
     // Protected fields
 
     virtual void BeginPlay() override;
-
-private:
-
-    // Private fields
-
-    float WalkSpeed;
-
-    float SprintSpeed;
 
 };

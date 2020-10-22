@@ -33,6 +33,16 @@ public:
     UFUNCTION(BlueprintNativeEvent)
     void BeginReload(float Length = 1.f);
 
+    void SprintStart();
+
+    UFUNCTION(Server, Reliable)
+    void ServerSprintStart();
+
+    void SprintEnd();
+
+    UFUNCTION(Server, Reliable)
+    void ServerSprintEnd();
+
     // Pure functions
 
     UFUNCTION(BlueprintPure)
@@ -70,6 +80,8 @@ protected:
 
     void CancelReload();
 
+    void ApplySprintMultiplier(float SprintMultiplier);
+
     UFUNCTION(Server, Reliable)
     void ServerCancelReload();
 
@@ -90,5 +102,9 @@ private:
     FTimerHandle ReloadTimer;
 
     bool bIsDead;
+
+    float WalkSpeed;
+
+    float SprintSpeed;
 
 };

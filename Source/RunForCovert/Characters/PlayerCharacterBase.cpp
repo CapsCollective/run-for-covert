@@ -26,17 +26,14 @@ APlayerCharacterBase::APlayerCharacterBase()
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
-    SprintSpeed = 0.f;
-    WalkSpeed = 0.f;
 }
 
 void APlayerCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Calculate movement speeds
-    WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-    SprintSpeed = WalkSpeed * SprintMultiplier;
+    // Apply the sprint multiplier to the character speed
+    ApplySprintMultiplier(SprintMultiplier);
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -56,8 +53,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
     PlayerInputComponent->BindAction(TEXT("Reload"), EInputEvent::IE_Pressed, this, (void(ACharacter::*)())&ACharacterBase::BeginReload);
 
-    PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::SprintStart);
-    PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &APlayerCharacterBase::SprintEnd);
+    PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &ACharacterBase::SprintStart);
+    PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ACharacterBase::SprintEnd);
 
     // Casts crouch functions to empty parameter functions of ACharacter
     PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, (void(ACharacter::*)())&ACharacter::Crouch);
@@ -118,14 +115,4 @@ void APlayerCharacterBase::FireEnd()
 {
     if (!GetGun()) { return; }
     GetGun()->SetTriggerDown(false);
-}
-
-void APlayerCharacterBase::SprintStart()
-{
-    GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-}
-
-void APlayerCharacterBase::SprintEnd()
-{
-    GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
