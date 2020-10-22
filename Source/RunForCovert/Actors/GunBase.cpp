@@ -57,10 +57,6 @@ void AGunBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Set the mesh only visible to owner and stop it from casting shadows
-    GunMesh->SetOnlyOwnerSee(true);
-    GunMesh->SetCastShadow(false);
-
     if (HasAuthority())
     {
         // Set the magazine to full

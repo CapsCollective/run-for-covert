@@ -47,8 +47,8 @@ void ACharacterBase::OnDeath()
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-float ACharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,
-                                       class AController* EventInstigator, AActor* DamageCauser)
+float ACharacterBase::TakeDamage(float DamageAmount,
+                                 struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     DamageAmount = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
@@ -128,7 +128,7 @@ AGunBase* ACharacterBase::FindGun()
     return nullptr;
 }
 
-void ACharacterBase::SetGun(AGunBase* GunActor)
+void ACharacterBase::SetGun_Implementation(AGunBase *GunActor)
 {
     if (Gun) { return; }
     Gun = GunActor;

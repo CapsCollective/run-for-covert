@@ -25,6 +25,7 @@ public:
 
     virtual void ApplyRecoil(FRotator& Recoil);
 
+    UFUNCTION(BlueprintNativeEvent)
     void SetGun(AGunBase* GunActor);
 
     UFUNCTION(BlueprintImplementableEvent)
@@ -68,7 +69,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent,
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
                              class AController* EventInstigator, AActor* DamageCauser) override;
 
     // Protected methods
