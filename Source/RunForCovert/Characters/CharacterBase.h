@@ -21,6 +21,9 @@ public:
 
     virtual void OnDeath();
 
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastOnDeath();
+
     virtual FVector GetAimVector();
 
     virtual void ApplyRecoil(FRotator& Recoil);
@@ -72,6 +75,8 @@ protected:
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
                              class AController* EventInstigator, AActor* DamageCauser) override;
 
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
     // Protected methods
 
     virtual void Fire();
@@ -102,6 +107,7 @@ private:
     UPROPERTY()
     FTimerHandle ReloadTimer;
 
+    UPROPERTY(Replicated)
     bool bIsDead;
 
     float WalkSpeed;

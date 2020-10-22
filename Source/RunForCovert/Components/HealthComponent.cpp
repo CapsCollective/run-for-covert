@@ -23,6 +23,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UHealthComponent::OnTakeDamage(float Damage)
 {
+    // Deduct damage from current health and check if they are dead
     if ((CurrentHealth -= Damage) <= 0.f) {
         CurrentHealth = 0;
         OnDeath();
@@ -31,11 +32,12 @@ void UHealthComponent::OnTakeDamage(float Damage)
 
 void UHealthComponent::OnDeath()
 {
+    // Get the owning character
     ACharacterBase* Character = Cast<ACharacterBase>(GetOwner());
     if (!Character) { return; }
 
-    // Inform the character of their death
-    Character->OnDeath();
+    // Inform the character of their death via multicast
+    Character->MulticastOnDeath();
 }
 
 float UHealthComponent::GetHealthPercentage() const

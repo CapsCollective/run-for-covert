@@ -63,7 +63,11 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void APlayerCharacterBase::OnDeath()
 {
-    GetController<APlayerLevelController>()->HideHUD();
+    // Hide the HUD if the player is posessed by the local player
+    if (IsLocallyControlled())
+    {
+        GetController<APlayerLevelController>()->HideHUD();
+    }
     Super::OnDeath();
 }
 

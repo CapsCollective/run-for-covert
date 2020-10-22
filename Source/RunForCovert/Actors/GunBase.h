@@ -101,7 +101,6 @@ private:
 
     // Private fields
 
-    UPROPERTY()
     float LastFireTime;
 
     UPROPERTY(Replicated)
