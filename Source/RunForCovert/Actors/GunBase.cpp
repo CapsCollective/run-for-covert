@@ -67,8 +67,8 @@ void AGunBase::BeginPlay()
     ACharacterBase* OwningCharacter = GetOwningCharacter();
     if (OwningCharacter)
     {
-        OwningCharacter->SetGun(this);
         SetOwner(OwningCharacter);
+        OwningCharacter->SetGun(this);
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include "HealthComponent.h"
 #include "RunForCovert/Characters/CharacterBase.h"
+#include "Net/UnrealNetwork.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -11,6 +12,13 @@ UHealthComponent::UHealthComponent()
     // Set field default values
     MaxHealth = 100.f;
     CurrentHealth = MaxHealth;
+}
+
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UHealthComponent, CurrentHealth)
 }
 
 void UHealthComponent::OnTakeDamage(float Damage)

@@ -29,10 +29,17 @@ public:
     UFUNCTION(BlueprintPure)
     float GetHealthPercentage() const;
 
+protected:
+
+    // Protected overrides
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 
     // Private fields
 
+    UPROPERTY(Replicated)
     float CurrentHealth;
 
     // Private functions

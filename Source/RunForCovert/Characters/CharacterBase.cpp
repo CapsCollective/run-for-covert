@@ -15,8 +15,11 @@ ACharacterBase::ACharacterBase()
     // Set actor for replication
     bReplicates = true;
 
-    // Set field default values
+    // Setup components
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+    Health->SetIsReplicated(true);
+
+    // Set field default values
     Gun = nullptr;
     bIsDead = false;
     SprintSpeed = 0.f;
