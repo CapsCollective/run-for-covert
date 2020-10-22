@@ -5,11 +5,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "TimerManager.h"
+#include "Net/UnrealNetwork.h"
 
 
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+    // Set actor for replication
+    bReplicates = true;
 
     // Set field default values
     Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
@@ -23,6 +27,9 @@ void ACharacterBase::BeginPlay()
 
     // Enable character crouching
     GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+
+    // Set the gun field
+    SetGun(FindGun());
 }
 
 void ACharacterBase::OnDeath()
@@ -51,23 +58,7 @@ FVector ACharacterBase::GetAimVector()
 
 void ACharacterBase::ApplyRecoil(FRotator& Recoil)
 {
-    // Void virtual method implementation
-}
-
-void ACharacterBase::SetGun(AGunBase* GunActor)
-{
-    Gun = GunActor;
-    OnGunSet();
-}
-
-AGunBase* ACharacterBase::GetGun() const
-{
-    return Gun;
-}
-
-UHealthComponent* ACharacterBase::GetHealth() const
-{
-    return Health;
+    // Empty virtual method implementation
 }
 
 void ACharacterBase::Fire()
@@ -79,19 +70,62 @@ void ACharacterBase::Fire()
 
 void ACharacterBase::BeginReload_Implementation(float Length)
 {
+    // Start the same process on the server
+    if (!HasAuthority())
+    {
+        ServerBeginReload(Length);
+    }
+
+    // Start a timer that reloads the gun on finishing
     if (IsReloading() || !Gun || Gun->FullyLoaded()) { return; }
-    GetWorldTimerManager().SetTimer(ReloadTimer, this, &ACharacterBase::ReloadEnd, Length, false);
+    GetWorldTimerManager().SetTimer(ReloadTimer, Gun, &AGunBase::Reload, Length, false);
 }
 
-void ACharacterBase::ReloadEnd()
+void ACharacterBase::ServerBeginReload_Implementation(float Length)
 {
-    if (!Gun) { return; }
-    Gun->Reload();
+    // Start the reload process on the server
+    BeginReload(Length);
 }
 
 void ACharacterBase::CancelReload()
 {
+    // Start the same process on the server
+    if (!HasAuthority())
+    {
+        ServerCancelReload();
+    }
+
+    // Clear the reload timer
     GetWorldTimerManager().ClearTimer(ReloadTimer);
+}
+
+void ACharacterBase::ServerCancelReload_Implementation()
+{
+    // Cancel the reload process on the server
+    CancelReload();
+}
+
+AGunBase* ACharacterBase::FindGun()
+{
+    // Receive a list of all child actors
+    TArray<AActor*> AttachedActors;
+    GetAttachedActors(OUT AttachedActors);
+
+    // Return the gun child actor if found
+    for (auto It = AttachedActors.CreateConstIterator(); It; It++)
+    {
+        if (AGunBase* GunActor = Cast<AGunBase>(*It))
+        {
+            return GunActor;
+        }
+    }
+    return nullptr;
+}
+
+void ACharacterBase::SetGun(AGunBase* GunActor)
+{
+    if (Gun) { return; }
+    Gun = GunActor;
 }
 
 bool ACharacterBase::IsReloading() const
@@ -102,4 +136,14 @@ bool ACharacterBase::IsReloading() const
 bool  ACharacterBase::IsDead() const
 {
     return bIsDead;
+}
+
+AGunBase* ACharacterBase::GetGun() const
+{
+    return Gun;
+}
+
+UHealthComponent* ACharacterBase::GetHealth() const
+{
+    return Health;
 }

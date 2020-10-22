@@ -67,6 +67,8 @@ public:
 
     void Reload();
 
+    // Pure functions
+
     UFUNCTION(BlueprintPure)
     bool FullyLoaded() const;
 
@@ -100,12 +102,13 @@ private:
     // Private fields
 
     UPROPERTY()
-    class ACharacterBase* OwningCharacter;
-
     float LastFireTime;
 
     UPROPERTY(Replicated)
     int32 CurrentAmmo;
+
+    UPROPERTY(Replicated)
+    bool bCanFire;
 
     bool bTriggerDown;
 
@@ -118,5 +121,7 @@ private:
 
     UFUNCTION(NetMulticast, Reliable)
     void MulticastFire(FVector LaunchVelocity);
+
+    class ACharacterBase* GetOwningCharacter();
 
 };

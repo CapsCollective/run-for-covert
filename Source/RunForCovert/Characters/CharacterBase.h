@@ -27,17 +27,25 @@ public:
 
     void SetGun(AGunBase* GunActor);
 
-    UFUNCTION(BlueprintPure)
-    UHealthComponent* GetHealth() const;
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnFired();
 
     UFUNCTION(BlueprintNativeEvent)
     void BeginReload(float Length = 1.f);
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnFired();
+    // Pure functions
+
+    UFUNCTION(BlueprintPure)
+    UHealthComponent* GetHealth() const;
 
     UFUNCTION(BlueprintPure)
     bool IsDead() const;
+
+    UFUNCTION(BlueprintPure)
+    bool IsReloading() const;
+
+    UFUNCTION(BlueprintPure)
+    AGunBase* GetGun() const;
 
     // Components
 
@@ -55,18 +63,15 @@ protected:
 
     // Protected methods
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnGunSet();
-
     virtual void Fire();
+
+    UFUNCTION(Server, Reliable)
+    void ServerBeginReload(float Length = 1.f);
 
     void CancelReload();
 
-    UFUNCTION(BlueprintPure)
-    bool IsReloading() const;
-
-    UFUNCTION(BlueprintPure)
-    AGunBase* GetGun() const;
+    UFUNCTION(Server, Reliable)
+    void ServerCancelReload();
 
 private:
 
@@ -74,13 +79,15 @@ private:
 
     void ReloadEnd();
 
+    AGunBase* FindGun();
+
     // Private fields
 
     UPROPERTY()
-    FTimerHandle ReloadTimer;
+    AGunBase* Gun;
 
     UPROPERTY()
-    AGunBase* Gun;
+    FTimerHandle ReloadTimer;
 
     bool bIsDead;
 

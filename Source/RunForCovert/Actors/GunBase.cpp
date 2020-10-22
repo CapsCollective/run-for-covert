@@ -8,6 +8,8 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/DamageType.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/GameStateBase.h"
+
 
 AGunBase::AGunBase()
 {
@@ -30,7 +32,7 @@ AGunBase::AGunBase()
     MuzzleFlashEffect = nullptr;
     HitCharacterEffect = nullptr;
     HitSurfaceEffect = nullptr;
-    OwningCharacter = nullptr;
+    bCanFire = true;
     bAutomatic = false;
     bTriggerDown = false;
     GunDamage = 10.f;
@@ -47,30 +49,46 @@ void AGunBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(AGunBase, CurrentAmmo);
+    DOREPLIFETIME(AGunBase, CurrentAmmo)
+    DOREPLIFETIME(AGunBase, bCanFire)
 }
 
 void AGunBase::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Set the mesh only visible to owner and stop it from casting shadows
+    GunMesh->SetOnlyOwnerSee(true);
+    GunMesh->SetCastShadow(false);
+
+    if (HasAuthority())
+    {
+        // Set the magazine to full
+        CurrentAmmo = MagazineSize;
+    }
+
     // Register as the character's gun
-    OwningCharacter = Cast<ACharacterBase>(GetParentActor());
+    ACharacterBase* OwningCharacter = GetOwningCharacter();
     if (OwningCharacter)
     {
         OwningCharacter->SetGun(this);
         SetOwner(OwningCharacter);
     }
-
-    // Set the magazine to full
-    CurrentAmmo = MagazineSize;
 }
 
 void AGunBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (bTriggerDown && OwningCharacter)
+    ACharacterBase* OwningCharacter = GetOwningCharacter();
+
+    // Allow the server to clear the client for firing based on ammo and fire time
+    if (HasAuthority())
+    {
+        bCanFire = (LastFireTime + MaxFireRate <= GetWorld()->GetGameState()->GetServerWorldTimeSeconds()) & (CurrentAmmo > 0);
+    }
+
+    if (bTriggerDown && bCanFire && OwningCharacter)
     {
         // Calculate launch velocity
         FVector LaunchVelocity = FMath::VRand() * BulletSpread + OwningCharacter->GetAimVector() * BulletSpeed;
@@ -79,8 +97,11 @@ void AGunBase::Tick(float DeltaTime)
         Fire(LaunchVelocity);
         HasAuthority() ? MulticastFire(LaunchVelocity) : ServerFire(LaunchVelocity);
 
+        // Stop firing until the server updates it again
+        bCanFire = false;
+
         // Reset the trigger for non-automatic weapons
-        if (!bAutomatic) { bTriggerDown = false; }
+        if (!bAutomatic && HasAuthority()) { bTriggerDown = false; }
     }
 }
 
@@ -95,30 +116,16 @@ void AGunBase::SetTriggerDown(bool bPulled)
     bTriggerDown = bPulled;
 }
 
-void AGunBase::ServerFire_Implementation(FVector LaunchVelocity)
-{
-    // Run fire on server only
-    Fire(LaunchVelocity);
-}
-
-void AGunBase::MulticastFire_Implementation(FVector LaunchVelocity)
-{
-    // Run fire on clients only
-    if (!HasAuthority()) { Fire(LaunchVelocity); }
-}
-
 void AGunBase::Fire(FVector LaunchVelocity)
 {
-    if (!OwningCharacter) { return; }
-
-    // Check if the gun can fire based on ammo and fire time
-    if ((LastFireTime + MaxFireRate > GetWorld()->GetTimeSeconds()) || (CurrentAmmo <= 0)) { return; }
+    ACharacterBase* OwningCharacter = GetOwningCharacter();
+    if (!OwningCharacter || !GetWorld()->GetGameState()) { return; }
 
     // Decrement ammunition and set the last fire time
     if (HasAuthority())
     {
         --CurrentAmmo;
-        LastFireTime = GetWorld()->GetTimeSeconds();
+        LastFireTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
     }
 
     // Play firing sound and particle effect
@@ -171,6 +178,32 @@ void AGunBase::Fire(FVector LaunchVelocity)
     OwningCharacter->OnFired();
 }
 
+void AGunBase::ServerFire_Implementation(FVector LaunchVelocity)
+{
+    // Run fire on server only
+    Fire(LaunchVelocity);
+}
+
+void AGunBase::MulticastFire_Implementation(FVector LaunchVelocity)
+{
+    // Run fire on clients only
+    if (!HasAuthority()) { Fire(LaunchVelocity); }
+}
+
+void AGunBase::Reload()
+{
+    // Reload on the server only
+    if (HasAuthority())
+    {
+        CurrentAmmo = MagazineSize;
+    }
+}
+
+ACharacterBase* AGunBase::GetOwningCharacter()
+{
+    return Cast<ACharacterBase>(GetParentActor());
+}
+
 bool AGunBase::HasAmmo() const
 {
     return CurrentAmmo > 0;
@@ -179,11 +212,6 @@ bool AGunBase::HasAmmo() const
 bool AGunBase::FullyLoaded() const
 {
     return CurrentAmmo >= MagazineSize;
-}
-
-void AGunBase::Reload()
-{
-    CurrentAmmo = MagazineSize;
 }
 
 int32 AGunBase::GetCurrentAmmo() const
