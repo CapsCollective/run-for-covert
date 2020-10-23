@@ -26,18 +26,24 @@ void UHealthComponent::OnTakeDamage(float Damage)
     // Deduct damage from current health and check if they are dead
     if ((CurrentHealth -= Damage) <= 0.f) {
         CurrentHealth = 0;
-        OnDeath();
+
+        // Run on death on the server
+        MulticastOnDeath();
     }
 }
 
 void UHealthComponent::OnDeath()
 {
-    // Get the owning character
+    // Get the owning character and call the on death method
     ACharacterBase* Character = Cast<ACharacterBase>(GetOwner());
     if (!Character) { return; }
+    Character->OnDeath();
+}
 
-    // Inform the character of their death via multicast
-    Character->MulticastOnDeath();
+void UHealthComponent::MulticastOnDeath_Implementation()
+{
+    // Run on death on all clients and server
+    OnDeath();
 }
 
 float UHealthComponent::GetHealthPercentage() const

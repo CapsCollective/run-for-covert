@@ -21,9 +21,6 @@ public:
 
     virtual void OnDeath();
 
-    UFUNCTION(NetMulticast, Reliable)
-    void MulticastOnDeath();
-
     virtual FVector GetAimVector();
 
     virtual void ApplyRecoil(FRotator& Recoil);

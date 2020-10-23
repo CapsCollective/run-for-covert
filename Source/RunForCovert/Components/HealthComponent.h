@@ -46,4 +46,7 @@ private:
 
     void OnDeath();
 
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastOnDeath();
+
 };

@@ -79,14 +79,8 @@ void ACharacterBase::OnDeath()
 
     // Detach the character from their controller and disable collision
     DetachFromControllerPendingDestroy();
+    GetCharacterMovement()->Deactivate();
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ACharacterBase::MulticastOnDeath_Implementation()
-{
-    // Run the on death method on all clients
-    // TODO this acts weird on clients falling through the floor and stuff
-    OnDeath();
 }
 
 float ACharacterBase::TakeDamage(float DamageAmount,
