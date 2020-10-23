@@ -19,6 +19,7 @@ void AEnemyCharacterBase::SetCrouching(bool Crouching)
 {
     // Set the crouching field
     Crouching ? Crouch() : UnCrouch();
+    Super::SetCrouching(Crouching);
 }
 
 void AEnemyCharacterBase::Fire()

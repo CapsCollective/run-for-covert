@@ -22,6 +22,7 @@ ACharacterBase::ACharacterBase()
     // Set field default values
     Gun = nullptr;
     bIsDead = false;
+    bIsCrouching = false;
     SprintSpeed = 0.f;
     WalkSpeed = 0.f;
 }
@@ -30,6 +31,7 @@ void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+    DOREPLIFETIME(ACharacterBase, bIsCrouching)
     DOREPLIFETIME(ACharacterBase, bIsDead)
 }
 
@@ -185,14 +187,24 @@ void ACharacterBase::ServerSprintEnd_Implementation()
     SprintEnd();
 }
 
+void ACharacterBase::SetCrouching(bool bCrouch)
+{
+    bIsCrouching = bCrouch;
+}
+
 bool ACharacterBase::IsReloading() const
 {
     return GetWorldTimerManager().IsTimerActive(ReloadTimer);
 }
 
-bool  ACharacterBase::IsDead() const
+bool ACharacterBase::IsDead() const
 {
     return bIsDead;
+}
+
+bool ACharacterBase::IsCrouching() const
+{
+    return bIsCrouching;
 }
 
 AGunBase* ACharacterBase::GetGun() const

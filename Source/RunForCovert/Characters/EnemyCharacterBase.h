@@ -21,7 +21,7 @@ public:
 
     virtual void Fire() override;
 
-    void SetCrouching(bool Crouching);
+    virtual void SetCrouching(bool Crouching) override;
 
     // Public fields
 

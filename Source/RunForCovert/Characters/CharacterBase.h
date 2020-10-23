@@ -25,6 +25,8 @@ public:
 
     virtual void ApplyRecoil(FRotator& Recoil);
 
+    virtual void SetCrouching(bool bCrouch);
+
     UFUNCTION(BlueprintImplementableEvent)
     void OnGunSet();
 
@@ -59,6 +61,9 @@ public:
 
     UFUNCTION(BlueprintPure)
     AGunBase* GetGun() const;
+
+    UFUNCTION(BlueprintPure)
+    bool IsCrouching() const;
 
     // Components
 
@@ -109,6 +114,9 @@ private:
 
     UPROPERTY(Replicated)
     bool bIsDead;
+
+    UPROPERTY(Replicated)
+    bool bIsCrouching;
 
     float WalkSpeed;
 

@@ -20,12 +20,17 @@ APlayerCharacterBase::APlayerCharacterBase()
     Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
     Arms->SetupAttachment(Camera);
 
+    MeshOffset = CreateDefaultSubobject<USceneComponent>(TEXT("MeshOffset"));
+    MeshOffset->SetupAttachment(GetCapsuleComponent());
+
     AIStimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AI Stimulus Source"));
     
 	// Set field default values
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
+    StandingHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    CrouchHeight = 50.f;
 }
 
 void APlayerCharacterBase::BeginPlay()
@@ -57,8 +62,8 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
     PlayerInputComponent->BindAction(TEXT("Sprint"), EInputEvent::IE_Released, this, &ACharacterBase::SprintEnd);
 
     // Casts crouch functions to empty parameter functions of ACharacter
-    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, (void(ACharacter::*)())&ACharacter::Crouch);
-    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, (void(ACharacter::*)())&ACharacter::UnCrouch);
+    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &APlayerCharacterBase::CrouchStart);
+    PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Released, this, &APlayerCharacterBase::CrouchEnd);
 }
 
 void APlayerCharacterBase::OnDeath()
@@ -119,4 +124,47 @@ void APlayerCharacterBase::FireEnd()
 {
     if (!GetGun()) { return; }
     GetGun()->SetTriggerDown(false);
+}
+
+void APlayerCharacterBase::CrouchStart()
+{
+    PerformCrouch(true, CrouchHeight, StandingHeight - CrouchHeight);
+}
+
+void APlayerCharacterBase::CrouchEnd()
+{
+    PerformCrouch(false, StandingHeight, CrouchHeight - StandingHeight);
+}
+
+void APlayerCharacterBase::PerformCrouch(bool bCrouch, float HalfHeight, float Offset)
+{
+    // Run crouch on the current client and forward it for the relevant local role
+    ApplyCrouch(bCrouch, HalfHeight, Offset);
+    if (HasAuthority())
+    {
+        MulticastApplyCrouch(bCrouch, HalfHeight, Offset);
+    }
+    else
+    {
+        ServerApplyCrouch(bCrouch, HalfHeight, Offset);
+    }
+}
+
+void APlayerCharacterBase::ApplyCrouch(bool bCrouch, float HalfHeight, float Offset)
+{
+    SetCrouching(bCrouch);
+    GetCapsuleComponent()->SetCapsuleHalfHeight(HalfHeight);
+    MeshOffset->SetRelativeLocation(MeshOffset->GetRelativeLocation() + FVector(0.f, 0.f, Offset));
+    UpdateComponentTransforms();
+}
+
+void APlayerCharacterBase::ServerApplyCrouch_Implementation(bool bCrouch, float HalfHeight, float Offset)
+{
+    ApplyCrouch(bCrouch, HalfHeight, Offset);
+}
+
+void APlayerCharacterBase::MulticastApplyCrouch_Implementation(bool bCrouch, float HalfHeight, float Offset)
+{
+    // Run crouch on clients only
+    if (!HasAuthority()) { ApplyCrouch(bCrouch, HalfHeight, Offset); }
 }

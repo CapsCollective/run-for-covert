@@ -38,6 +38,9 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
     float SprintMultiplier;
+
+    UPROPERTY(EditAnywhere, Category = "Player Control")
+    float CrouchHeight;
 	
     // Components
 
@@ -46,6 +49,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     USkeletalMeshComponent* Arms;
+
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* MeshOffset;
 
 	UPROPERTY(VisibleAnywhere)
 	UAIPerceptionStimuliSourceComponent* AIStimulusSource;
@@ -64,10 +70,32 @@ public:
 
     void FireEnd();
 
+    void CrouchStart();
+
+    void CrouchEnd();
+
 protected:
 
-    // Protected fields
+    // Protected overrides
 
     virtual void BeginPlay() override;
+
+private:
+
+    // Private fields
+
+    float StandingHeight;
+
+    // Private functions
+
+    void PerformCrouch(bool bCrouch, float HalfHeight, float Offset);
+
+    void ApplyCrouch(bool bCrouch, float HalfHeight, float Offset);
+
+    UFUNCTION(Server, Reliable)
+    void ServerApplyCrouch(bool bCrouch, float HalfHeight, float Offset);
+
+    UFUNCTION(NetMulticast, Reliable)
+    void MulticastApplyCrouch(bool bCrouch, float HalfHeight, float Offset);
 
 };
