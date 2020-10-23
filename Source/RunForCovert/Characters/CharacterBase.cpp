@@ -26,7 +26,6 @@ ACharacterBase::ACharacterBase()
     WalkSpeed = 0.f;
 }
 
-
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);

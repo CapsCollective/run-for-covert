@@ -125,10 +125,10 @@ void AGunBase::SetTriggerDown(bool bPulled)
 
 void AGunBase::Fire(FVector LaunchVelocity)
 {
-    if (!OwningCharacter || !GetWorld()->GetGameState()) { return; }
+    if (!OwningCharacter) { return; }
 
     // Decrement ammunition and set the last fire time
-    if (HasAuthority())
+    if (HasAuthority() && GetWorld()->GetGameState())
     {
         --CurrentAmmo;
         LastFireTime = GetWorld()->GetGameState()->GetServerWorldTimeSeconds();
