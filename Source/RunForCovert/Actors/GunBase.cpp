@@ -9,6 +9,7 @@
 #include "GameFramework/DamageType.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/GameStateBase.h"
+#include "TimerManager.h"
 
 
 AGunBase::AGunBase()
@@ -32,6 +33,7 @@ AGunBase::AGunBase()
     MuzzleFlashEffect = nullptr;
     HitCharacterEffect = nullptr;
     HitSurfaceEffect = nullptr;
+    OwningCharacter = nullptr;
     bCanFire = true;
     bAutomatic = false;
     bTriggerDown = false;
@@ -63,20 +65,29 @@ void AGunBase::BeginPlay()
         CurrentAmmo = MagazineSize;
     }
 
-    // Register as the character's gun
-    ACharacterBase* OwningCharacter = GetOwningCharacter();
+    // Begin searching for the owning character
+    GetWorldTimerManager().SetTimer(CharacterSearchHandle, this, &AGunBase::OwningCharacterLookup, .5f, true);
+}
+
+void AGunBase::OwningCharacterLookup()
+{
+    // Try find the owning character for setup
+    OwningCharacter = Cast<ACharacterBase>(GetParentActor());
     if (OwningCharacter)
     {
+        // Perform setup
         SetOwner(OwningCharacter);
-        OwningCharacter->SetGun(this);
+
+        // Clear the timer once found
+        GetWorldTimerManager().ClearTimer(CharacterSearchHandle);
     }
+
+    UE_LOG(LogTemp, Warning, TEXT("Searching for owning character..."))
 }
 
 void AGunBase::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-    ACharacterBase* OwningCharacter = GetOwningCharacter();
 
     // Allow the server to clear the client for firing based on ammo and fire time
     if (HasAuthority())
@@ -114,7 +125,6 @@ void AGunBase::SetTriggerDown(bool bPulled)
 
 void AGunBase::Fire(FVector LaunchVelocity)
 {
-    ACharacterBase* OwningCharacter = GetOwningCharacter();
     if (!OwningCharacter || !GetWorld()->GetGameState()) { return; }
 
     // Decrement ammunition and set the last fire time
@@ -193,11 +203,6 @@ void AGunBase::Reload()
     {
         CurrentAmmo = MagazineSize;
     }
-}
-
-ACharacterBase* AGunBase::GetOwningCharacter()
-{
-    return Cast<ACharacterBase>(GetParentActor());
 }
 
 bool AGunBase::HasAmmo() const

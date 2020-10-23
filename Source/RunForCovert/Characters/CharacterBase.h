@@ -28,8 +28,8 @@ public:
 
     virtual void ApplyRecoil(FRotator& Recoil);
 
-    UFUNCTION(BlueprintNativeEvent)
-    void SetGun(AGunBase* GunActor);
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnGunSet();
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnFired();
@@ -46,6 +46,8 @@ public:
 
     UFUNCTION(Server, Reliable)
     void ServerSprintEnd();
+
+    void GunLookup();
 
     // Pure functions
 
@@ -97,8 +99,6 @@ private:
 
     void ReloadEnd();
 
-    AGunBase* FindGun();
-
     // Private fields
 
     UPROPERTY()
@@ -106,6 +106,9 @@ private:
 
     UPROPERTY()
     FTimerHandle ReloadTimer;
+
+    UPROPERTY()
+    FTimerHandle GunSearchHandle;
 
     UPROPERTY(Replicated)
     bool bIsDead;

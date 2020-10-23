@@ -67,6 +67,8 @@ public:
 
     void Reload();
 
+    void OwningCharacterLookup();
+
     // Pure functions
 
     UFUNCTION(BlueprintPure)
@@ -101,6 +103,12 @@ private:
 
     // Private fields
 
+    UPROPERTY()
+    class ACharacterBase* OwningCharacter;
+
+    UPROPERTY()
+    FTimerHandle CharacterSearchHandle;
+
     float LastFireTime;
 
     UPROPERTY(Replicated)
@@ -120,7 +128,5 @@ private:
 
     UFUNCTION(NetMulticast, Reliable)
     void MulticastFire(FVector LaunchVelocity);
-
-    class ACharacterBase* GetOwningCharacter();
 
 };

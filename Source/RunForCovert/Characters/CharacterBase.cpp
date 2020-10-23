@@ -26,6 +26,7 @@ ACharacterBase::ACharacterBase()
     WalkSpeed = 0.f;
 }
 
+
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -44,8 +45,32 @@ void ACharacterBase::BeginPlay()
     WalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
     ApplySprintMultiplier(1.f);
 
-    // Set the gun field
-    SetGun(FindGun());
+    // Begin searching for the child gun
+    GetWorldTimerManager().SetTimer(GunSearchHandle, this, &ACharacterBase::GunLookup, .5f, true);
+}
+
+void ACharacterBase::GunLookup()
+{
+    // Receive a list of all child actors and set the field if found
+    TArray<AActor*> AttachedActors;
+    GetAttachedActors(OUT AttachedActors);
+    for (auto It = AttachedActors.CreateConstIterator(); It; It++)
+    {
+        if (AGunBase* GunActor = Cast<AGunBase>(*It))
+        {
+            Gun = GunActor;
+            break;
+        }
+    }
+
+    // Clear the timer and post to the event once found
+    if (Gun)
+    {
+        GetWorldTimerManager().ClearTimer(GunSearchHandle);
+        OnGunSet();
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("Searching for owning character..."))
 }
 
 void ACharacterBase::OnDeath()
@@ -126,29 +151,6 @@ void ACharacterBase::ServerCancelReload_Implementation()
 {
     // Cancel the reload process on the server
     CancelReload();
-}
-
-AGunBase* ACharacterBase::FindGun()
-{
-    // Receive a list of all child actors
-    TArray<AActor*> AttachedActors;
-    GetAttachedActors(OUT AttachedActors);
-
-    // Return the gun child actor if found
-    for (auto It = AttachedActors.CreateConstIterator(); It; It++)
-    {
-        if (AGunBase* GunActor = Cast<AGunBase>(*It))
-        {
-            return GunActor;
-        }
-    }
-    return nullptr;
-}
-
-void ACharacterBase::SetGun_Implementation(AGunBase *GunActor)
-{
-    if (Gun) { return; }
-    Gun = GunActor;
 }
 
 void ACharacterBase::ApplySprintMultiplier(float SprintMultiplier)
