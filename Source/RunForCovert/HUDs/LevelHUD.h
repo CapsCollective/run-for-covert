@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "HUDBase.generated.h"
+#include "LevelHUD.generated.h"
 
 
 UCLASS()
-class RUNFORCOVERT_API AHUDBase : public AHUD
+class RUNFORCOVERT_API ALevelHUD : public AHUD
 {
 
 	GENERATED_BODY()
 
 public:
 
-    AHUDBase();
+    ALevelHUD();
 
     // Public fields
 
@@ -24,6 +24,8 @@ public:
 
     UPROPERTY(EditAnywhere)
     TSubclassOf<UUserWidget> PauseWidgetClass;
+
+    // Public functions
 
 	void DisplayHUD(bool bShow);
 

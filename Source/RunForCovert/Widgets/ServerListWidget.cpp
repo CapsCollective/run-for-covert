@@ -2,7 +2,7 @@
 
 
 #include "ServerListWidget.h"
-#include "../GameModes/MenuGameMode.h"
+#include "../HUDs/MenuHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 
@@ -27,9 +27,9 @@ void UServerListWidget::OnCreateGameButtonPressed()
 void UServerListWidget::OnBackButtonPressed()
 {
     // Return to the main menu
-    AMenuGameMode* GameMode = GetWorld()->GetAuthGameMode<AMenuGameMode>();
-    if (GameMode)
+    AMenuHUD* HUD = GetWorld()->GetFirstPlayerController()->GetHUD<AMenuHUD>();
+    if (HUD)
     {
-        GameMode->OpenMenu();
+        HUD->OpenMenu();
     }
 }

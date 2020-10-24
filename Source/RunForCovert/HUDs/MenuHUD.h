@@ -3,26 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "MenuGameMode.generated.h"
+#include "GameFramework/HUD.h"
+#include "MenuHUD.generated.h"
 
 
 UCLASS()
-class RUNFORCOVERT_API AMenuGameMode : public AGameModeBase
+class RUNFORCOVERT_API AMenuHUD : public AHUD
 {
+
 	GENERATED_BODY()
 
 public:
 
-	// Public fields
+    AMenuHUD();
+
+    // Public fields
 
     UPROPERTY(EditAnywhere)
-    TSubclassOf<UUserWidget> MenuWidgetClass;
+    TSubclassOf<class UUserWidget> MenuWidgetClass;
 
     UPROPERTY(EditAnywhere)
     TSubclassOf<UUserWidget> ServerListWidgetClass;
 
-    // Public methods
+    // Public functions
 
     void OpenServerList();
 
@@ -38,10 +41,8 @@ private:
 
     // Private fields
 
-    UPROPERTY()
     UUserWidget* MenuWidget;
 
-    UPROPERTY()
     UUserWidget* ServerListWidget;
 	
 };

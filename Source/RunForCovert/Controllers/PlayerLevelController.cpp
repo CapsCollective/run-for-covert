@@ -2,7 +2,7 @@
 
 
 #include "PlayerLevelController.h"
-#include "../HUDs/HUDBase.h"
+#include "../HUDs/LevelHUD.h"
 #include "GameFramework/Pawn.h"
 
 
@@ -15,7 +15,7 @@ void APlayerLevelController::SetupInputComponent()
 
 void APlayerLevelController::HideHUD()
 {
-    GetHUD<AHUDBase>()->DisplayHUD(false);
+    GetHUD<ALevelHUD>()->DisplayHUD(false);
 }
 
 void APlayerLevelController::OpenMenu()
@@ -32,5 +32,5 @@ void APlayerLevelController::OpenMenu()
             GetPawn()->EnableInput(this);
         }
     }
-    GetHUD<AHUDBase>()->TogglePause();
+    GetHUD<ALevelHUD>()->TogglePause();
 }

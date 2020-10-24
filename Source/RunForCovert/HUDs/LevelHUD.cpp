@@ -1,37 +1,39 @@
 // Caps Collective 2020
 
 
-#include "HUDBase.h"
+#include "LevelHUD.h"
 #include "Blueprint/UserWidget.h"
 
 
-AHUDBase::AHUDBase()
+ALevelHUD::ALevelHUD()
 {
     PrimaryActorTick.bCanEverTick = false;
 
     // Set field default values
     HUDWidgetClass = UUserWidget::StaticClass();
+    PauseWidgetClass = UUserWidget::StaticClass();
     HUDWidget = nullptr;
     PauseWidget = nullptr;
 }
 
-void AHUDBase::BeginPlay()
+void ALevelHUD::BeginPlay()
 {
     Super::BeginPlay();
 
     // Initialise the HUD widgets
     HUDWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWidgetClass);
-    PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass);
     HUDWidget->AddToViewport();
+
+    PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass);
     PauseWidget->AddToViewport();
 }
 
-void AHUDBase::DisplayHUD(bool bShow)
+void ALevelHUD::DisplayHUD(bool bShow)
 {
     HUDWidget->SetVisibility(bShow ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
-void AHUDBase::TogglePause()
+void ALevelHUD::TogglePause()
 {
     bool bHidden = PauseWidget->GetVisibility() == ESlateVisibility::Hidden;
 

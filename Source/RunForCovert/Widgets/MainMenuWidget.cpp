@@ -4,7 +4,7 @@
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "../GameModes/MenuGameMode.h"
+#include "../HUDs/MenuHUD.h"
 
 bool UMainMenuWidget::Initialize()
 {
@@ -20,10 +20,10 @@ bool UMainMenuWidget::Initialize()
 void UMainMenuWidget::OnPlayButtonPressed()
 {
     // Open the server list
-    AMenuGameMode* GameMode = GetWorld()->GetAuthGameMode<AMenuGameMode>();
-    if (GameMode)
+    AMenuHUD* HUD = GetWorld()->GetFirstPlayerController()->GetHUD<AMenuHUD>();
+    if (HUD)
     {
-        GameMode->OpenServerList();
+        HUD->OpenServerList();
     }
 }
 

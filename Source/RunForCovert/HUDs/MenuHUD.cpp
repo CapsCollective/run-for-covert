@@ -1,19 +1,29 @@
 // Caps Collective 2020
 
 
-#include "MenuGameMode.h"
+#include "MenuHUD.h"
 #include "Blueprint/UserWidget.h"
 
 
-void AMenuGameMode::BeginPlay()
+AMenuHUD::AMenuHUD()
+{
+    PrimaryActorTick.bCanEverTick = false;
+
+    // Set field default values
+    MenuWidgetClass = UUserWidget::StaticClass();
+    ServerListWidgetClass = UUserWidget::StaticClass();
+    MenuWidget = nullptr;
+    ServerListWidget = nullptr;
+}
+
+void AMenuHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Add the menu widget to the viewport
+    // Add the widgets to the viewport
     MenuWidget = CreateWidget<UUserWidget>(GetWorld(), MenuWidgetClass);
     MenuWidget->AddToViewport();
 
-    // Add the menu widget to the viewport
     ServerListWidget = CreateWidget<UUserWidget>(GetWorld(), ServerListWidgetClass);
     ServerListWidget->AddToViewport();
     ServerListWidget->SetVisibility(ESlateVisibility::Hidden);
@@ -26,13 +36,13 @@ void AMenuGameMode::BeginPlay()
     GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 }
 
-void AMenuGameMode::OpenServerList()
+void AMenuHUD::OpenServerList()
 {
     MenuWidget->SetVisibility(ESlateVisibility::Hidden);
     ServerListWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
-void AMenuGameMode::OpenMenu()
+void AMenuHUD::OpenMenu()
 {
     ServerListWidget->SetVisibility(ESlateVisibility::Hidden);
     MenuWidget->SetVisibility(ESlateVisibility::Visible);
