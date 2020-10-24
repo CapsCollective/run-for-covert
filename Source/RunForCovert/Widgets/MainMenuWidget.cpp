@@ -2,9 +2,9 @@
 
 
 #include "MainMenuWidget.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../GameModes/MenuGameMode.h"
 
 bool UMainMenuWidget::Initialize()
 {
@@ -19,9 +19,12 @@ bool UMainMenuWidget::Initialize()
 
 void UMainMenuWidget::OnPlayButtonPressed()
 {
-    // Return to the main menu
-    // TODO make sure this opens a server browser
-    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainProcGen"), true, "listen");
+    // Open the server list
+    AMenuGameMode* GameMode = GetWorld()->GetAuthGameMode<AMenuGameMode>();
+    if (GameMode)
+    {
+        GameMode->OpenServerList();
+    }
 }
 
 void UMainMenuWidget::OnQuitButtonPressed()

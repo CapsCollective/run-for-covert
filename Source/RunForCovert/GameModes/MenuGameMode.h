@@ -19,6 +19,15 @@ public:
     UPROPERTY(EditAnywhere)
     TSubclassOf<UUserWidget> MenuWidgetClass;
 
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<UUserWidget> ServerListWidgetClass;
+
+    // Public methods
+
+    void OpenServerList();
+
+    void OpenMenu();
+
 protected:
 
     // Protected overrides
@@ -31,5 +40,8 @@ private:
 
     UPROPERTY()
     UUserWidget* MenuWidget;
+
+    UPROPERTY()
+    UUserWidget* ServerListWidget;
 	
 };
