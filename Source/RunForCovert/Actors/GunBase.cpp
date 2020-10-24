@@ -101,8 +101,8 @@ void AGunBase::Tick(float DeltaTime)
         FVector LaunchVelocity = FMath::VRand() * BulletSpread + OwningCharacter->GetAimVector() * BulletSpeed;
 
         // Run fire on the local machine and then forward to relevant partner type
-        Fire(LaunchVelocity);
-        HasAuthority() ? MulticastFire(LaunchVelocity) : ServerFire(LaunchVelocity);
+        ServerFire(LaunchVelocity);
+        if (!HasAuthority()) { Fire(LaunchVelocity); }
 
         // Stop firing until the server updates it again
         bCanFire = false;
@@ -186,14 +186,17 @@ void AGunBase::Fire(FVector LaunchVelocity)
 
 void AGunBase::ServerFire_Implementation(FVector LaunchVelocity)
 {
-    // Run fire on server only
-    Fire(LaunchVelocity);
+    // Run fire as a multicast call
+    MulticastFire(LaunchVelocity);
 }
 
 void AGunBase::MulticastFire_Implementation(FVector LaunchVelocity)
 {
-    // Run fire on clients only
-    if (!HasAuthority()) { Fire(LaunchVelocity); }
+    // Run fire on all non-controlling clients and server
+    if (GetParentActor()->GetLocalRole() != ROLE_AutonomousProxy)
+    {
+        Fire(LaunchVelocity);
+    }
 }
 
 void AGunBase::Reload()
