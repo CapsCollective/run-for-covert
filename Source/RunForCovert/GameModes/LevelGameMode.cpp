@@ -23,10 +23,6 @@ void ALevelGameMode::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Set the input mode to game only and hide the cursor
-    GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
-    GetWorld()->GetFirstPlayerController()->bShowMouseCursor = false;
-
     // Set field default values
     CoverSystem = NewObject<UCoverSystem>(this);
     PatrolSystem = NewObject<UPatrolSystem>(this);

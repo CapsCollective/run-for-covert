@@ -20,6 +20,10 @@ void ALevelHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Set the input mode to game only and hide the cursor
+    GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeGameOnly());
+    GetWorld()->GetFirstPlayerController()->bShowMouseCursor = false;
+
     // Initialise the HUD widgets
     HUDWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWidgetClass);
     HUDWidget->AddToViewport();
