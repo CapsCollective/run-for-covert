@@ -29,15 +29,18 @@ APlayerCharacterBase::APlayerCharacterBase()
     MoveSpeed = 100.f;
     LookSpeed = 1.f;
     SprintMultiplier = 2.f;
+    CrouchMultiplier = 0.5;
     StandingHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
     CrouchHeight = 50.f;
+    CrouchSpeed = 0.f;
 }
 
 void APlayerCharacterBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Apply the sprint multiplier to the character speed
+    // Set the crouch speed and apply the sprint multiplier to the character speed
+    CrouchSpeed = GetWalkSpeed() * CrouchMultiplier;
     ApplySprintMultiplier(SprintMultiplier);
 }
 
@@ -152,10 +155,14 @@ void APlayerCharacterBase::PerformCrouch(bool bCrouch, float HalfHeight, float O
 
 void APlayerCharacterBase::ApplyCrouch(bool bCrouch, float HalfHeight, float Offset)
 {
+    // Resize the capsule height and apply mesh offset
     SetCrouching(bCrouch);
     GetCapsuleComponent()->SetCapsuleHalfHeight(HalfHeight);
     MeshOffset->SetRelativeLocation(MeshOffset->GetRelativeLocation() + FVector(0.f, 0.f, Offset));
     UpdateComponentTransforms();
+
+    // Modify the character movement speed
+    GetCharacterMovement()->MaxWalkSpeed = bCrouch ? CrouchSpeed : GetWalkSpeed();
 }
 
 void APlayerCharacterBase::ServerApplyCrouch_Implementation(bool bCrouch, float HalfHeight, float Offset)

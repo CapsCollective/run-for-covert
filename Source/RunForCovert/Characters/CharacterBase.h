@@ -95,6 +95,8 @@ protected:
     UFUNCTION(Server, Reliable)
     void ServerCancelReload();
 
+    float GetWalkSpeed() const;
+
 private:
 
     // Private functions

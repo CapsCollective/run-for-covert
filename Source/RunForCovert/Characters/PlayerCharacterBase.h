@@ -37,6 +37,9 @@ public:
     float LookSpeed;
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
+    float CrouchMultiplier;
+
+    UPROPERTY(EditAnywhere, Category = "Player Control")
     float SprintMultiplier;
 
     UPROPERTY(EditAnywhere, Category = "Player Control")
@@ -85,6 +88,8 @@ private:
     // Private fields
 
     float StandingHeight;
+
+    float CrouchSpeed;
 
     // Private functions
 

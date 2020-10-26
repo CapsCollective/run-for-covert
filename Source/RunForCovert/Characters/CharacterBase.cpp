@@ -155,6 +155,8 @@ void ACharacterBase::ApplySprintMultiplier(float SprintMultiplier)
 
 void ACharacterBase::SprintStart()
 {
+    if (bIsCrouching) { return; }
+
     // Start the same process on the server
     if (!HasAuthority())
     {
@@ -172,6 +174,8 @@ void ACharacterBase::ServerSprintStart_Implementation()
 
 void ACharacterBase::SprintEnd()
 {
+    if (bIsCrouching) { return; }
+
     // Start the same process on the server
     if (!HasAuthority())
     {
@@ -185,6 +189,11 @@ void ACharacterBase::SprintEnd()
 void ACharacterBase::ServerSprintEnd_Implementation()
 {
     SprintEnd();
+}
+
+float ACharacterBase::GetWalkSpeed() const
+{
+    return WalkSpeed;
 }
 
 void ACharacterBase::SetCrouching(bool bCrouch)
