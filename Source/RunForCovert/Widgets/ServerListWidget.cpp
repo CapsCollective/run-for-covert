@@ -36,7 +36,7 @@ void UServerListWidget::DisplayMessage(const FString& Message)
 void UServerListWidget::OnCreateButtonPressed()
 {
     // Open a new session for a new game
-    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->CreateSession(TEXT("Game"));
+    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->CreateSession();
 }
 
 void UServerListWidget::OnSearchButtonPressed()
@@ -57,7 +57,7 @@ void UServerListWidget::PopulateServerList(const TArray<FOnlineSessionSearchResu
         // Encapsulate the session inside a container object
         USessionContainer* NewContainer = NewObject<USessionContainer>(this);
         NewContainer->Session = Result;
-        NewContainer->Name = Result.GetSessionIdStr();
+        NewContainer->Name = Result.Session.SessionSettings.Settings.Find(FName("HostName"))->Data.ToString();
         ListServers->AddItem(NewContainer);
     }
 }

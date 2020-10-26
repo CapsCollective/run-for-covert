@@ -23,7 +23,7 @@ public:
 
     void SetServerList(class UServerListWidget* Caller);
 
-    void CreateSession(FName SessionName);
+    void CreateSession();
 
     void SearchSessions();
 

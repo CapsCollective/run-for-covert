@@ -23,7 +23,7 @@ void UNetworkedGameInstance::Init()
     SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UNetworkedGameInstance::OnJoinSessionComplete);
 }
 
-void UNetworkedGameInstance::CreateSession(FName SessionName)
+void UNetworkedGameInstance::CreateSession()
 {
     if (SessionInterface.IsValid())
     {
@@ -35,8 +35,10 @@ void UNetworkedGameInstance::CreateSession(FName SessionName)
         SessionSettings->NumPublicConnections = 3;
         SessionSettings->NumPrivateConnections = 3;
         SessionSettings->bAllowJoinInProgress = true;
+        SessionSettings->Set(FName("HostName"), FString(FPlatformProcess::ComputerName()),
+                             EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
         SessionInterface->CreateSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(),
-                                        SessionName, *SessionSettings);
+                                        GameSessionName, *SessionSettings);
     }
 }
 
