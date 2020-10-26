@@ -109,6 +109,7 @@ void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
     APlayerCharacterBase* PlayerCharacter = Cast<APlayerCharacterBase>(ActorSensed);
     if(PlayerCharacter && Stimulus.WasSuccessfullySensed())
     {
+        Player = PlayerCharacter;
         SenseState = EnemySenseState::PLAYER_SEEN;
     }
 }
