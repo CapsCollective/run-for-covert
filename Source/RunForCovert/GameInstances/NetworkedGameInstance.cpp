@@ -5,8 +5,9 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Kismet/GameplayStatics.h"
-#include "GameFramework/PlayerController.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "../HUDs/MenuHUD.h"
+#include "../Widgets/ServerListWidget.h"
 
 
 void UNetworkedGameInstance::Init()
@@ -41,7 +42,8 @@ void UNetworkedGameInstance::CreateSession(FName SessionName)
         SessionSettings->NumPublicConnections = 3;
         SessionSettings->NumPrivateConnections = 3;
         SessionSettings->bAllowJoinInProgress = true;
-        SessionInterface->CreateSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(), SessionName, *SessionSettings);
+        SessionInterface->CreateSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(),
+                                        SessionName, *SessionSettings);
     }
 }
 
@@ -52,11 +54,6 @@ void UNetworkedGameInstance::OnCreateSessionComplete(FName SessionName, bool bSu
         UE_LOG(LogTemp, Warning, TEXT("Session Created Successfully"))
         SessionInterface->StartSession(SessionName);
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Session is already in use, restarting session"))
-        SessionInterface->DestroySession(SessionName);
-    }
 }
 
 void UNetworkedGameInstance::OnStartSessionComplete(FName SessionName, bool bSuccess)
@@ -64,12 +61,7 @@ void UNetworkedGameInstance::OnStartSessionComplete(FName SessionName, bool bSuc
     if (bSuccess)
     {
         UE_LOG(LogTemp, Warning, TEXT("Session Started Successfully"))
-        FInputModeGameOnly InputMode;
-        InputMode.SetConsumeCaptureMouseDown(true);
-        GetFirstLocalPlayerController()->bShowMouseCursor = false;
-        GetFirstLocalPlayerController()->SetInputMode(InputMode);
-
-        UGameplayStatics::OpenLevel(GetWorld(), TEXT("MultiplayerMap"), true, "listen");
+        UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainProcGen"), true, "listen");
     }
     else
     {
@@ -77,10 +69,11 @@ void UNetworkedGameInstance::OnStartSessionComplete(FName SessionName, bool bSuc
     }
 }
 
-void UNetworkedGameInstance::JoinRunningSession(FName SessionName)
+void UNetworkedGameInstance::SearchSessions(UServerListWidget* Caller)
 {
     if (SessionInterface.IsValid())
     {
+        ServerListWidget = Caller;
         SessionSearch = MakeShareable(new FOnlineSessionSearch());
         SessionSearch->bIsLanQuery = true;
         SessionSearch->MaxSearchResults = 20;
@@ -92,19 +85,18 @@ void UNetworkedGameInstance::JoinRunningSession(FName SessionName)
 
 void UNetworkedGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
-    if (SessionInterface.IsValid() && SessionSearch.IsValid())
+    if (bWasSuccessful && SessionInterface.IsValid() && SessionSearch.IsValid())
     {
-        UE_LOG(LogTemp, Warning, TEXT("%i Sessions Found"), SessionSearch->SearchResults.Num())
-        if (SessionSearch->SearchResults.Num() > 0)
-        {
-            FOnlineSessionSearchResult SessionResult = SessionSearch->SearchResults[0];
-            SessionInterface->JoinSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(),
-                                          *SessionResult.Session.GetSessionIdStr(), SessionResult);
-        }
+        ServerListWidget->PopulateServerList(SessionSearch->SearchResults);
     }
-    else
+}
+
+void UNetworkedGameInstance::JoinFoundSession(FOnlineSessionSearchResult& SessionResult)
+{
+    if (SessionInterface.IsValid())
     {
-        UE_LOG(LogTemp, Error, TEXT("No Sessions could be found"))
+        SessionInterface->JoinSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(),
+                                      *SessionResult.Session.GetSessionIdStr(), SessionResult);
     }
 }
 
@@ -112,13 +104,22 @@ void UNetworkedGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSes
 {
     if (SessionInterface.IsValid() && Result == EOnJoinSessionCompleteResult::Success)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Session joined successfully"))
+        ServerListWidget->DisplayMessage(TEXT("Session joined successfully"));
+
         FString TravelURL;
-        if (SessionInterface->GetResolvedConnectString(SessionName, TravelURL))
+        if (SessionInterface->GetResolvedConnectString(SessionName, OUT TravelURL))
         {
-            UE_LOG(LogTemp, Warning, TEXT("Client travelling"))
+            UE_LOG(LogTemp, Warning, TEXT("Client travelling..."))
             GetFirstLocalPlayerController()->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
         }
+        else
+        {
+            ServerListWidget->DisplayMessage(TEXT("Could not resolve connection string"));
+        }
+    }
+    else
+    {
+        ServerListWidget->DisplayMessage(TEXT("Couldn't join session"));
     }
 }
 

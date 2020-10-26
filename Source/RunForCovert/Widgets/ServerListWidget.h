@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "OnlineSessionSettings.h"
 #include "ServerListWidget.generated.h"
 
 
@@ -11,6 +12,14 @@ UCLASS()
 class RUNFORCOVERT_API UServerListWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+    // Public methods
+
+    void PopulateServerList(TArray<FOnlineSessionSearchResult>& Sessions);
+
+    void DisplayMessage(const FString& Message);
 
 protected:
 
@@ -26,12 +35,30 @@ private:
     class UButton* ButtonBack;
 
     UPROPERTY(meta=(BindWidget))
-    UButton* ButtonCreateGame;
+    UButton* ButtonSearch;
+
+    UPROPERTY(meta=(BindWidget))
+    UButton* ButtonCreate;
+
+    UPROPERTY(meta=(BindWidget))
+    class UListView* ListServers;
+
+    UPROPERTY(meta=(BindWidget))
+    UButton* ButtonJoin;
+
+    UPROPERTY(meta=(BindWidget))
+    class UTextBlock* TextDebug;
 
     // Private functions
 
     UFUNCTION()
-    void OnCreateGameButtonPressed();
+    void OnCreateButtonPressed();
+
+    UFUNCTION()
+    void OnSearchButtonPressed();
+
+    UFUNCTION()
+    void OnJoinButtonPressed();
 
     UFUNCTION()
     void OnBackButtonPressed();

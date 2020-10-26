@@ -13,19 +13,25 @@ class RUNFORCOVERT_API UNetworkedGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+public:
+
 	// Public overrides
 
-    virtual void Init() override;
+    virtual void Init();
 
     // Public methods
 
     void CreateSession(FName SessionName);
 
-    void JoinRunningSession(FName SessionName);
+    void SearchSessions(class UServerListWidget* Caller);
+
+    void JoinFoundSession(FOnlineSessionSearchResult& SessionResult);
 
 private:
 
     // Private fields
+
+    UServerListWidget* ServerListWidget;
 
     class IOnlineSubsystem* Subsystem;
 
