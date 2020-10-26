@@ -17,7 +17,7 @@ public:
 
     // Public methods
 
-    void PopulateServerList(TArray<FOnlineSessionSearchResult>& Sessions);
+    void PopulateServerList(const TArray<FOnlineSessionSearchResult>& Sessions);
 
     void DisplayMessage(const FString& Message);
 

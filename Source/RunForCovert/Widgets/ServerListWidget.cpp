@@ -22,6 +22,8 @@ bool UServerListWidget::Initialize()
     ButtonSearch->OnClicked.AddDynamic(this, &UServerListWidget::OnSearchButtonPressed);
     ButtonJoin->OnClicked.AddDynamic(this, &UServerListWidget::OnJoinButtonPressed);
 
+    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->SetServerList(this);
+
     return bReturnValue;
 }
 
@@ -34,20 +36,18 @@ void UServerListWidget::DisplayMessage(const FString& Message)
 void UServerListWidget::OnCreateButtonPressed()
 {
     // Open a new session for a new game
-    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->CreateSession(TEXT("Standard Game"));
+    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->CreateSession(TEXT("Game"));
 }
 
 void UServerListWidget::OnSearchButtonPressed()
 {
     // Begin searching for sessions
-    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->SearchSessions(this);
-    TextDebug->SetText(FText::FromString(TEXT("Searching...")));
+    GetWorld()->GetGameInstance<UNetworkedGameInstance>()->SearchSessions();
 }
 
-void UServerListWidget::PopulateServerList(TArray<FOnlineSessionSearchResult>& Sessions)
+void UServerListWidget::PopulateServerList(const TArray<FOnlineSessionSearchResult>& Sessions)
 {
     // Display the number of found sessions and enable the join button if there are sessions
-    TextDebug->SetText(FText::FromString(FString::Printf(TEXT("%d sessions found"), Sessions.Num())));
     ButtonJoin->SetIsEnabled(Sessions.Num() > 0);
 
     // Clear and repopulate the server list
@@ -69,12 +69,11 @@ void UServerListWidget::OnJoinButtonPressed()
     if (Container)
     {
         // Begin joining the selected session
-        TextDebug->SetText(FText::FromString(TEXT("Joining...")));
         GetWorld()->GetGameInstance<UNetworkedGameInstance>()->JoinFoundSession(Container->Session);
     }
     else
     {
-        TextDebug->SetText(FText::FromString(TEXT("No session selected")));
+        DisplayMessage(TEXT("No session selected"));
     }
 }
 

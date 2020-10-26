@@ -21,9 +21,11 @@ public:
 
     // Public methods
 
+    void SetServerList(class UServerListWidget* Caller);
+
     void CreateSession(FName SessionName);
 
-    void SearchSessions(class UServerListWidget* Caller);
+    void SearchSessions();
 
     void JoinFoundSession(FOnlineSessionSearchResult& SessionResult);
 
