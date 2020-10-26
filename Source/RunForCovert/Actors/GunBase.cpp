@@ -193,7 +193,7 @@ void AGunBase::ServerFire_Implementation(FVector LaunchVelocity)
 void AGunBase::MulticastFire_Implementation(FVector LaunchVelocity)
 {
     // Run fire on all non-controlling clients and server
-    if (GetParentActor()->GetLocalRole() != ROLE_AutonomousProxy)
+    if (GetParentActor() && GetParentActor()->GetLocalRole() != ROLE_AutonomousProxy)
     {
         Fire(LaunchVelocity);
     }
