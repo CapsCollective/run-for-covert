@@ -33,8 +33,6 @@ private:
 
     UServerListWidget* ServerListWidget;
 
-    class IOnlineSubsystem* Subsystem;
-
     IOnlineSessionPtr SessionInterface;
 
     TSharedPtr<class FOnlineSessionSearch> SessionSearch;

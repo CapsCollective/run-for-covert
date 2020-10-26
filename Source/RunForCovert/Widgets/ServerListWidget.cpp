@@ -27,6 +27,7 @@ bool UServerListWidget::Initialize()
 
 void UServerListWidget::DisplayMessage(const FString& Message)
 {
+    // Display the message in the menu
     TextDebug->SetText(FText::FromString(Message));
 }
 
@@ -45,12 +46,15 @@ void UServerListWidget::OnSearchButtonPressed()
 
 void UServerListWidget::PopulateServerList(TArray<FOnlineSessionSearchResult>& Sessions)
 {
+    // Display the number of found sessions and enable the join button if there are sessions
     TextDebug->SetText(FText::FromString(FString::Printf(TEXT("%d sessions found"), Sessions.Num())));
     ButtonJoin->SetIsEnabled(Sessions.Num() > 0);
 
+    // Clear and repopulate the server list
     ListServers->ClearListItems();
     for (const FOnlineSessionSearchResult& Result : Sessions)
     {
+        // Encapsulate the session inside a container object
         USessionContainer* NewContainer = NewObject<USessionContainer>(this);
         NewContainer->Session = Result;
         NewContainer->Name = Result.GetSessionIdStr();
@@ -60,10 +64,11 @@ void UServerListWidget::PopulateServerList(TArray<FOnlineSessionSearchResult>& S
 
 void UServerListWidget::OnJoinButtonPressed()
 {
+    // Get the session container object selected
     USessionContainer* Container = Cast<USessionContainer>(ListServers->GetSelectedItem());
     if (Container)
     {
-        // Begin searching for sessions
+        // Begin joining the selected session
         TextDebug->SetText(FText::FromString(TEXT("Joining...")));
         GetWorld()->GetGameInstance<UNetworkedGameInstance>()->JoinFoundSession(Container->Session);
     }

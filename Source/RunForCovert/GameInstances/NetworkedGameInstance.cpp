@@ -13,18 +13,9 @@
 void UNetworkedGameInstance::Init()
 {
     Super::Init();
-    Subsystem = IOnlineSubsystem::Get();
 
-    if (Subsystem)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Found Online Subsystem: %s”"), *Subsystem->GetSubsystemName().ToString())
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Unable to find Online Subsystem"))
-    }
-
-    SessionInterface = Subsystem->GetSessionInterface();
+    // Find the online subsystem's session interface and bind its delegates
+    SessionInterface = IOnlineSubsystem::Get()->GetSessionInterface();
     SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UNetworkedGameInstance::OnFindSessionsComplete);
     SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UNetworkedGameInstance::OnCreateSessionComplete);
     SessionInterface->OnStartSessionCompleteDelegates.AddUObject(this, &UNetworkedGameInstance::OnStartSessionComplete);
@@ -36,6 +27,7 @@ void UNetworkedGameInstance::CreateSession(FName SessionName)
 {
     if (SessionInterface.IsValid())
     {
+        // Set session settings and begin creating the session
         SessionSettings = MakeShareable(new FOnlineSessionSettings());
         SessionSettings->bIsLANMatch = true;
         SessionSettings->bShouldAdvertise = true;
@@ -52,6 +44,8 @@ void UNetworkedGameInstance::OnCreateSessionComplete(FName SessionName, bool bSu
     if (SessionInterface.IsValid() && bSuccess)
     {
         UE_LOG(LogTemp, Warning, TEXT("Session Created Successfully"))
+
+        // Begin starting the session
         SessionInterface->StartSession(SessionName);
     }
 }
@@ -61,6 +55,7 @@ void UNetworkedGameInstance::OnStartSessionComplete(FName SessionName, bool bSuc
     if (bSuccess)
     {
         UE_LOG(LogTemp, Warning, TEXT("Session Started Successfully"))
+        // Open the map level using the listen option
         UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainProcGen"), true, "listen");
     }
     else
@@ -74,6 +69,8 @@ void UNetworkedGameInstance::SearchSessions(UServerListWidget* Caller)
     if (SessionInterface.IsValid())
     {
         ServerListWidget = Caller;
+
+        // Set session search parameters and begin searching sessions
         SessionSearch = MakeShareable(new FOnlineSessionSearch());
         SessionSearch->bIsLanQuery = true;
         SessionSearch->MaxSearchResults = 20;
@@ -87,6 +84,7 @@ void UNetworkedGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
     if (bWasSuccessful && SessionInterface.IsValid() && SessionSearch.IsValid())
     {
+        // Populate the server list with search results
         ServerListWidget->PopulateServerList(SessionSearch->SearchResults);
     }
 }
@@ -95,6 +93,7 @@ void UNetworkedGameInstance::JoinFoundSession(FOnlineSessionSearchResult& Sessio
 {
     if (SessionInterface.IsValid())
     {
+        // Begin joining the specified session
         SessionInterface->JoinSession(*GetFirstGamePlayer()->GetPreferredUniqueNetId(),
                                       *SessionResult.Session.GetSessionIdStr(), SessionResult);
     }
@@ -106,10 +105,11 @@ void UNetworkedGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSes
     {
         ServerListWidget->DisplayMessage(TEXT("Session joined successfully"));
 
+        // Attempt to resolve the session connect string
         FString TravelURL;
         if (SessionInterface->GetResolvedConnectString(SessionName, OUT TravelURL))
         {
-            UE_LOG(LogTemp, Warning, TEXT("Client travelling..."))
+            // Client travel to the connect string
             GetFirstLocalPlayerController()->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
         }
         else
@@ -125,13 +125,5 @@ void UNetworkedGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSes
 
 void UNetworkedGameInstance::OnDestroySessionComplete(FName SessionName, bool bSuccess)
 {
-    if (bSuccess)
-    {
-        CreateSession(SessionName);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Session could not be created"))
-        SessionInterface->DestroySession(SessionName);
-    }
+    // TODO implement this
 }
