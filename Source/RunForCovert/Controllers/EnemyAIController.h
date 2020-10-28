@@ -33,6 +33,12 @@ public:
     UFUNCTION()
     void SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus);
 
+    UFUNCTION()
+    void SensePlayer(const TArray<AActor*>& UpdatedActors);
+
+    UFUNCTION()
+    void ChaseClosestPlayer();
+
     // Public fields
 
     UPROPERTY()

@@ -9,8 +9,11 @@
 #include "LevelGenerator.h"
 #include "MapAttachmentPoint.h"
 #include "MapFragment.h"
+#include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 #include "RunForCovert/Components/TerrainPointComponent.h"
 #include "Materials/Material.h"
+#include "Net/UnrealNetwork.h"
 
 
 AProceduralTerrain::AProceduralTerrain()
@@ -21,7 +24,6 @@ AProceduralTerrain::AProceduralTerrain()
     MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh Component"));
 
 	// Setup of default values
-	Seed = 0;
     Width = 100;
     Height = 100;
     GridSize = 200;
@@ -34,48 +36,40 @@ AProceduralTerrain::AProceduralTerrain()
 	SmoothingDistance = 4;
     LevelGenerator = nullptr;
     Material = nullptr;
+	bReplicates = true;
+	bAlwaysRelevant = true;
+	bNetLoadOnClient = true;
 }
 
 void AProceduralTerrain::BeginPlay()
 {
-	Super::BeginPlay();
 
-	// Waits for the level to be generated
-	// Once it has been generated, the terrain will start to be generated
-	if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
-	{
-		LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProceduralTerrain::GenerateMap);
-	}
-	else
-	{
-		// Sometimes the level is generated too quickly causing the above delegate to not be called
-		// This is used in those cases.
-		GenerateMap();
-	}
+	// if(HasAuthority() || GetWorld()->IsServer())
+	// {
+	// 	if(Seed == 0)
+	// 	{
+	// 		Seed = FMath::RandRange(-10000, 10000);
+	// 	}
+	// 	// Waits for the level to be generated
+	// 	// Once it has been generated, the terrain will start to be generated
+	// 	// if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
+	// 	// {
+	// 	// 	LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProceduralTerrain::GenerateMap);
+	// 	// }
+	// 	// else
+	// 	// {
+	// 	// 	// Sometimes the level is generated too quickly causing the above delegate to not be called
+	// 	// 	// This is used in those cases.
+	// 	// 	GenerateMap();
+	// 	// }
+	// }
+	Super::BeginPlay();
 }
 
-void AProceduralTerrain::GenerateMap()
+
+
+void AProceduralTerrain::GenerateMap(int32 Seed, TArray<FVector> AllLevelPositions)
 {
-	// Gets the position of every MapFragment for use later in the generation process
-	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
-	{
-		// Adds all the positions to an array of FVectors
-		AllLevelPositions.Add(It->GetActorLocation());
-		// Get all the ChildActorComponents
-		TArray<UTerrainPointComponent*> Points;
-		It->GetComponents(Points);
-		for(UTerrainPointComponent* p : Points)
-		{
-			// If the name of the ChildActor Component starts with "TerrainPoint"
-			// Add to the list of FVectors for use later
-			AllLevelPositions.Add(p->GetComponentLocation());
-		}
-	}
-
-	// Sort the array we just filled with position by the Z value
-	// This is important later to avoid clipping in the levels
-	Algo::SortBy(AllLevelPositions, &FVector::Z);
-
 	// Create an instance of Billow noise
 	noise::module::Billow Billow;
 	Billow.SetFrequency(16);
@@ -86,16 +80,9 @@ void AProceduralTerrain::GenerateMap()
 	// This will be helpful when it comes to networking
 	// If the seed in the inspector is 0, a random seed is chosen
 	// Otherwise the set seed is used.
-	if(Seed == 0)
-	{
-		Billow.SetSeed(FMath::RandRange(-10000, 10000));
-		RFM.SetSeed(FMath::RandRange(-10000, 10000));
-	}
-	else
-	{
-		Billow.SetSeed(Seed);
-		RFM.SetSeed(Seed);
-	}
+
+	Billow.SetSeed(Seed);
+	RFM.SetSeed(Seed);
 
 	// Initial generation of the mesh
 	// Loop through all the desired positions of the mesh
@@ -260,6 +247,30 @@ void AProceduralTerrain::GenerateMap()
 
 	// Set the material to the mesh
     MeshComponent->SetMaterial(0, Material);
+
+	// if(HasAuthority())
+	// 	ClientGenerateTerrain(Seed, AllLevelPositions);
+}
+
+TArray<FVector> AProceduralTerrain::GetLevelPositions()
+{
+	TArray<FVector> LevelPositions;
+	for (TActorIterator<AMapFragment> It(GetWorld()); It; ++It)
+    {
+    	// Adds all the positions to an array of FVectors
+    	LevelPositions.Add(It->GetActorLocation());
+    	// Get all the ChildActorComponents
+    	TArray<UTerrainPointComponent*> Points;
+    	It->GetComponents(Points);
+    	for(UTerrainPointComponent* p : Points)
+    	{
+    		// If the name of the ChildActor Component starts with "TerrainPoint"
+    		// Add to the list of FVectors for use later
+    		LevelPositions.Add(p->GetComponentLocation());
+    	}
+    }
+	Algo::SortBy(LevelPositions, &FVector::Z);
+	return LevelPositions;
 }
 
 FVector AProceduralTerrain::GetVertexWorldPosition(FVector Vertex)

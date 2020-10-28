@@ -23,6 +23,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UHealthComponent::OnTakeDamage(float Damage)
 {
+    OnTakeDamageDelegate.Broadcast();
     // Deduct damage from current health and check if they are dead
     if ((CurrentHealth -= Damage) <= 0.f) {
         CurrentHealth = 0;

@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthComponentDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RUNFORCOVERT_API UHealthComponent : public UActorComponent
@@ -28,6 +29,8 @@ public:
 
     UFUNCTION(BlueprintPure)
     float GetHealthPercentage() const;
+
+    FHealthComponentDelegate OnTakeDamageDelegate;
 
 protected:
 

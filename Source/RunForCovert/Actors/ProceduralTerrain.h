@@ -27,15 +27,12 @@ protected:
 private:
 
 	// Private members
-
+	
     UPROPERTY(EditAnywhere)
     UMaterialInterface* Material;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UProceduralMeshComponent* MeshComponent;
-
-	UPROPERTY(EditAnywhere)
-	int32 Seed;
 	
 	UPROPERTY(EditAnywhere)
 	int32 Width;
@@ -79,9 +76,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	class ALevelGenerator* LevelGenerator;
 
-	UPROPERTY(VisibleAnywhere)
-	TArray<FVector> AllLevelPositions;
-
 	UPROPERTY(EditAnywhere)
 	float VertexDistanceCheck;
 
@@ -95,12 +89,15 @@ private:
 
 	UPROPERTY()
 	TArray<FVector> MovedVerticesForLevel;
-
-	// Private functions
-
-    UFUNCTION(BlueprintCallable)
-    void GenerateMap();
-
-    void ClearMap();
 	
+	// Private functions
+	
+    UFUNCTION(BlueprintCallable)
+    void GenerateMap(int32 Seed, TArray<FVector> AllLevelPositions);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FVector> GetLevelPositions();
+	
+    void ClearMap();
+
 };

@@ -58,6 +58,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UAIPerceptionStimuliSourceComponent* AIStimulusSource;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPawnNoiseEmitterComponent* PawnNoiseEmitter;
 	
     // Input methods
 

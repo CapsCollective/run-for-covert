@@ -10,8 +10,10 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "../Objects/States/EnemyStateMachine.h"
 #include "../GameModes/LevelGameMode.h"
+#include "Perception/AISense_Hearing.h"
 
 
 AEnemyAIController::AEnemyAIController()
@@ -20,7 +22,6 @@ AEnemyAIController::AEnemyAIController()
 
     // Setup components
     PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception"));
-
     // Setup the controller's perception and sight config details
     UAISenseConfig_Sight* SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
     SightConfig->SightRadius = 1000.0f;
@@ -28,6 +29,16 @@ AEnemyAIController::AEnemyAIController()
     SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
     SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
     PerceptionComponent->ConfigureSense(*SightConfig);
+
+    UAISenseConfig_Hearing* HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
+    HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
+    HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
+    HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
+    HearingConfig->HearingRange = 1000.0f;
+    HearingConfig->SetMaxAge(1.0f);
+    PerceptionComponent->ConfigureSense(*HearingConfig);
+
+    PerceptionComponent->SetDominantSense(SightConfig->GetSenseImplementation());
 
     // Set field default values
     Player = nullptr;
@@ -48,8 +59,11 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
     Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
     Agent = Cast<AEnemyCharacterBase>(InPawn);
 
+    Agent->Health->OnTakeDamageDelegate.AddDynamic(this, &AEnemyAIController::ChaseClosestPlayer);
+    
     // Register perception delegate method
-    PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
+    //PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SeePlayer);
+    PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &AEnemyAIController::SensePlayer);
 
     // Get a reference to the game mode (used as a service locator)
     ALevelGameMode* GameMode = Cast<ALevelGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
@@ -111,5 +125,52 @@ void AEnemyAIController::SeePlayer(AActor* ActorSensed, FAIStimulus Stimulus)
     {
         Player = PlayerCharacter;
         SenseState = EnemySenseState::PLAYER_SEEN;
+    }
+}
+
+void AEnemyAIController::SensePlayer(const TArray<AActor*>& UpdatedActors)
+{
+    for(AActor* Actor : UpdatedActors)
+    {
+        FActorPerceptionInfo Info = FActorPerceptionInfo(Actor);
+        FActorPerceptionBlueprintInfo BPInfo = FActorPerceptionBlueprintInfo();
+        PerceptionComponent->GetActorsPerception(Actor, BPInfo);
+
+        APlayerCharacterBase* PlayerCharacter = Cast<APlayerCharacterBase>(BPInfo.Target);
+        if(PlayerCharacter)
+        {
+            for(FAIStimulus Stimuli : BPInfo.LastSensedStimuli)
+            {
+                if(Stimuli.WasSuccessfullySensed())
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Sensed with: %s"), *Stimuli.Type.Name.ToString());
+                    Player = PlayerCharacter;
+                    SenseState = EnemySenseState::PLAYER_SEEN;
+                    break;
+                }
+                SenseState = EnemySenseState::DEFAULT;
+            }
+        }
+    }
+}
+
+void AEnemyAIController::ChaseClosestPlayer()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Took damage, chasing player"))
+    float Distance = TNumericLimits<float>::Max();
+    APlayerCharacterBase* ClosestPlayer = nullptr;
+    for (TActorIterator<APlayerCharacterBase> It(GetWorld()); It; ++It)
+    {
+        float DistToPlayer = FVector::Dist(Agent->GetActorLocation(), It->GetActorLocation());
+        if(DistToPlayer <  Distance)
+        {
+            Distance = DistToPlayer;
+            ClosestPlayer = *It;
+        }
+    }
+    if(ClosestPlayer)
+    {
+        Player = ClosestPlayer;
+        SenseState = EnemySenseState::CHASING_PLAYER;
     }
 }

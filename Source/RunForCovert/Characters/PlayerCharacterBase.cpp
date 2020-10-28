@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 #include "Camera/CameraComponent.h"
 
 APlayerCharacterBase::APlayerCharacterBase()
@@ -24,6 +25,8 @@ APlayerCharacterBase::APlayerCharacterBase()
     MeshOffset->SetupAttachment(GetCapsuleComponent());
 
     AIStimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AI Stimulus Source"));
+
+    PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Pawn Noise Emitter"));
     
 	// Set field default values
     MoveSpeed = 100.f;
@@ -45,7 +48,7 @@ void APlayerCharacterBase::BeginPlay()
 }
 
 void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+{   
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &APlayerCharacterBase::MoveForward);
