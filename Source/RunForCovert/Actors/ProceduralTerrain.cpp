@@ -24,6 +24,8 @@ AProceduralTerrain::AProceduralTerrain()
     MeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh Component"));
 
 	// Setup of default values
+	AllowGeneration = true;
+	Seed = 0;
     Width = 100;
     Height = 100;
     GridSize = 200;
@@ -43,32 +45,41 @@ AProceduralTerrain::AProceduralTerrain()
 
 void AProceduralTerrain::BeginPlay()
 {
-
-	// if(HasAuthority() || GetWorld()->IsServer())
-	// {
-	// 	if(Seed == 0)
-	// 	{
-	// 		Seed = FMath::RandRange(-10000, 10000);
-	// 	}
-	// 	// Waits for the level to be generated
-	// 	// Once it has been generated, the terrain will start to be generated
-	// 	// if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
-	// 	// {
-	// 	// 	LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProceduralTerrain::GenerateMap);
-	// 	// }
-	// 	// else
-	// 	// {
-	// 	// 	// Sometimes the level is generated too quickly causing the above delegate to not be called
-	// 	// 	// This is used in those cases.
-	// 	// 	GenerateMap();
-	// 	// }
-	// }
+	if(!AllowGeneration) {return;}
+	
+	if(HasAuthority() || GetWorld()->IsServer())
+	{
+		if(Seed == 0)
+		{
+			Seed = FMath::RandRange(-10000, 10000);
+		}
+		
+		AllLevelPositions = GetLevelPositions();
+		// Waits for the level to be generated
+		// Once it has been generated, the terrain will start to be generated
+		if(LevelGenerator && !LevelGenerator->IsGenerationComplete())
+		{
+			LevelGenerator->OnGenerationComplete.AddDynamic(this, &AProceduralTerrain::GenerateMap);
+		}
+		else
+		{
+			// Sometimes the level is generated too quickly causing the above delegate to not be called
+			// This is used in those cases.
+			GenerateMap();
+		}
+	}
 	Super::BeginPlay();
 }
 
 
+void AProceduralTerrain::GetLifetimeReplicatedProps(::TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AProceduralTerrain, Seed);
+	DOREPLIFETIME(AProceduralTerrain, AllLevelPositions);
+}
 
-void AProceduralTerrain::GenerateMap(int32 Seed, TArray<FVector> AllLevelPositions)
+void AProceduralTerrain::GenerateMap()
 {
 	// Create an instance of Billow noise
 	noise::module::Billow Billow;
@@ -271,6 +282,15 @@ TArray<FVector> AProceduralTerrain::GetLevelPositions()
     }
 	Algo::SortBy(LevelPositions, &FVector::Z);
 	return LevelPositions;
+}
+
+void AProceduralTerrain::ClientGetPositions()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Seed: %i"), Seed));
+	if(!HasAuthority())
+	{
+		GenerateMap();
+	}
 }
 
 FVector AProceduralTerrain::GetVertexWorldPosition(FVector Vertex)

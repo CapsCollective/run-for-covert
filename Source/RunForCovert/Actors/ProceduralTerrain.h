@@ -18,6 +18,12 @@ public:
 
 	AProceduralTerrain();
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly)
+	int32 Seed;
+	
+	UPROPERTY(Replicated, ReplicatedUsing = ClientGetPositions, BlueprintReadOnly)
+	TArray<FVector> AllLevelPositions;
+
 protected:
 
     // Protected overrides
@@ -27,6 +33,9 @@ protected:
 private:
 
 	// Private members
+	
+	UPROPERTY(EditAnywhere)
+	bool AllowGeneration;
 	
     UPROPERTY(EditAnywhere)
     UMaterialInterface* Material;
@@ -92,12 +101,17 @@ private:
 	
 	// Private functions
 	
+	virtual void GetLifetimeReplicatedProps(::TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
     UFUNCTION(BlueprintCallable)
-    void GenerateMap(int32 Seed, TArray<FVector> AllLevelPositions);
+    void GenerateMap();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FVector> GetLevelPositions();
 	
     void ClearMap();
 
+	UFUNCTION()
+	void ClientGetPositions();
+	
 };
