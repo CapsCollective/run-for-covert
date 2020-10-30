@@ -25,6 +25,7 @@ ACharacterBase::ACharacterBase()
     bIsCrouching = false;
     SprintSpeed = 0.f;
     WalkSpeed = 0.f;
+    bIsSprinting = false;
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -165,6 +166,7 @@ void ACharacterBase::SprintStart()
 
     // Apply the sprint speed
     GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+    bIsSprinting = true;
 }
 
 void ACharacterBase::ServerSprintStart_Implementation()
@@ -184,6 +186,7 @@ void ACharacterBase::SprintEnd()
 
     // Reapply the walk speed
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+    bIsSprinting = false;
 }
 
 void ACharacterBase::ServerSprintEnd_Implementation()

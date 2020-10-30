@@ -17,6 +17,11 @@ public:
 
 	ACharacterBase();
 
+    // Public properties
+
+    UPROPERTY(BlueprintReadOnly)
+    bool bIsSprinting;
+    
     // Public functions
 
     virtual void OnDeath();
