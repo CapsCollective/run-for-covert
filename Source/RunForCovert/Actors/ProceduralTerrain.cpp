@@ -286,7 +286,6 @@ TArray<FVector> AProceduralTerrain::GetLevelPositions()
 
 void AProceduralTerrain::ClientGetPositions()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("Seed: %i"), Seed));
 	if(!HasAuthority())
 	{
 		GenerateMap();
